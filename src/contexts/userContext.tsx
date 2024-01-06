@@ -16,7 +16,7 @@ interface UserContextProviderProps {
 const UserContext = createContext<UserContextValue | undefined>(undefined);
 
 // Make Context Provider
-export const UserContextProvider = ({children}: UserContextProviderProps) => {
+export const UserContextProvider = ({ children }: UserContextProviderProps) => {
   const [user, setUser] = useState<UserBase | null>(null);
 
   const value: UserContextValue = { user, setUser };

@@ -1,7 +1,7 @@
 import {
   Typography,
   Link
-} from '@mui/material'
+} from '@mui/material';
 
 const SoftwareCompany = () => {
   return (
@@ -13,8 +13,8 @@ const SoftwareCompany = () => {
       {new Date().getFullYear()}
       {'.'}
     </Typography>
-  )
-}
+  );
+};
 
 
 
@@ -40,4 +40,4 @@ const SoftwareCompany = () => {
 
 
 
-export default SoftwareCompany
+export default SoftwareCompany;

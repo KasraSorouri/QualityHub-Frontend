@@ -1,7 +1,7 @@
 import {
   Typography,
   Paper
-} from '@mui/material'
+} from '@mui/material';
 
 const HomePage = () => {
 
@@ -12,6 +12,6 @@ const HomePage = () => {
       <Typography variant='body1'>This page is public and anybody can see this page without login</Typography>
       <Typography variant='body1'>For using the application please login</Typography>
     </Paper>
-  )
-}
-export default HomePage
+  );
+};
+export default HomePage;

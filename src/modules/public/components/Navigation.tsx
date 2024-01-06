@@ -1,5 +1,5 @@
-import React, { Fragment, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { Fragment, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import {
   AppBar,
@@ -11,37 +11,37 @@ import {
   Grid,
   Box,
   ListItemIcon,
-  Stack } from '@mui/material'
+  Stack } from '@mui/material';
 
-import HomeIcon from '@mui/icons-material/Home'
-import ConfigIcon from '@mui/icons-material/SettingsSuggest'
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
-import Logout from '@mui/icons-material/Logout'
+import HomeIcon from '@mui/icons-material/Home';
+import ConfigIcon from '@mui/icons-material/SettingsSuggest';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import Logout from '@mui/icons-material/Logout';
 
-import { useUserSet } from '../../../contexts/userContext'
+import { useUserSet } from '../../../contexts/userContext';
 
-import { UserBase } from '../../../types/UserAuthTypes'
+import { UserBase } from '../../../types/UserAuthTypes';
 
 const Navigation = ({ signedUser } :{ signedUser: UserBase | null}) => {
 
-  const navigate = useNavigate()
-  const setUser = useUserSet()
+  const navigate = useNavigate();
+  const setUser = useUserSet();
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
+    setAnchorEl(event.currentTarget);
+  };
   const handleClose = () => {
-    setAnchorEl(null)
-  }
+    setAnchorEl(null);
+  };
 
   const handleLogout = () => {
-    window.localStorage.removeItem('Manufacturing_logedUser')
-    setUser(null)
-    navigate('/signin')
-    handleClose()
-  }
+    window.localStorage.removeItem('Manufacturing_logedUser');
+    setUser(null);
+    navigate('/signin');
+    handleClose();
+  };
 
   return (
     <AppBar position='sticky'>
@@ -167,6 +167,7 @@ const Navigation = ({ signedUser } :{ signedUser: UserBase | null}) => {
         </Grid>
       </Toolbar>
     </AppBar>
-  )
-}
-export default Navigation
+  );
+};
+
+export default Navigation;

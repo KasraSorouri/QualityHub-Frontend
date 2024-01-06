@@ -1,58 +1,57 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
-import Avatar from '@mui/material/Avatar'
-import Button from '@mui/material/Button'
-import CssBaseline from '@mui/material/CssBaseline'
-import TextField from '@mui/material/TextField'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Checkbox from '@mui/material/Checkbox'
-import Link from '@mui/material/Link'
-import Grid from '@mui/material/Grid'
-import Box from '@mui/material/Box'
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
-import Typography from '@mui/material/Typography'
-import Container from '@mui/material/Container'
-import { createTheme, ThemeProvider } from '@mui/material/styles'
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Link from '@mui/material/Link';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-import loginServices from '../services/login'
+import loginServices from '../services/login';
 
-import { useUserSet } from '../../../contexts/userContext'
-import { Credentials, UserBase } from '../../../types/UserAuthTypes'
-//import { useNotificationSet } from '../../../contexts/NotificationContext'
+import { useUserSet } from '../../../contexts/userContext';
+import { Credentials, UserBase } from '../../../types/UserAuthTypes';
+import { useNotificationSet } from '../../../contexts/NotificationContext';
 
-const defaultTheme = createTheme()
+const defaultTheme = createTheme();
 
 const SignIn = () => {
 
-  const navigate = useNavigate()
-  const setUser = useUserSet()
-  //const setNotification = useNotificationSet()
+  const navigate = useNavigate();
+  const setUser = useUserSet();
+  const setNotification = useNotificationSet();
 
   const handleSubmit = async(event: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined }) => {
-    event.preventDefault()
-    const data = new FormData(event.currentTarget)
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
     const credentials : Credentials = {
       username: data.get('username') as string,
       password: data.get('password') as string,
-    }
+    };
 
     try {
-      const response = await loginServices.login(credentials)
+      const response = await loginServices.login(credentials);
+      const user : UserBase = response ? response : null;
 
-      console.log('login *** response ->', response)
-      const user : UserBase = response ? response : null
+      window.localStorage.setItem('QualityHub_SignedUser', JSON.stringify(user));
 
-      window.localStorage.setItem('QualityHub_SignedUser', JSON.stringify(user))
-      console.log('login *** user ->', user)
-
-      setUser(user)
-      console.log('login *** user ->', user)
-      //setNotification({ message: 'Login Successfully!', type: 'success', time: 3 })
-      navigate('/')
-    } catch (err) {
-      //setNotification({ message: err.message, type: 'error', time: 5 })
+      setUser(user);
+      setNotification({ message: 'Login Successfully!', type: 'info', time: 3 });
+      navigate('/');
+    } catch (err : unknown) {
+      if (err instanceof Error) {
+        console.log('log in fail =>',err.message);
+        setNotification({ message: err.message, type: 'error', time: 5 });
+      }
     }
-  }
+  };
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -114,7 +113,7 @@ const SignIn = () => {
         </Box>
       </Container>
     </ThemeProvider>
-  )
-}
+  );
+};
 
-export default SignIn
+export default SignIn;

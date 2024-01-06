@@ -1,38 +1,39 @@
-import { useEffect } from 'react'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import { useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
-import './App.css'
+import './App.css';
 
-import { useUserSet, useUserValue } from './contexts/userContext'
-import SoftwareCompany from './modules/public/components/SoftwareCompany'
-import Navigation from './modules/public/components/Navigation'
-import SignIn from './modules/usersAndAuthentications/components/Login'
-import HomePage from './modules/public/components/HomePage'
+import { useUserSet, useUserValue } from './contexts/userContext';
+import SoftwareCompany from './modules/public/components/SoftwareCompany';
+import Navigation from './modules/public/components/Navigation';
+import SignIn from './modules/usersAndAuthentications/components/Login';
+import HomePage from './modules/public/components/HomePage';
+import Notification from './modules/public/components/Notification';
 
 
 
 function App() {
 
   // User management
-  const setUser = useUserSet()
-  const user = useUserValue()
+  const setUser = useUserSet();
+  const user = useUserValue();
 
   useEffect(() => {
-    const signedUser = window.localStorage.getItem('QualityHub_SignedUser')
-    signedUser && setUser(JSON.parse(signedUser))
+    const signedUser = window.localStorage.getItem('QualityHub_SignedUser');
+    signedUser && setUser(JSON.parse(signedUser));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
+  },[]);
 
-  console.log('app user ->',user)
+  console.log('app user ->',user);
 
   return (
 
     <div>
       <Router>
         <Navigation signedUser={user} />
+        <Notification  />
 
         {/*}
-          <Notification  />
   */}
         <Routes>
           <Route path='/' element={<HomePage />} />
@@ -48,8 +49,8 @@ function App() {
         <SoftwareCompany />
       </footer>
     </div>
-  )
+  );
 
 }
 
-export default App
+export default App;
