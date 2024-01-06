@@ -1,38 +1,46 @@
-import React from 'react'
+import React, { Fragment, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-import AppBar from '@mui/material/AppBar'
-import Box from '@mui/material/Box'
-import Toolbar from '@mui/material/Toolbar'
-import Typography from '@mui/material/Typography'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import { Grid, Stack } from '@mui/material'
+import {
+  AppBar,
+  Toolbar,
+  Divider,
+  Menu,
+  MenuItem,
+  Typography,
+  Grid,
+  Box,
+  ListItemIcon,
+  Stack } from '@mui/material'
 
 import HomeIcon from '@mui/icons-material/Home'
+import ConfigIcon from '@mui/icons-material/SettingsSuggest'
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
+import Logout from '@mui/icons-material/Logout'
+
+import { useUserSet } from '../../../contexts/userContext'
 
 import { UserBase } from '../../../types/UserAuthTypes'
 
-
-const pages = ['Config', 'User Management', 'Dashboard']
-const settings = ['Profile', 'Account', 'Logout']
-
 const Navigation = ({ signedUser } :{ signedUser: UserBase | null}) => {
 
-  //const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
+  const navigate = useNavigate()
+  const setUser = useUserSet()
 
-  //const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-  //  setAnchorElNav(event.currentTarget);
-  //};
-
-  /*
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const open = Boolean(anchorEl)
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget)
   }
-*/
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null)
+  const handleLogout = () => {
+    window.localStorage.removeItem('Manufacturing_logedUser')
+    setUser(null)
+    navigate('/signin')
+    handleClose()
   }
 
   return (
@@ -45,7 +53,7 @@ const Navigation = ({ signedUser } :{ signedUser: UserBase | null}) => {
                 variant="h6"
                 noWrap
                 component="a"
-                href= 'home'
+                href= '/'
                 sx={{
                   mr: 2,
                   display: { xs: 'none', md: 'flex' },
@@ -58,67 +66,84 @@ const Navigation = ({ signedUser } :{ signedUser: UserBase | null}) => {
                 <HomeIcon sx={{ mr: 1 }} />
                 Home
               </Typography>
-              {pages.map((page) => (
-                <Typography
-                  key={page}
-                  variant="h6"
-                  noWrap
-                  component="a"
-                  href= {`${page}`}
-                  sx={{
-                    mr: 2,
-                    display: { xs: 'none', md: 'flex' },
-                    fontFamily: 'monospace',
-                    fontWeight: 700,
-                    color: 'inherit',
-                    textDecoration: 'none',
-                  }}
-                >
-                  {page}
-                </Typography>
-              ))}
+              <Typography
+                variant="h6"
+                noWrap
+                component="a"
+                href= '/'
+                sx={{
+                  mr: 2,
+                  display: { xs: 'none', md: 'flex' },
+                  fontFamily: 'monospace',
+                  fontWeight: 700,
+                  color: 'inherit',
+                  textDecoration: 'none',
+                }}
+              >
+                <ConfigIcon sx={{ mr: 1 }} />
+                Settings
+              </Typography>
+              <Typography
+                variant="h6"
+                noWrap
+                component="a"
+                href= '/'
+                sx={{
+                  mr: 2,
+                  display: { xs: 'none', md: 'flex' },
+                  fontFamily: 'monospace',
+                  fontWeight: 700,
+                  color: 'inherit',
+                  textDecoration: 'none',
+                }}
+              >
+                <ManageAccountsIcon sx={{ mr: 1 }} />
+                User Management
+              </Typography>
             </Stack>
           </Grid>
           <Grid item marginLeft={25}>
             <Box sx={{ flexGrow: 0 }}>
               {signedUser ?
-                <><Typography
-                  variant="h6"
-                  noWrap
-                  component="a"
-                  href='home'
-                  sx={{
-                    mr: 2,
-                    display: { xs: 'none', md: 'flex' },
-                    fontFamily: 'monospace',
-                    fontWeight: 700,
-                    color: 'inherit',
-                    textDecoration: 'none',
-                  }}
-                >
-                  {signedUser.firstName}
-                </Typography><Menu
-                  sx={{ mt: '45px' }}
-                  id="menu-appbar"
-                  anchorEl={anchorElUser}
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseUserMenu}
-                >
-                  {settings.map((setting) => (
-                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                      <Typography textAlign="center">{settings}</Typography>
+                <Fragment>
+                  <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}
+                    onClick={handleClick}
+                  >
+                    <Typography
+                      variant='h6'
+                      noWrap
+                      sx={{
+                        mr: 2,
+                        fontFamily: 'monospace',
+                        fontWeight: 700,
+                        color: 'inherit',
+                        textDecoration: 'none',
+                      }}
+                    >
+                      { `${signedUser.firstName} ${signedUser.lastName}`}
+                    </Typography>
+                  </Box>
+                  <Menu
+                    anchorEl={anchorEl}
+                    id='account-menu'
+                    open={open}
+                    onClose={handleClose}
+                    onClick={handleClose}
+                    transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                  >
+                    <MenuItem onClick={handleClose}>
+                      Change Password
                     </MenuItem>
-                  ))}
-                </Menu></>:
+                    <Divider />
+                    <MenuItem onClick={handleLogout}>
+                      <ListItemIcon>
+                        <Logout fontSize='small' />
+                      </ListItemIcon>
+                    Logout
+                    </MenuItem>
+                  </Menu>
+                </Fragment>:
 
                 <Typography
                   variant="h6"

@@ -28,13 +28,14 @@ function App() {
   return (
 
     <div>
-      <Navigation signedUser={user} />
       <Router>
+        <Navigation signedUser={user} />
+
         {/*}
           <Notification  />
   */}
         <Routes>
-          <Route path='/home' element={<HomePage />} />
+          <Route path='/' element={<HomePage />} />
           <Route path='/signin' element={<SignIn />} />
           {/*
             <Route path='/Config' element={<ConfigurationPage user={user} />} />
