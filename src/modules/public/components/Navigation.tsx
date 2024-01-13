@@ -48,14 +48,14 @@ const Navigation = ({ signedUser } :{ signedUser: UserBase | null}) => {
       <Toolbar disableGutters>
         <Grid container justifyContent='space-between'>
           <Grid item>
-            <Stack direction={'row'} spacing={5}>
+            <Stack direction={'row'} spacing={5} margin={2}>
               <Typography
                 variant="h6"
                 noWrap
                 component="a"
                 href= '/'
                 sx={{
-                  mr: 2,
+                  margin: 2,
                   display: { xs: 'none', md: 'flex' },
                   fontFamily: 'monospace',
                   fontWeight: 700,
@@ -63,7 +63,7 @@ const Navigation = ({ signedUser } :{ signedUser: UserBase | null}) => {
                   textDecoration: 'none',
                 }}
               >
-                <HomeIcon sx={{ mr: 1 }} />
+                <HomeIcon sx={{ margin: 0.5 }} />
                 Home
               </Typography>
               <Typography
@@ -72,7 +72,7 @@ const Navigation = ({ signedUser } :{ signedUser: UserBase | null}) => {
                 component="a"
                 href= '/'
                 sx={{
-                  mr: 2,
+                  margin: 2,
                   display: { xs: 'none', md: 'flex' },
                   fontFamily: 'monospace',
                   fontWeight: 700,
@@ -80,16 +80,16 @@ const Navigation = ({ signedUser } :{ signedUser: UserBase | null}) => {
                   textDecoration: 'none',
                 }}
               >
-                <ConfigIcon sx={{ mr: 1 }} />
+                <ConfigIcon sx={{ margin: 0.5 }} />
                 Settings
               </Typography>
               <Typography
                 variant="h6"
                 noWrap
                 component="a"
-                href= '/'
+                href= '/user_management'
                 sx={{
-                  mr: 2,
+                  margin: 2,
                   display: { xs: 'none', md: 'flex' },
                   fontFamily: 'monospace',
                   fontWeight: 700,
@@ -97,7 +97,7 @@ const Navigation = ({ signedUser } :{ signedUser: UserBase | null}) => {
                   textDecoration: 'none',
                 }}
               >
-                <ManageAccountsIcon sx={{ mr: 1 }} />
+                <ManageAccountsIcon sx={{ margin: 0.5 }} />
                 User Management
               </Typography>
             </Stack>
@@ -113,7 +113,7 @@ const Navigation = ({ signedUser } :{ signedUser: UserBase | null}) => {
                       variant='h6'
                       noWrap
                       sx={{
-                        mr: 2,
+                        margin: 2,
                         fontFamily: 'monospace',
                         fontWeight: 700,
                         color: 'inherit',
@@ -144,7 +144,6 @@ const Navigation = ({ signedUser } :{ signedUser: UserBase | null}) => {
                     </MenuItem>
                   </Menu>
                 </Fragment>:
-
                 <Typography
                   variant="h6"
                   noWrap

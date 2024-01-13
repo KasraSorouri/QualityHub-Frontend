@@ -1,16 +1,14 @@
 import { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
-import './App.css';
-
 import { useUserSet, useUserValue } from './contexts/userContext';
-import SoftwareCompany from './modules/public/components/SoftwareCompany';
+
 import Navigation from './modules/public/components/Navigation';
-import SignIn from './modules/usersAndAuthentications/components/Login';
+import SoftwareCompany from './modules/public/components/SoftwareCompany';
 import HomePage from './modules/public/components/HomePage';
 import Notification from './modules/public/components/Notification';
-
-
+import SignIn from './modules/usersAndAuthentications/components/Login';
+import UserManagement from './modules/usersAndAuthentications/components/UserManagement';
 
 function App() {
 
@@ -24,25 +22,15 @@ function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
 
-  console.log('app user ->',user);
-
   return (
-
-    <div>
+    <div style={{ width: '98vw', minHeight: '60vh', margin: 10 }}>
       <Router>
         <Navigation signedUser={user} />
         <Notification  />
-
-        {/*}
-  */}
         <Routes>
           <Route path='/' element={<HomePage />} />
           <Route path='/signin' element={<SignIn />} />
-          {/*
-            <Route path='/Config' element={<ConfigurationPage user={user} />} />
-            <Route path='/userManagement'element={<UserManagement />} />
-            <Route path='/bomManagement' element={<BomManagement />} />
-*/}
+          <Route path='/user_management' element={<UserManagement />} />
         </Routes>
       </Router>
       <footer>
@@ -50,7 +38,6 @@ function App() {
       </footer>
     </div>
   );
-
 }
 
 export default App;
