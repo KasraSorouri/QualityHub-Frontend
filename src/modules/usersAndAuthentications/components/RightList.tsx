@@ -57,19 +57,21 @@ const RightList = ({ rights, allRights, displayRightForm, selectRight } : rightL
     return 0;
   });
 
-  const showEditRight = (id : string) => {
-    const roleData = rights.filter((r) => r.id === id )[0];
-    selectRight(roleData);
+  const showEditRight = (id : string | number) => {
+    const rightData = rights.filter((r) => r.id === id )[0];
+    selectRight(rightData);
     displayRightForm({ show: true, formType: 'EDIT' });
   };
 
   const addNewRight = () => {
+    selectRight(null); // clear selected role data
     displayRightForm({ show: true, formType: 'ADD' });
   };
 
   const columnHeader = [
     { id: 'right', lable: 'Right', minWidth: 10 },
     { id: 'relatedModule', lable: 'Module', minWidth: 10 },
+    { id: 'active', lable: 'Active', minWidth: 10 },
   ];
 
   const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
@@ -145,9 +147,11 @@ const RightList = ({ rights, allRights, displayRightForm, selectRight } : rightL
                     <TableCell align='center' >
                       {right.relatedModule}
                     </TableCell>
-                    <IconButton onClick={() => showEditRight(right.id)} style={{ height: '12px', width: '12px', marginLeft: 25 , color:'#1976d2d9' }}>
-                      <EditIcon />
-                    </IconButton>
+                    <TableCell align='center' >
+                      <IconButton onClick={() => showEditRight(right.id)} style={{ height: '12px', width: '12px', marginLeft: 25 , color:'#1976d2d9' }}>
+                        <EditIcon />
+                      </IconButton>
+                    </TableCell>
                   </TableRow>
                 );
               })}

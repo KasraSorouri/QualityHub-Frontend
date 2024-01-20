@@ -1,5 +1,5 @@
 export interface UserBase {
-  id: string,
+  id: number | string,
   firstName: string,
   lastName: string,
   username: string,
@@ -10,12 +10,12 @@ export interface UserBase {
 
 export interface NewUser extends Omit<UserBase,'id' | 'roles'> {
   password: string,
-  roles?: string[]
+  roles?: (number | string)[]
 }
 
 export interface UserUpdate extends Omit<UserBase,'roles'> {
   password?: string,
-  roles?: string[]
+  roles?: (number | string)[]
 }
 
 export interface Credentials {
@@ -33,20 +33,20 @@ export interface Token {
 }
 
 export interface Role {
-  id: string;
+  id: number | string,
   roleName: string;
   active: boolean;
   rights?: Right[];
 }
 
 export interface RoleUpdate extends Omit<Role,'rights'> {
-  rights?: string[]
+  rights?: (number | string)[]
 }
 
 export interface NewRole extends Omit<RoleUpdate,'id'> {}
 
 export interface Right {
-  id: string;
+  id: number | string,
   right: string;
   active: boolean;
   relatedModule: string;

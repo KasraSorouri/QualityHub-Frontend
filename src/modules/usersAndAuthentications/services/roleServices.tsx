@@ -16,7 +16,6 @@ const createRole = async(roleData : NewRole) : Promise<Role | unknown> => {
   const config = {
     headers: { Authorization: token },
   };
-
   try {
     const res = await axios.post(`${api_url}/auth/roles`, roleData, config);
     return res.data;
@@ -36,6 +35,9 @@ const editRole = async(roleData : RoleUpdate) : Promise<Role | unknown> => {
   };
 
   const { id, ...roleEditedData } = roleData;
+
+  console.log('** role service * update role * role data ->', roleData);
+
   try{
     const res = await axios.put(`${api_url}/auth/roles/${id}`, roleEditedData, config);
     return res.data;

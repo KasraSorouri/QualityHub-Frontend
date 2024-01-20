@@ -20,7 +20,7 @@ const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
 const checkedIcon = <CheckBoxIcon fontSize='small' />;
 
 interface FormData extends Role {
-  checked: boolean
+  rightData: (number | string)[]
 }
 
 type RoleFormProps = {
@@ -41,13 +41,21 @@ const RoleForm = ({ formType, roleData, submitHandler, displayRoleForm, rightLis
     roleName: roleData ? roleData.roleName :'',
     active: roleData ? roleData.active : true,
     rights: roleData ? roleData.rights : [],
-    checked: false
+    rightData: []
   };
+
 
   const [ formValues, setFormValues ] = useState<FormData>(initialFormData);
 
   useEffect(() => {
-    //setFormValues(roleData);
+    const formData : FormData = {
+      id: roleData ? roleData.id : '',
+      roleName: roleData ? roleData.roleName :'',
+      active: roleData ? roleData.active : true,
+      rights: roleData ? roleData.rights : [],
+      rightData: roleData?.rights ? roleData.rights?.map(right => right.id) : []
+    };
+    setFormValues(formData);
   },[roleData]);
 
   const handleChange = (event: { target: { name: string; value: string | number | boolean; checked: boolean; }; }) => {
@@ -107,8 +115,7 @@ const RoleForm = ({ formType, roleData, submitHandler, displayRoleForm, rightLis
                   control={
                     <Checkbox
                       sx={{ marginLeft: 2 }}
-                      checked={formValues.checked}
-                      defaultChecked={true}
+                      checked={formValues.active}
                       onChange={handleChange}
                       name='active'
                       color='primary'
@@ -127,6 +134,7 @@ const RoleForm = ({ formType, roleData, submitHandler, displayRoleForm, rightLis
                   value={formValues.rights}
                   onChange={handleRightChange}
                   getOptionLabel={(option) => option.right}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
                   renderOption={(props, option, { selected }) => {
                     return (
                       <li {...props}>

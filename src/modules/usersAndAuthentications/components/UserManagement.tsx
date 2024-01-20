@@ -47,10 +47,6 @@ const UserManagement = () => {
   const [ selectedRight, setSelectedRight ] = useState<Right | null>(null);
 
   const [ filterParameter, setFilterParameter ] = useState<FilterParamData | null>(null);
-  console.log('right form type ->',showRightForm);
-
-  console.log('user form type ->',showUserForm);
-  console.log('selected User ->',selectedUser);
 
   // Query implementation
   const queryClient = useQueryClient();
@@ -61,8 +57,8 @@ const UserManagement = () => {
       queryClient.invalidateQueries('roles');
       setNotification({ message: 'Role added successfully!', type: 'info', time: 3 });
     },
-    onError: () => {
-      setNotification({ message: 'Role does not add due to an error!', type: 'error', time: 8 });
+    onError: (err) => {
+      setNotification({ message: `${err}`, type: 'error', time: 8 });
     }
   });
 
@@ -71,8 +67,8 @@ const UserManagement = () => {
       queryClient.invalidateQueries('rights');
       setNotification({ message: 'Right added successfully!', type: 'info', time: 3 });
     },
-    onError: () => {
-      setNotification({ message: 'Right does not add due to an error!', type: 'error', time: 8 });
+    onError: (err) => {
+      setNotification({ message: `${err}`, type: 'error', time: 8 });
     }
   });
 
@@ -83,8 +79,8 @@ const UserManagement = () => {
       setSelectedUser(null);
       setNotification({ message: 'User added successfully!', type: 'info', time: 3 });
     },
-    onError: () => {
-      setNotification({ message: 'User does not add due to an error!', type: 'error', time: 8 });
+    onError: (err) => {
+      setNotification({ message: `${err}`, type: 'error', time: 8 });
     }
   });
 
@@ -95,8 +91,8 @@ const UserManagement = () => {
       queryClient.invalidateQueries('users');
       setNotification({ message: 'User updated successfully!', type: 'info', time: 3 });
     },
-    onError: () => {
-      setNotification({ message: 'User does not update due to an error!', type: 'error', time: 8 });
+    onError: (err) => {
+      setNotification({ message: `${err}`, type: 'error', time: 8 });
     }
   });
 
@@ -105,8 +101,8 @@ const UserManagement = () => {
       queryClient.invalidateQueries('roles');
       setNotification({ message: 'Role updated successfully!', type: 'info', time: 3 });
     },
-    onError: () => {
-      setNotification({ message: 'Role does not update due to an error!', type: 'error', time: 8 });
+    onError: (err) => {
+      setNotification({ message: `${err}`, type: 'error', time: 8 });
     }
   });
 
@@ -115,8 +111,8 @@ const UserManagement = () => {
       queryClient.invalidateQueries('rights');
       setNotification({ message: 'rightupdated successfully!', type: 'info', time: 3 });
     },
-    onError: () => {
-      setNotification({ message: 'right does not update due to an error!', type: 'error', time: 8 });
+    onError: (err) => {
+      setNotification({ message: `${err}`, type: 'error', time: 8 });
     }
   });
 
@@ -194,11 +190,11 @@ const UserManagement = () => {
 
   // Right Form Submit
   const handleRightFormSubmit = (newRightData : NewRight | Right) => {
-    if (showRoleForm.formType === 'ADD') {
+    if (showRightForm.formType === 'ADD') {
       newRightMutation.mutate(newRightData as NewRight);
     }
 
-    if (showRoleForm.formType === 'EDIT') {
+    if (showRightForm.formType === 'EDIT') {
       editRightMutation.mutate(newRightData as Right);
     }
   };
@@ -228,7 +224,7 @@ const UserManagement = () => {
         </Grid>
       </Box>
       <Grid container spacing={1}>
-        <Grid item xs={6}>
+        <Grid item xs={7}>
           <Paper >
             <Filter HandleFilter={handleFilter}/>
             <Grid container spacing={1} height={'600px'}>
@@ -251,7 +247,7 @@ const UserManagement = () => {
             </Grid>
           </Paper>
         </Grid>
-        <Grid item xs={6} >
+        <Grid item xs={5} >
           { showRoleForm.show && <RoleForm roleData={selectedRole} displayRoleForm={setShowRoleForm} submitHandler={handleRoleFormSubmit} rightList={rightResults.data ? rightResults.data : []} formType={showRoleForm.formType}/> }
           { showRightForm.show && <RightForm rightData={selectedRight} displayRightForm={setShowRightForm} submitHandler={handleRightFormSubmit} formType={showRightForm.formType} /> }
           { showUserForm.show && <UserForm userData={selectedUser} formType={showUserForm.formType} submitHandler={handleUserFormSubmit} displayUserForm={setShowUserForm} roleList={roleResults.data ? roleResults.data?.filter((role) => role.active) : [] } /> }

@@ -21,9 +21,11 @@ const createUser = async(userData: NewUser) : Promise<UserBase | unknown> => {
     const res = await axios.post(`${api_url}/auth/users`, userData, config);
     return res.data;
   } catch (err : unknown) {
-    if (err instanceof Error) {
-      console.log('create user fail =>', err.message);
-      throw new Error(`${err.message}`);
+    if(axios.isAxiosError(err)) {
+      console.log('create user fail =>', err.response?.data.error);
+      throw new Error(`${err.response?.data.error}`);
+    } else {
+      console.log('An unexpected error occurred:', err);
     }
   }
 };
@@ -40,9 +42,11 @@ const editUser = async(userData : UserUpdate) : Promise<UserBase | unknown> => {
     const res = await axios.put(`${api_url}/auth/users/${id}`, userEditedData, config);
     return res.data;
   } catch (err : unknown) {
-    if(err instanceof Error) {
-      console.log('create user fail =>', err.message);
-      throw new Error(`${err.message}`);
+    if(axios.isAxiosError(err)) {
+      console.log('create user fail =>', err.response?.data.error);
+      throw new Error(`${err.response?.data.error}`);
+    } else {
+      console.log('An unexpected error occurred:', err);
     }
   }
 };
@@ -50,5 +54,5 @@ const editUser = async(userData : UserUpdate) : Promise<UserBase | unknown> => {
 export default {
   getUsers,
   createUser,
-  editUser
+  editUser,
 };

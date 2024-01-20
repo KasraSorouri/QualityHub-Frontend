@@ -61,7 +61,7 @@ const RoleList = ({ roles, allRoles, displayRoleForm, selectRole } : RoleListPro
     return 0;
   });
 
-  const showEditRole = (id : string) => {
+  const showEditRole = (id : number | string) => {
     const roleData = roles.filter((r) => r.id === id )[0];
     selectRole(roleData);
     displayRoleForm({ show: true, formType: 'EDIT' });
@@ -121,13 +121,6 @@ const RoleList = ({ roles, allRoles, displayRoleForm, selectRole } : RoleListPro
     setSort({ sortItem: property, sortOrder:isAsc ? -1 : 1 });
   };
 
-  /*
-  if (!roles){
-    return (
-      setNotification({ message: 'No role find!', type: 'info', time: 8 })
-    );
-  }
-*/
   return(
     <div>
       <Paper>

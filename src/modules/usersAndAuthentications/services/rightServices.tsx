@@ -22,7 +22,6 @@ const createRight = async(rightData : NewRight) : Promise<Right | unknown> => {
     return res.data;
   } catch (err : unknown) {
     if (err instanceof Error) {
-      console.log('create right fail =>', err.message);
       throw new Error(`${err.message}`);
     }
   }

@@ -9,7 +9,6 @@ const login = async(credentials : Credentials) => {
 
   try {
     const result = await axios.post(`${api_url}/auth/login`,  { username, password });
-    console.log('login service * result ->', result);
 
     return result.data;
   } catch (err : unknown) {

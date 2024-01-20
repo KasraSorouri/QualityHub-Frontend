@@ -39,8 +39,6 @@ interface EnhancedTableHeadProps {
 
 const UsersList = ({ users, allUsers,  displayUserForm, selectUser }: UserListProps) : JSX.Element => {
 
-  //const setNotification = useNotificationSet();
-
   // Sort Items
   const [ sort, setSort ] = useState<{ sortItem: keyof UserBase; sortOrder: number }>({ sortItem: 'lastName' , sortOrder: 1 });
   const order : 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
@@ -61,7 +59,7 @@ const UsersList = ({ users, allUsers,  displayUserForm, selectUser }: UserListPr
     return 0;
   });
 
-  const showEditUser = (id : string) => {
+  const showEditUser = (id : number | string) => {
     const userData: UserBase = users.filter((u) => u.id === id )[0];
     selectUser(userData);
     displayUserForm({ show: true, formType: 'EDIT' });
@@ -123,13 +121,6 @@ const UsersList = ({ users, allUsers,  displayUserForm, selectUser }: UserListPr
     setSort({ sortItem: property, sortOrder:isAsc ? -1 : 1 });
   };
 
-  /*
-  if (!users){
-    return (
-      setNotification({ message: 'No User find!', type: 'info', time: 8 })
-    );
-  }
-*/
   return(
     <div>
       <Paper>

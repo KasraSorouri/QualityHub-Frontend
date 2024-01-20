@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   TextField,
@@ -21,8 +21,8 @@ type RightFormProps = {
 
 const RightForm = ({ formType, rightData, submitHandler, displayRightForm } : RightFormProps) => {
 
-  const formTitle = formType === 'ADD' ? 'Add New Role' : 'Edit Role';
-  const submitTitle = formType === 'ADD' ? 'Add Role' : 'Update Role';
+  const formTitle = formType === 'ADD' ? 'Add New Right' : 'Edit Right';
+  const submitTitle = formType === 'ADD' ? 'Add Righte' : 'Update Right';
 
   const initialFormData : FormData = {
     id: rightData ? rightData.id : '',
@@ -32,6 +32,16 @@ const RightForm = ({ formType, rightData, submitHandler, displayRightForm } : Ri
   };
 
   const [ formValues, setFormValues ] = useState<FormData>(initialFormData);
+
+  useEffect(() => {
+    const formData : FormData = {
+      id: rightData ? rightData.id : '',
+      right: rightData ? rightData.right : '',
+      relatedModule: rightData ? rightData.relatedModule : '',
+      active: rightData ? rightData.active : true,
+    };
+    setFormValues(formData);
+  },[rightData]);
 
   const handleChange = (event: { target: { name: string; value: string | number | boolean; }; }) => {
     const { name, value } = event.target;
