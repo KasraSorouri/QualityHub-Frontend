@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState } from 'react';
-import { UserBase } from '../types/UserAuthTypes';
+import { Token } from '../types/UserAuthTypes';
 
 
 // Define Types
 interface UserContextValue {
-  user: UserBase | null;
-  setUser: React.Dispatch<React.SetStateAction<UserBase | null>>;
+  user: Token | null;
+  setUser: React.Dispatch<React.SetStateAction<Token | null>>;
 }
 
 interface UserContextProviderProps {
@@ -17,7 +17,7 @@ const UserContext = createContext<UserContextValue | undefined>(undefined);
 
 // Make Context Provider
 export const UserContextProvider = ({ children }: UserContextProviderProps) => {
-  const [user, setUser] = useState<UserBase | null>(null);
+  const [user, setUser] = useState<Token | null>(null);
 
   const value: UserContextValue = { user, setUser };
   return (
@@ -28,7 +28,7 @@ export const UserContextProvider = ({ children }: UserContextProviderProps) => {
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const useUserValue = (): UserBase | null => {
+export const useUserValue = (): Token | null => {
   const context = useContext(UserContext);
   if (!context) {
     throw new Error('useUserValue must be used within a UserContextProvider');
@@ -37,7 +37,7 @@ export const useUserValue = (): UserBase | null => {
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const useUserSet = (): React.Dispatch<React.SetStateAction<UserBase | null>> => {
+export const useUserSet = (): React.Dispatch<React.SetStateAction<Token | null>> => {
   const context = useContext(UserContext);
   if (!context) {
     throw new Error('useUserSet must be used within a UserContextProvider');

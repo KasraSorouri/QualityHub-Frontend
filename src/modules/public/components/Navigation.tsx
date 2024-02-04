@@ -20,9 +20,9 @@ import Logout from '@mui/icons-material/Logout';
 
 import { useUserSet } from '../../../contexts/userContext';
 
-import { UserBase } from '../../../types/UserAuthTypes';
+import { Token } from '../../../types/UserAuthTypes';
 
-const Navigation = ({ signedUser } :{ signedUser: UserBase | null}) => {
+const Navigation = ({ signedUser } :{ signedUser: Token | null}) => {
 
   const navigate = useNavigate();
   const setUser = useUserSet();
@@ -70,7 +70,7 @@ const Navigation = ({ signedUser } :{ signedUser: UserBase | null}) => {
                 variant="h6"
                 noWrap
                 component="a"
-                href= '/'
+                href= '/quality-setting/manage'
                 sx={{
                   margin: 2,
                   display: { xs: 'none', md: 'flex' },

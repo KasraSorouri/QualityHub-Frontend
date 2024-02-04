@@ -9,6 +9,8 @@ import HomePage from './modules/public/components/HomePage';
 import Notification from './modules/public/components/Notification';
 import SignIn from './modules/usersAndAuthentications/components/Login';
 import UserManagement from './modules/usersAndAuthentications/components/UserManagement';
+import ConfigurationPage from './modules/qualityHub-Settings/components/ConfigurationPage';
+import ProductsManagement from './modules/qualityHub-Settings/components/ProductsManagement';
 
 function App() {
 
@@ -31,6 +33,8 @@ function App() {
           <Route path='/' element={<HomePage />} />
           <Route path='/signin' element={<SignIn />} />
           <Route path='/user_management' element={<UserManagement />} />
+          <Route path='/quality-setting/manage' element={<ConfigurationPage signedUser={user} />} />
+          <Route path='/quality-setting/manage/Product' element={<ProductsManagement />} />
         </Routes>
       </Router>
       <footer>
