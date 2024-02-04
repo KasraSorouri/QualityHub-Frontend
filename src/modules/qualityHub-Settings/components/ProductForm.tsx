@@ -113,7 +113,7 @@ const ProductForm = ({ productData, formType, submitHandler, displayProductForm 
         bgcolor={'#1976d270'}
       >
         <Typography variant='h6' marginLeft={2}  >{formTitle}</Typography>
-        <Button variant='contained' onClick={() => displayProductForm({ show: false, formType: 'ADD' })}>
+        <Button variant='contained'  size='small'  onClick={() => displayProductForm({ show: false, formType: 'ADD' })}>
           close
         </Button>
       </Box>
@@ -144,6 +144,9 @@ const ProductForm = ({ productData, formType, submitHandler, displayProductForm 
             />
             <Autocomplete
               id='productGrp'
+              sx={{ margin: 1, width: '150px' }}
+              size='small'
+              aria-required
               options={productGrps}
               isOptionEqualToValue={
                 (option: ProductGroup, value: ProductGroup) => option.groupName === value.groupName
@@ -151,22 +154,21 @@ const ProductForm = ({ productData, formType, submitHandler, displayProductForm 
               value={formValues.productGrp}
               onChange={(_event, newValue) => newValue && handleGroupChange(newValue)}
               getOptionLabel={(option: { groupName: string; }) => option.groupName}
-              sx={{ margin: 1, width: '150px' }}
-              size='small'
               renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
                 <TextField
                   {...params}
                   label=' Product Group'
                   placeholder='Add Group'
                   size='small'
-                  sx={{ maxWidth: '350px', margin: '2' }}
+                  sx={{ width: '180px', margin: '2' }}
+                  required
                 />
               )}
             />
             <FormControlLabel
+              sx={{ marginLeft: 5 }}
               control={
                 <Checkbox
-                  sx={{ marginLeft: 2 }}
                   checked={formValues.active}
                   onChange={handleChange}
                   name='active'

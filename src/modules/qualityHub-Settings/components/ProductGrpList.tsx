@@ -11,9 +11,9 @@ import {
   Box,
   TableRow,
   Checkbox,
-  IconButton,
   Typography,
-  Grid,
+  IconButton,
+  Grid
 } from '@mui/material';
 
 import { visuallyHidden } from '@mui/utils';
@@ -21,31 +21,30 @@ import { visuallyHidden } from '@mui/utils';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 
-//import { useNotificationSet } from '../../../contexts/NotificationContext';
-
-type ProductGrListProps = {
-  productGrps: ProductGrp[];
-  allProductGrs: number;
-  displayProductGrForm: ({ show, formType }:{show: boolean, formType: 'ADD' | 'EDIT'}) => void;
-  selectProductGr: (userData: ProductGrp | null) => void;
-}
+import { ProductGroup } from '../../../types/QualityHubTypes';
 
 interface EnhancedTableHeadProps {
   order: 'asc' | 'desc';
-  orderBy: string;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: string) => void;
+  orderBy: keyof ProductGroup;
+  onRequestSort: (_event: React.MouseEvent<unknown>, property: string) => void;
 }
 
-const ProductGrList = ({ productGrs, allProductGrs, displayProductGrForm, selectProductGr } : ProductGrListProps) => {
+type ProductGrpListProps = {
+  productGrps: ProductGroup[];
+  displayProductGrpForm: ({ show, formType }:{show: boolean, formType: 'ADD' | 'EDIT'}) => void;
+  selectProductGrp: (ProductGrpData: ProductGroup | null) => void;
+}
 
-  //const setNotification = useNotificationSet();
+
+const ProductGrpList = ({ productGrps, displayProductGrpForm, selectProductGrp } : ProductGrpListProps) => {
+
 
   // Sort Items
-  const [ sort, setSort ] = useState<{ sortItem: keyof ProductGr; sortOrder: number }>({ sortItem: 'productGrName' , sortOrder: 1 });
+  const [ sort, setSort ] = useState<{ sortItem: keyof ProductGroup; sortOrder: number }>({ sortItem: 'groupName' , sortOrder: 1 });
   const order : 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
-  const orderBy : keyof ProductGr = sort.sortItem;
+  const orderBy : keyof ProductGroup = sort.sortItem;
 
-  const sortedProductGrs: ProductGr[]  = productGrs.sort((a, b) => {
+  const sortedProductGrps: ProductGroup[]  = productGrps.sort((a, b) => {
     const aValue = a[orderBy];
     const bValue = b[orderBy];
 
@@ -60,20 +59,11 @@ const ProductGrList = ({ productGrs, allProductGrs, displayProductGrForm, select
     return 0;
   });
 
-  const showEditProductGr = (id : number | string) => {
-    const productGrData = productGrs.filter((r) => r.id === id )[0];
-    selectProductGr(productGrData);
-    displayProductGrForm({ show: true, formType: 'EDIT' });
-  };
-
-  const addNewProductGr = () => {
-    selectProductGr(null);
-    displayProductGrForm({ show: true, formType: 'ADD' });
-  };
 
   const columnHeader = [
-    { id: 'productGrName', lable: 'ProductGr Name', minWidth: 30 },
-    { id: 'active', lable: 'Active', minWidth: 5 },
+    { id: 'groupName', lable: 'Group Name', minWidth: 10, borderRight: true },
+    { id: 'groupCode', lable: 'Group Code', minWidth: 10, borderRight: true },
+    { id: 'active', lable: 'Active', width: 3 },
   ];
 
   const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
@@ -92,8 +82,8 @@ const ProductGrList = ({ productGrs, allProductGrs, displayProductGrForm, select
             <TableCell
               key={column.id}
               align='center'
-              style={{ minWidth: column.minWidth }}
-              sx={{ backgroundColor: '#1976d2', color: 'white' }}
+              style={{ width: column.width ? column.width : undefined, minWidth: column.minWidth }}
+              sx={{ backgroundColor: '#1976d2', color: 'white' , borderRight: column.borderRight ? '1px solid white' : undefined }}
               sortDirection={orderBy === column.id ? order : false }
             >
               <TableSortLabel
@@ -115,54 +105,69 @@ const ProductGrList = ({ productGrs, allProductGrs, displayProductGrForm, select
     );
   };
 
-  const handleRequestSort = (_event : undefined, property : keyof ProductGr) => {
+  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof ProductGroup) => {
     const isAsc = orderBy === property && order ==='asc';
     setSort({ sortItem: property, sortOrder:isAsc ? -1 : 1 });
   };
 
+  const showEditProductGrp = (id : number | string) => {
+    const productGrpGrpData: ProductGroup = productGrps.filter((u) => u.id === id )[0];
+    selectProductGrp(productGrpGrpData);
+    displayProductGrpForm({ show: true, formType: 'EDIT' });
+  };
+
+  const addNewProductGrp = () => {
+    selectProductGrp(null);
+    displayProductGrpForm({ show: true, formType: 'ADD' });
+  };
+
+
   return(
-    <div>
-      <Paper>
-        <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'} >
-          <Typography margin={1} >ROLE LIST</Typography>
-          <Typography margin={1} >{productGrs.length} of {allProductGrs} productGrs</Typography>
-          <div style={{ margin: '10px' }} >
-            <IconButton onClick={addNewProductGr} style={{ height: '16px', width: '16px', color:'white' }}>
-              <AddIcon />
-            </IconButton>
-          </div>
-        </Grid>
-        <TableContainer sx={{ maxHeight: '250Px' }}>
-          <Table stickyHeader aria-label='sticky table' size='small'>
-            <EnhancedTableHead
-              order={order}
-              orderBy={orderBy}
-              onRequestSort={() => handleRequestSort}
-            />
-            <TableBody>
-              { sortedProductGrs.map((productGr) => {
-                return(
-                  <TableRow hover productGr='checkbox' tabIndex={-1} key={productGr.id}>
-                    <TableCell align='left'>
-                      {productGr.productGrName}
-                    </TableCell>
-                    <TableCell align='center'>
-                      <Box justifyContent={'space-between'} >
-                        <Checkbox checked={productGr.active} style={{ height: '16px', width: '16px' }} />
-                        <IconButton onClick={() => showEditProductGr(productGr.id)} style={{ height: '12px', width: '12px', marginLeft: 25 , color:'#1976d2d9' }}>
-                          <EditIcon />
-                        </IconButton>
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Paper>
-    </div>
+    <Paper>
+      <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'} >
+        <Typography margin={1} >GROUP LIST</Typography>
+        <Typography margin={1} >{productGrps.length} groups</Typography>
+        <div style={{ margin: '10px' }} >
+          <IconButton onClick={addNewProductGrp} style={{ height: '16px', width: '16px', color:'white' }}>
+            <AddIcon />
+          </IconButton>
+        </div>
+      </Grid>
+      <TableContainer sx={{ maxHeight: '550Px' }}>
+        <Table stickyHeader aria-label='sticky table' size='small'>
+          <EnhancedTableHead
+            order={order}
+            orderBy={orderBy}
+            onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof ProductGroup)}
+          />
+          <TableBody>
+            { sortedProductGrps.map((productGrp) => {
+              return(
+                <TableRow hover role='checkbox' tabIndex={-1} key={productGrp.id} >
+                  <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
+                    {productGrp.groupName}
+                  </TableCell>
+                  <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
+                    {productGrp.groupCode}
+                  </TableCell>
+                  <TableCell align='center' >
+                    <Box justifyContent={'space-between'} >
+                      <Checkbox checked={productGrp.active} style={{ height: '16px', width: '16px' }}/>
+                      <IconButton onClick={() => showEditProductGrp(productGrp.id)}
+                        title='Edit'
+                        style={{ height: '12px', width: '12px', marginLeft: 25 , color:'#1976d2d9' }}>
+                        <EditIcon />
+                      </IconButton>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
   );
 };
 
-export default ProductGrList;
+export default ProductGrpList;

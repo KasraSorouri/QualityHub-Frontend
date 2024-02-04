@@ -13,7 +13,8 @@ import {
   Divider,
 } from '@mui/material';
 
-import ProductList from './Products';
+import Product from './Products';
+import ProductGrp from './ProductGrps';
 
 const ProductsManagement = () => {
 
@@ -30,7 +31,7 @@ const ProductsManagement = () => {
       >
         <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'}>
           <Typography margin={1}>PRODUCT SETTINGS</Typography>
-          <Button onClick={() => navigate('/config')} size='small' variant='contained'>
+          <Button onClick={() => navigate('/config')} variant='contained' sx={{ height: '39px' }}>
             close
           </Button>
         </Grid>
@@ -66,7 +67,8 @@ const ProductsManagement = () => {
         </Grid>
         <Grid item xs={9} p={2}>
           <Box>
-            {showListForm === 'PRODUCT' && <ProductList /> }
+            {showListForm === 'PRODUCT' && <Product /> }
+            {showListForm === 'PRODUCT_GRP' && <ProductGrp /> }
           </Box>
         </Grid>
       </Grid>

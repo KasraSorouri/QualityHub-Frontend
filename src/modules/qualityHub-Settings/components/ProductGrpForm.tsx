@@ -8,164 +8,124 @@ import {
   Checkbox,
   Button,
   Paper,
-  Autocomplete,
-  Grid
+  Grid,
 } from '@mui/material';
 
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import { NewRole, Right, Role, RoleUpdate } from '../../../types/UserAuthTypes';
+import { ProductGroup, NewProductGrp } from '../../../types/QualityHubTypes';
 
-const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
-const checkedIcon = <CheckBoxIcon fontSize='small' />;
-
-interface FormData extends Role {
-  rightData: (number | string)[]
+interface FormData {
+  id: number | string;
+  groupName: string;
+  groupCode:  string;
+  active: boolean;
 }
 
-type RoleFormProps = {
-  roleData: Role | null;
+type ProductGrpFormProps = {
+  productGrpData: ProductGroup | null;
   formType: 'ADD' | 'EDIT';
-  submitHandler: (role: NewRole | RoleUpdate) => void;
-  displayRoleForm: ({ show, formType } : { show: boolean, formType: 'ADD' | 'EDIT' }) => void;
-  rightList: Right[];
+  submitHandler: (productGrp: NewProductGrp | NewProductGrp) => void;
+  displayProductGrpForm: ({ show, formType } : { show: boolean, formType: 'ADD' | 'EDIT' }) => void;
 }
 
-const RoleForm = ({ formType, roleData, submitHandler, displayRoleForm, rightList } : RoleFormProps) => {
 
-  const formTitle = formType === 'ADD' ? 'Add New Role' : 'Edit Role';
-  const submitTitle = formType === 'ADD' ? 'Add Role' : 'Update Role';
+
+const ProductGrpForm = ({ productGrpData, formType, submitHandler, displayProductGrpForm } : ProductGrpFormProps) => {
+
+  const formTitle = formType === 'ADD' ? 'Add New ProductGrp' : 'Edit ProductGrp';
+  const submitTitle = formType === 'ADD' ? 'Add ProductGrp' : 'Update ProductGrp';
 
   const initialFormData : FormData = {
-    id: roleData ? roleData.id : '',
-    roleName: roleData ? roleData.roleName :'',
-    active: roleData ? roleData.active : true,
-    rights: roleData ? roleData.rights : [],
-    rightData: []
+    id: productGrpData ? productGrpData.id : '',
+    groupName: productGrpData ? productGrpData.groupName : '',
+    groupCode:  productGrpData ? productGrpData.groupCode : '',
+    active: productGrpData ? productGrpData.active : false,
   };
-
 
   const [ formValues, setFormValues ] = useState<FormData>(initialFormData);
 
   useEffect(() => {
     const formData : FormData = {
-      id: roleData ? roleData.id : '',
-      roleName: roleData ? roleData.roleName :'',
-      active: roleData ? roleData.active : true,
-      rights: roleData ? roleData.rights : [],
-      rightData: roleData?.rights ? roleData.rights?.map(right => right.id) : []
+      id: productGrpData ? productGrpData.id : '',
+      groupName: productGrpData ? productGrpData.groupName : '',
+      groupCode:  productGrpData ? productGrpData.groupCode : '',
+      active: productGrpData ? productGrpData.active : false,
     };
     setFormValues(formData);
-  },[roleData]);
+  },[formType, productGrpData]);
 
-  const handleChange = (event: { target: { name: string; value: string | number | boolean; checked: boolean; }; }) => {
+  const handleChange = (event: {target: { name: string, value: unknown, checked: boolean}}) => {
     const { name, value, checked } = event.target;
     const newValue = name === 'active' ? checked : value;
 
-    setFormValues((prevValues) => ({
+    setFormValues((prevValues: FormData) => ({
       ...prevValues,
       [name]: newValue,
     }));
   };
 
-  const handleRightChange = (_event: unknown, value: Right[]) => {
-    setFormValues((preValues : FormData) => ({
-      ...preValues,
-      rights: value,
-    }));
-  };
-
-
   const handleSubmit = (event: { preventDefault: () => void; }) => {
     event.preventDefault();
-    const newRole : RoleUpdate | NewRole = { ...formValues, rights: formValues.rights?.map(right => right.id) };
-    submitHandler(newRole);
+    const newProductGrp: NewProductGrp  = {
+      id: (typeof formValues.id === 'number') ? formValues.id : 0,
+      groupName: formValues.groupName,
+      groupCode: formValues.groupCode,
+      active: formValues.active,
+    };
+    submitHandler(newProductGrp);
   };
 
   return(
-    <Paper elevation={5} sx={{ borderRadius: 3, marginBottom: 1 }}>
+    <Paper elevation={5} sx={{ borderRadius: 1 }}>
       <Box display='flex' justifyContent='space-between' alignItems='center'
-        border={'solid'} borderColor={'#1976d270'} borderRadius={3}  margin={0}
         bgcolor={'#1976d270'}
       >
         <Typography variant='h6' marginLeft={2}  >{formTitle}</Typography>
-        <Button variant='contained' onClick={() => displayRoleForm({ show: false, formType: 'ADD' })}>
+        <Button variant='contained'  size='small'  onClick={() => displayProductGrpForm({ show: false, formType: 'ADD' })}>
           close
         </Button>
       </Box>
       <form onSubmit={handleSubmit} >
-        <Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-evenly'
-          border={'solid'} borderColor={'#1976d2'} borderRadius={3}
-        >
-          <Grid container flexDirection={'column'}>
-            <Grid container flexDirection={'row'} justifyContent={'space-between'} >
-              <Grid>
-                <TextField
-                  label='Role'
-                  name='roleName'
-                  value={formValues.roleName}
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-                  margin='dense'
-                  variant='outlined'
-                  size='small'
-                  required
-                  sx={{ marginLeft: 2 }}
+        <Box display='flex'  margin={0} >
+          <Grid container flexDirection={'row'} >
+            <TextField
+              label='Group Name'
+              name='groupName'
+              sx={{ marginLeft: 2 }}
+              value={formValues.groupName}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
+              margin='dense'
+              variant='outlined'
+              size='small'
+              required
+            />
+            <TextField
+              label='Group Code'
+              name='groupCode'
+              sx={{ marginLeft: 2 }}
+              value={formValues.groupCode}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
+              margin='dense'
+              variant='outlined'
+              size='small'
+              required
+            />
+            <FormControlLabel
+              sx={{ marginLeft: 5 }}
+              control={
+                <Checkbox
+                  checked={formValues.active}
+                  onChange={handleChange}
+                  name='active'
+                  color='primary'
                 />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      sx={{ marginLeft: 2 }}
-                      checked={formValues.active}
-                      onChange={handleChange}
-                      name='active'
-                      color='primary'
-                    />
-                  }
-                  label='Active'
-                />
-              </Grid>
-              <Grid>
-                <Autocomplete
-                  sx={{ marginLeft: 2 , marginTop: 1 }}
-                  multiple
-                  id='rights'
-                  options={rightList}
-                  disableCloseOnSelect
-                  value={formValues.rights}
-                  onChange={handleRightChange}
-                  getOptionLabel={(option) => option.right}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
-                  renderOption={(props, option, { selected }) => {
-                    return (
-                      <li {...props}>
-                        <Checkbox
-                          icon={icon}
-                          checkedIcon={checkedIcon}
-                          style={{ marginRight: 8 }}
-                          checked={selected}
-                        />
-                        {option.right}
-                      </li>
-                    );
-                  }}
-                  style={{ width: 500 }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label='Rights'
-                      placeholder='Add right'
-                      size='small'
-                      sx={{ maxWidth: '250px', marginBottom: 1 }}
-                    />
-                  )}
-                />
-              </Grid>
-            </Grid>
-            <Grid container>
-              <Button type='submit' variant='contained' color='primary' sx={{ marginLeft: 2, marginBottom: 2 }}>
-                {submitTitle}
-              </Button>
-            </Grid>
+              }
+              label='Active'
+            />
+          </Grid>
+          <Grid>
+            <Button type='submit' variant='contained' color='primary' sx={{ margin: 1, minWidth: '200px' , width: 'auto' }}>
+              {submitTitle}
+            </Button>
           </Grid>
         </Box>
       </form>
@@ -173,4 +133,4 @@ const RoleForm = ({ formType, roleData, submitHandler, displayRoleForm, rightLis
   );
 };
 
-export default RoleForm;
+export default ProductGrpForm;

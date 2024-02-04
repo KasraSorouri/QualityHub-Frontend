@@ -18,12 +18,12 @@ const createProductGrp = async(productGrpData: NewProductGrp) : Promise<ProductG
   };
 
   try {
-    const res = await axios.post(`${api_url}/quality/productGrps`, productGrpData, config);
+    const res = await axios.post(`${api_url}/quality/product_grps`, productGrpData, config);
     return res.data;
   } catch (err : unknown) {
-    if(axios.isAxiosError(err)) {
-      console.log('create productGrp fail =>', err.response?.data.error);
-      throw new Error(`${err.response?.data.error}`);
+    if(err instanceof Error) {
+      console.log('create product fail =>', err.message);
+      throw new Error(`${err.message}`);
     } else {
       console.log('An unexpected error occurred:', err);
     }
@@ -39,12 +39,12 @@ const editProductGrp = async(productGrpData : NewProductGrp) : Promise<ProductGr
 
   const { id, ...productGrpEditedData } = productGrpData;
   try{
-    const res = await axios.put(`${api_url}/quality/productGrps/${id}`, productGrpEditedData, config);
+    const res = await axios.put(`${api_url}/quality/product_grps/${id}`, productGrpEditedData, config);
     return res.data;
   } catch (err : unknown) {
-    if(axios.isAxiosError(err)) {
-      console.log('create productGrp fail =>', err.response?.data.error);
-      throw new Error(`${err.response?.data.error}`);
+    if(err instanceof Error) {
+      console.log('create product fail =>', err.message);
+      throw new Error(`${err.message}`);
     } else {
       console.log('An unexpected error occurred:', err);
     }
