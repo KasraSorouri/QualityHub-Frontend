@@ -9,18 +9,26 @@ import {
   Button,
   Paper,
   Grid,
+  Autocomplete,
+  FilledTextFieldProps,
+  OutlinedTextFieldProps,
+  StandardTextFieldProps,
+  TextFieldVariants,
 } from '@mui/material';
 
 import { NewProduct, ProductGroup, UpdateProductData } from '../../../types/QualityHubTypes';
 import { Product } from '../../../types/QualityHubTypes';
+import productGrpServices from '../services/productGrpServices';
+import { useQuery } from 'react-query';
+import { JSX } from 'react/jsx-runtime';
 
 
 interface FormData {
   id: number | string;
   productName: string;
   productCode:  string;
-  productGrp?: ProductGroup | undefined;
-  productGrpId: number | undefined;
+  productGrp?: ProductGroup | null;
+  productGrpId: number | null;
   active: boolean;
 }
 
@@ -42,7 +50,8 @@ const ProductForm = ({ productData, formType, submitHandler, displayProductForm 
     id: productData ? productData.id : '',
     productName: productData ? productData.productName : '',
     productCode:  productData ? productData.productCode : '',
-    productGrpId: productData ? productData.productGrp.id : undefined,
+    productGrp:  productData ? productData.productGrp : null,
+    productGrpId: productData ? productData.productGrp.id : null,
     active: productData ? productData.active : false,
   };
 
@@ -53,14 +62,19 @@ const ProductForm = ({ productData, formType, submitHandler, displayProductForm 
       id: productData ? productData.id : '',
       productName: productData ? productData.productName : '',
       productCode:  productData ? productData.productCode : '',
-      productGrp:  productData ? productData.productGrp : undefined,
-      productGrpId: productData ? productData.productGrp.id : undefined,
+      productGrp:  productData ? productData.productGrp : null,
+      productGrpId: productData ? productData.productGrp.id : null,
       active: productData ? productData.active : false,
     };
     setFormValues(formData);
   },[formType, productData]);
 
-  const handleChange = (event: { target: { name: string; value: string | number | boolean; checked: boolean; }; }) => {
+  // Get Product List
+  const productGrpResults = useQuery('productGrps',productGrpServices.getProductGrp, { refetchOnWindowFocus: false });
+
+  const productGrps: ProductGroup[] = productGrpResults.data || [];
+
+  const handleChange = (event: {target: { name: string, value: unknown, checked: boolean}}) => {
     const { name, value, checked } = event.target;
     const newValue = name === 'active' ? checked : value;
 
@@ -70,10 +84,20 @@ const ProductForm = ({ productData, formType, submitHandler, displayProductForm 
     }));
   };
 
+  const handleGroupChange = (newValue: ProductGroup) => {
+
+    setFormValues((prevValues: FormData) => ({
+      ...prevValues,
+      ['productGrp']: newValue,
+      ['productGrpId']: newValue.id
+    }));
+  };
+
   const handleSubmit = (event: { preventDefault: () => void; }) => {
     event.preventDefault();
     if (formValues.productGrp) {
-      const newProduct: NewProduct  = {
+      const newProduct: NewProduct | UpdateProductData  = {
+        id: (typeof formValues.id === 'number') ? formValues.id : 0,
         productName: formValues.productName,
         productCode: formValues.productCode,
         active: formValues.active,
@@ -118,12 +142,32 @@ const ProductForm = ({ productData, formType, submitHandler, displayProductForm 
               size='small'
               required
             />
+            <Autocomplete
+              id='productGrp'
+              options={productGrps}
+              isOptionEqualToValue={
+                (option: ProductGroup, value: ProductGroup) => option.groupName === value.groupName
+              }
+              value={formValues.productGrp}
+              onChange={(_event, newValue) => newValue && handleGroupChange(newValue)}
+              getOptionLabel={(option: { groupName: string; }) => option.groupName}
+              sx={{ margin: 1, width: '150px' }}
+              size='small'
+              renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
+                <TextField
+                  {...params}
+                  label=' Product Group'
+                  placeholder='Add Group'
+                  size='small'
+                  sx={{ maxWidth: '350px', margin: '2' }}
+                />
+              )}
+            />
             <FormControlLabel
               control={
                 <Checkbox
                   sx={{ marginLeft: 2 }}
                   checked={formValues.active}
-                  defaultChecked={true}
                   onChange={handleChange}
                   name='active'
                   color='primary'

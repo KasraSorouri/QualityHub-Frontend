@@ -19,10 +19,6 @@ const Products = () => {
   const [ showProductForm, setShowProductForm ] = useState<{ show: boolean, formType: 'ADD' | 'EDIT' }>({ show: false, formType: 'ADD' });
   const [ selectedProduct, setSelectedProduct ] = useState<Product | null>(null);
 
-  console.log('show product form ->', showProductForm);
-  console.log('selected product ->', selectedProduct);
-
-
   const setNotification = useNotificationSet();
 
   // Query implementation
@@ -56,7 +52,8 @@ const Products = () => {
 
   const products: Product[] = productResults.data || [];
 
-  const handleProductFormSubmit = (newUserData: NewProduct | UpdateProductData) => {
+  const handleProductFormSubmit = (newUserData:  NewProduct | UpdateProductData) => {
+
     if (showProductForm.formType === 'ADD') {
       newProductMutation.mutate(newUserData as NewProduct);
     }

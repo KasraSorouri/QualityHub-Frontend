@@ -22,8 +22,10 @@ export interface ProductGroup {
   active: boolean;
 }
 
+export interface NewProductGrp extends Omit<ProductGroup,'id'> {
+  id?: number;
+}
 
-export interface ProductGrpData extends Omit<ProductGroup,'id'> {}
 
 export interface WorkShift {
   id: number;

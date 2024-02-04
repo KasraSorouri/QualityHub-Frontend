@@ -21,9 +21,9 @@ const createProduct = async(productData: NewProduct) : Promise<Product | unknown
     const res = await axios.post(`${api_url}/quality/products`, productData, config);
     return res.data;
   } catch (err : unknown) {
-    if(axios.isAxiosError(err)) {
-      console.log('create product fail =>', err.response?.data.error);
-      throw new Error(`${err.response?.data.error}`);
+    if(err instanceof Error) {
+      console.log('create product fail =>', err.message);
+      throw new Error(`${err.message}`);
     } else {
       console.log('An unexpected error occurred:', err);
     }
