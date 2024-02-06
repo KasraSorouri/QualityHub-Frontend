@@ -15,6 +15,7 @@ import {
 
 import Product from './Products';
 import ProductGrp from './ProductGrps';
+import Station from './Stations';
 
 const ProductsManagement = () => {
 
@@ -69,6 +70,7 @@ const ProductsManagement = () => {
           <Box>
             {showListForm === 'PRODUCT' && <Product /> }
             {showListForm === 'PRODUCT_GRP' && <ProductGrp /> }
+            {showListForm === 'STATION' && <Station /> }
           </Box>
         </Grid>
       </Grid>

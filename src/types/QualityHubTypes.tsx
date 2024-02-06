@@ -43,7 +43,9 @@ export interface Station {
   active: boolean;
 }
 
-export interface StationData extends Omit<Station,'id'> {}
+export interface NewStation extends Omit<Station,'id'> {
+  id?: number;
+}
 
 export interface Material {
   id: number;
