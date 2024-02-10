@@ -28,7 +28,7 @@ const Stations = () => {
   const newStationMutation = useMutation(stationServices.createStation, {
     onSuccess: () => {
       queryClient.invalidateQueries('stations');
-      setNotification({ message: 'Role added successfully!', type: 'info', time: 3 });
+      setNotification({ message: 'Station added successfully!', type: 'info', time: 3 });
     },
     onError: (err) => {
       setNotification({ message: `${err}`, type: 'error', time: 8 });
@@ -39,7 +39,7 @@ const Stations = () => {
   const editStationMutation = useMutation(stationServices.editStation,{
     onSuccess: () => {
       queryClient.invalidateQueries('stations');
-      setNotification({ message: 'User updated successfully!', type: 'info', time: 3 });
+      setNotification({ message: 'Station updated successfully!', type: 'info', time: 3 });
     },
     onError: (err) => {
       setNotification({ message: `${err}`, type: 'error', time: 8 });

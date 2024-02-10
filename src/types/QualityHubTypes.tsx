@@ -47,6 +47,7 @@ export interface NewStation extends Omit<Station,'id'> {
   id?: number;
 }
 
+
 export interface Material {
   id: number;
   itemShortName: string;
@@ -57,7 +58,15 @@ export interface Material {
   active: boolean;
 }
 
-export interface MaterialData extends Omit<Material,'id'> {}
+
+export interface NewMaterial extends Omit<Material,'id'> {
+  id?: number;
+}
+
+export interface Unit {
+  id: number;
+  unitName: string;
+}
 
 export interface Recipe {
   id: number;

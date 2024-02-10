@@ -16,6 +16,7 @@ import {
 import Product from './Products';
 import ProductGrp from './ProductGrps';
 import Station from './Stations';
+import Material from './Materials';
 
 const ProductsManagement = () => {
 
@@ -26,7 +27,7 @@ const ProductsManagement = () => {
   const [ showListForm, setShowListForm ] = useState<ShowListForm>('NONE');
 
   return(
-    <Paper sx={{ marginTop: 1, border: 'solid', borderRadius: 2, borderColor: '#1976d270', width: '100%', height: '100%' }}>
+    <Paper sx={{ marginTop: 1, border: 'solid', borderRadius: 2, borderColor: '#1976d270', width: '99.7%', height: '100%' }}>
       <Box display='flex' justifyContent='space-between' alignItems='center'
         borderRadius={2} bgcolor={'#1976d270'}
       >
@@ -37,7 +38,7 @@ const ProductsManagement = () => {
           </Button>
         </Grid>
       </Box>
-      <Grid container display={'flex'} direction={'row'}>
+      <Grid container display={'flex'} direction={'row'} height={'650px'}>
         <Grid item p={2}
           width={'180x'}
           bgcolor={'#E5E7E9'}
@@ -58,7 +59,7 @@ const ProductsManagement = () => {
             </ListItem>
             <Divider />
             <ListItem onClick={() => setShowListForm('MATERIAL')}>
-              <ListItemText primary='Materilas' sx={{ color: 'black' }} />
+              <ListItemText primary='Materials' sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
             <ListItem onClick={() => setShowListForm('STATION')}>
@@ -71,6 +72,7 @@ const ProductsManagement = () => {
             {showListForm === 'PRODUCT' && <Product /> }
             {showListForm === 'PRODUCT_GRP' && <ProductGrp /> }
             {showListForm === 'STATION' && <Station /> }
+            {showListForm === 'MATERIAL' && <Material /> }
           </Box>
         </Grid>
       </Grid>

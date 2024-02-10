@@ -28,7 +28,7 @@ const Products = () => {
   const newProductMutation = useMutation(productServices.createProduct, {
     onSuccess: () => {
       queryClient.invalidateQueries('products');
-      setNotification({ message: 'Role added successfully!', type: 'info', time: 3 });
+      setNotification({ message: 'Product added successfully!', type: 'info', time: 3 });
     },
     onError: (err) => {
       setNotification({ message: `${err}`, type: 'error', time: 8 });
@@ -39,7 +39,7 @@ const Products = () => {
   const editProductMutation = useMutation(productServices.editProduct,{
     onSuccess: () => {
       queryClient.invalidateQueries('products');
-      setNotification({ message: 'User updated successfully!', type: 'info', time: 3 });
+      setNotification({ message: 'Product updated successfully!', type: 'info', time: 3 });
     },
     onError: (err) => {
       setNotification({ message: `${err}`, type: 'error', time: 8 });

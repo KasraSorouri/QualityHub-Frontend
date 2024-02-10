@@ -28,7 +28,7 @@ const ProductGrps = () => {
   const newProductGrpMutation = useMutation(productGrpServices.createProductGrp, {
     onSuccess: () => {
       queryClient.invalidateQueries('productGrps');
-      setNotification({ message: 'Role added successfully!', type: 'info', time: 3 });
+      setNotification({ message: 'Product Group added successfully!', type: 'info', time: 3 });
     },
     onError: (err) => {
       setNotification({ message: `${err}`, type: 'error', time: 8 });
@@ -39,7 +39,7 @@ const ProductGrps = () => {
   const editProductGrpMutation = useMutation(productGrpServices.editProductGrp,{
     onSuccess: () => {
       queryClient.invalidateQueries('productGrps');
-      setNotification({ message: 'User updated successfully!', type: 'info', time: 3 });
+      setNotification({ message: 'Product Group updated successfully!', type: 'info', time: 3 });
     },
     onError: (err) => {
       setNotification({ message: `${err}`, type: 'error', time: 8 });
