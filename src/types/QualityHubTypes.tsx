@@ -77,27 +77,24 @@ export interface Recipe {
   station: Station;
   timeDuration?: number;
   active: boolean;
-  materials?: Material[];
+  recipeMaterials?: ConsumingMaterial[];
 }
 
-export interface ConsumingMaterial {
-  materialId: number;
-  qty: number;
-  reusable?: boolean;
-}
-
-export interface RecipeData extends Omit<Recipe,'id' | 'product' | 'station' | 'material'> {
+export interface RecipeData extends Omit<Recipe,'id' | 'product' | 'station' | 'materials'> {
+  id?: number;
   productId: number;
   stationId: number;
-  materialsData: ConsumingMaterial[];
+  materialsData: ConsumingMaterialData[];
 }
 
-export interface RecipeBom {
-  id: number;
-  recipeId: number;
-  materialId: number;
+export enum Reusable  {'Yes', 'No', 'IQC'}
+
+export interface ConsumingMaterial {
+  material: Material;
   qty: number;
-  reusable: boolean;
+  reusable: Reusable;
 }
 
-export interface RecipeBomData extends Omit<RecipeBom,'id'> {}
+export interface ConsumingMaterialData extends Omit<ConsumingMaterial, 'material'> {
+  materialId: number;
+}

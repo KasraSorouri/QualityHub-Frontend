@@ -17,6 +17,7 @@ import Product from './Products';
 import ProductGrp from './ProductGrps';
 import Station from './Stations';
 import Material from './Materials';
+import Recipe from './Recipes';
 
 const ProductsManagement = () => {
 
@@ -67,12 +68,13 @@ const ProductsManagement = () => {
             </ListItem>
           </List>
         </Grid>
-        <Grid item xs={9} p={2}>
+        <Grid item xs={10} p={2}>
           <Box>
             {showListForm === 'PRODUCT' && <Product /> }
             {showListForm === 'PRODUCT_GRP' && <ProductGrp /> }
             {showListForm === 'STATION' && <Station /> }
             {showListForm === 'MATERIAL' && <Material /> }
+            {showListForm === 'RECIPE' && <Recipe /> }
           </Box>
         </Grid>
       </Grid>

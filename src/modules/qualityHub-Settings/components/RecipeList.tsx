@@ -13,7 +13,8 @@ import {
   Checkbox,
   Typography,
   IconButton,
-  Grid
+  Grid,
+  Button
 } from '@mui/material';
 
 import { visuallyHidden } from '@mui/utils';
@@ -21,30 +22,30 @@ import { visuallyHidden } from '@mui/utils';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 
-import { Material } from '../../../types/QualityHubTypes';
+import { Recipe } from '../../../types/QualityHubTypes';
 
 interface EnhancedTableHeadProps {
   order: 'asc' | 'desc';
-  orderBy: keyof Material;
+  orderBy: keyof Recipe;
   onRequestSort: (_event: React.MouseEvent<unknown>, property: string) => void;
 }
 
-type MaterialListProps = {
-  materials: Material[];
-  displayMaterialForm: ({ show, formType }:{show: boolean, formType: 'ADD' | 'EDIT'}) => void;
-  selectMaterial: (MaterialData: Material | null) => void;
+type RecipeListProps = {
+  recipes: Recipe[];
+  displayRecipeForm: ({ show, formType }:{show: boolean, formType: 'ADD' | 'EDIT'}) => void;
+  selectRecipe: (RecipeData: Recipe | null) => void;
 }
 
 
-const MaterialList = ({ materials, displayMaterialForm, selectMaterial } : MaterialListProps) => {
+const RecipeList = ({ recipes, displayRecipeForm, selectRecipe } : RecipeListProps) => {
 
 
   // Sort Items
-  const [ sort, setSort ] = useState<{ sortItem: keyof Material; sortOrder: number }>({ sortItem: 'itemShortName' , sortOrder: 1 });
+  const [ sort, setSort ] = useState<{ sortItem: keyof Recipe; sortOrder: number }>({ sortItem: 'recipeCode' , sortOrder: 1 });
   const order : 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
-  const orderBy : keyof Material = sort.sortItem;
+  const orderBy : keyof Recipe = sort.sortItem;
 
-  const sortedMaterials: Material[]  = materials.sort((a, b) => {
+  const sortedRecipes: Recipe[]  = recipes.sort((a, b) => {
     const aValue = a[orderBy];
     const bValue = b[orderBy];
 
@@ -61,11 +62,12 @@ const MaterialList = ({ materials, displayMaterialForm, selectMaterial } : Mater
 
 
   const columnHeader = [
-    { id: 'itemShortName', lable: 'Short Name', minWidth: 10, borderRight: true },
-    { id: 'itemLongName', lable: 'Long Name', minWidth: 10, borderRight: true },
-    { id: 'itemCode', lable: 'Item Code', minWidth: 10, borderRight: true },
-    { id: 'price', lable: 'Price', minWidth: 10, borderRight: true },
-    { id: 'unit', lable: 'Unit', minWidth: 10, borderRight: true },
+    { id: 'recipeCode', lable: 'Code', minWidth: 10, borderRight: true },
+    { id: 'description', lable: 'Description', minWidth: 10, borderRight: true },
+    { id: 'station', lable: 'Station', minWidth: 10, borderRight: true },
+    { id: 'order', lable: 'order', minWidth: 10, borderRight: true },
+    { id: 'timeDuration', lable: 'Duration', minWidth: 10, borderRight: true },
+    { id: 'materials', lable: 'Materials', minWidth: 10, borderRight: true },
     { id: 'active', lable: 'Active', width: 3 },
   ];
 
@@ -108,30 +110,30 @@ const MaterialList = ({ materials, displayMaterialForm, selectMaterial } : Mater
     );
   };
 
-  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Material) => {
+  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Recipe) => {
     const isAsc = orderBy === property && order ==='asc';
     setSort({ sortItem: property, sortOrder:isAsc ? -1 : 1 });
   };
 
-  const showEditMaterial = (id : number | string) => {
-    const materialData: Material = materials.filter((u) => u.id === id )[0];
-    selectMaterial(materialData);
-    displayMaterialForm({ show: true, formType: 'EDIT' });
+  const showEditRecipe = (id : number | string) => {
+    const recipeData: Recipe = recipes.filter((u) => u.id === id )[0];
+    selectRecipe(recipeData);
+    displayRecipeForm({ show: true, formType: 'EDIT' });
   };
 
-  const addNewMaterial = () => {
-    selectMaterial(null);
-    displayMaterialForm({ show: true, formType: 'ADD' });
+  const addNewRecipe = () => {
+    selectRecipe(null);
+    displayRecipeForm({ show: true, formType: 'ADD' });
   };
 
 
   return(
     <Paper>
       <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'} >
-        <Typography margin={1} >MATERIAL LIST</Typography>
-        <Typography margin={1} >{materials.length} Materials</Typography>
+        <Typography margin={1} >RECIPE LIST</Typography>
+        <Typography margin={1} >{recipes.length} Recipes</Typography>
         <div style={{ margin: '10px' }} >
-          <IconButton onClick={addNewMaterial} style={{ height: '16px', width: '16px', color:'white' }}>
+          <IconButton onClick={addNewRecipe} style={{ height: '16px', width: '16px', color:'white' }}>
             <AddIcon />
           </IconButton>
         </div>
@@ -141,31 +143,36 @@ const MaterialList = ({ materials, displayMaterialForm, selectMaterial } : Mater
           <EnhancedTableHead
             order={order}
             orderBy={orderBy}
-            onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof Material)}
+            onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof Recipe)}
           />
           <TableBody>
-            { sortedMaterials.map((material) => {
+            { sortedRecipes.map((recipe) => {
               return(
-                <TableRow hover role='checkbox' tabIndex={-1} key={material.id} >
+                <TableRow hover role='checkbox' tabIndex={-1} key={recipe.id} >
                   <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {material.itemShortName}
+                    {recipe.recipeCode}
                   </TableCell>
                   <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {material.itemLongName}
+                    {recipe.description}
                   </TableCell>
                   <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {material.itemCode}
+                    {recipe.station.stationName}
                   </TableCell>
                   <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {material.price}
+                    {recipe.order}
                   </TableCell>
                   <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {material.unit}
+                    {recipe.timeDuration}
+                  </TableCell>
+                  <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
+                    <Button onClick={() => selectRecipe(recipe)} variant='contained' color='primary'>
+                      Materials
+                    </Button>
                   </TableCell>
                   <TableCell align='center' >
                     <Box justifyContent={'space-between'} >
-                      <Checkbox checked={material.active} style={{ height: '16px', width: '16px' }}/>
-                      <IconButton onClick={() => showEditMaterial(material.id)}
+                      <Checkbox checked={recipe.active} style={{ height: '16px', width: '16px' }}/>
+                      <IconButton onClick={() => showEditRecipe(recipe.id)}
                         title='Edit'
                         style={{ height: '12px', width: '12px', marginLeft: 25 , color:'#1976d2d9' }}>
                         <EditIcon />
@@ -182,4 +189,4 @@ const MaterialList = ({ materials, displayMaterialForm, selectMaterial } : Mater
   );
 };
 
-export default MaterialList;
+export default RecipeList;
