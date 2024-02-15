@@ -17,7 +17,7 @@ import Product from './Products';
 import ProductGrp from './ProductGrps';
 import Station from './Stations';
 import Material from './Materials';
-import Recipe from './Recipes';
+import RecipeProductChoice from './RecipeProductChoice';
 
 const ProductsManagement = () => {
 
@@ -74,7 +74,7 @@ const ProductsManagement = () => {
             {showListForm === 'PRODUCT_GRP' && <ProductGrp /> }
             {showListForm === 'STATION' && <Station /> }
             {showListForm === 'MATERIAL' && <Material /> }
-            {showListForm === 'RECIPE' && <Recipe /> }
+            {showListForm === 'RECIPE' && <RecipeProductChoice /> }
           </Box>
         </Grid>
       </Grid>

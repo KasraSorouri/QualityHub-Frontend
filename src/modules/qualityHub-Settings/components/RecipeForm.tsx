@@ -40,11 +40,9 @@ type RecipeFormProps = {
   recipeData: Recipe | null;
   productId: number;
   formType: 'ADD' | 'EDIT';
-  submitHandler: (recipe: Recipe | RecipeData) => void;
+  submitHandler: (recipe: RecipeData) => void;
   displayRecipeForm: ({ show, formType } : { show: boolean, formType: 'ADD' | 'EDIT' }) => void;
 }
-
-
 
 const RecipeForm = ({ recipeData, productId, formType, submitHandler, displayRecipeForm } : RecipeFormProps) => {
 
@@ -80,10 +78,6 @@ const RecipeForm = ({ recipeData, productId, formType, submitHandler, displayRec
     setFormValues(formData);
   },[formType, recipeData]);
 
-  console.log('** recipe form * Recipe Data ->', recipeData);
-  console.log('** recipe form * form values ->', formValues);
-
-
   // get Station List
   const stationResults = useQuery('stations',stationServices.getStation, { refetchOnWindowFocus: false });
   const stationList: Station[] = stationResults.data || [];
@@ -100,8 +94,6 @@ const RecipeForm = ({ recipeData, productId, formType, submitHandler, displayRec
 
   const handleStationChange = (newValue: Station) => {
 
-    console.log(' ***  handle station * station->', newValue);
-
     setFormValues((prevValues: FormData) => ({
       ...prevValues,
       ['station']: newValue,
@@ -109,7 +101,6 @@ const RecipeForm = ({ recipeData, productId, formType, submitHandler, displayRec
   };
 
   const handleMaterialChange = (newValue: ConsumingMaterial[]) => {
-    console.log(' ***  handle material cahnge * in recipe form * materials ->', newValue);
     const newMaterials = newValue.map(item => { return({
       material: item.material,
       qty: item.qty,
@@ -121,13 +112,10 @@ const RecipeForm = ({ recipeData, productId, formType, submitHandler, displayRec
       ['materials']: newMaterials,
     };
     setFormValues(newFormValue);
-    console.log('****** fotm values ***** -> ', formValues);
-
   };
 
   const handleSubmit = (event: { preventDefault: () => void; }) => {
     event.preventDefault();
-    console.log('****** form values ***** -> ', formValues);
 
     const materialsData = formValues.materials?.map(item => {
       if (!item.material) {
@@ -154,7 +142,13 @@ const RecipeForm = ({ recipeData, productId, formType, submitHandler, displayRec
         active: formValues.active,
         materialsData: materialsData
       };
-      console.log('****** new Recipe  ***** ->', newRecipe);
+
+      // Remove Materials from form
+      const newFormValue : FormData = {
+        ...formValues,
+        ['materials']: [],
+      };
+      setFormValues(newFormValue);
 
       submitHandler(newRecipe);
     }
@@ -255,17 +249,17 @@ const RecipeForm = ({ recipeData, productId, formType, submitHandler, displayRec
                     label='Active'
                   />
                 </Grid>
-                <Button variant='contained' color='primary' sx={{ margin: 1, minWidth:'200px' }}
+                <Button variant='contained' color='primary' sx={{ margin: 1, minWidth:'200px', maxHeight:40,  width: 'auto' }}
                   onClick={() => setShowMaterials(!showMaterials)}>
                   {showMaterials ? 'Hide Materials' : 'Show Materials'}
                 </Button>
               </Stack>
               <Grid margin={2}>
-                { showMaterials && <RecipeBOM bom={formValues.materials ? formValues.materials : []} updateBOM={handleMaterialChange} /> }
+                { showMaterials && <RecipeBOM bom={formValues.materials ? formValues.materials : []} updateBOM={handleMaterialChange} readonly={false} /> }
               </Grid>
             </Grid >
-            <Grid item xs={2} >
-              <Button type='submit' variant='contained' color='primary' sx={{ margin: 1, minWidth: '200px' , width: 'auto' }}>
+            <Grid item xs={2} margin={1}>
+              <Button type='submit' variant='contained' color='primary' sx={{ minWidth: '200px' , width: 'auto' }}>
                 {submitTitle}
               </Button>
             </Grid>

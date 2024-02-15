@@ -10,6 +10,13 @@ const getRecipe = async() : Promise<Recipe[]> => {
   return res.data;
 };
 
+// Get Recipe by Product
+const getRecipeByProduct = async( productId : number) : Promise<Recipe[]> => {
+
+  const res = await axios.get(`${api_url}/quality/recipes/product/${productId}`);
+  return res.data;
+};
+
 // Craete recipe
 const createRecipe = async(recipeData: RecipeData) : Promise<Recipe | unknown> => {
   const token = setToken();
@@ -53,6 +60,7 @@ const editRecipe = async(recipeData : RecipeData) : Promise<Recipe | unknown> =>
 
 export default {
   getRecipe,
+  getRecipeByProduct,
   createRecipe,
   editRecipe,
 };

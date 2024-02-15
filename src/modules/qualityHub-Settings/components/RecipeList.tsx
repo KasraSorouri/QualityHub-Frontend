@@ -14,7 +14,8 @@ import {
   Typography,
   IconButton,
   Grid,
-  Button
+  Button,
+  Collapse
 } from '@mui/material';
 
 import { visuallyHidden } from '@mui/utils';
@@ -23,6 +24,8 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 
 import { Recipe } from '../../../types/QualityHubTypes';
+import RecipeBOM from './RecipeBOM';
+import React from 'react';
 
 interface EnhancedTableHeadProps {
   order: 'asc' | 'desc';
@@ -36,10 +39,14 @@ type RecipeListProps = {
   selectRecipe: (RecipeData: Recipe | null) => void;
 }
 
+type ShowDetails = {
+  show: boolean;
+  index: number | undefined;
+}
 
 const RecipeList = ({ recipes, displayRecipeForm, selectRecipe } : RecipeListProps) => {
 
-
+  const [ showMatrials, setShowMaterials ] = useState<ShowDetails>({ index: undefined, show: false });
   // Sort Items
   const [ sort, setSort ] = useState<{ sortItem: keyof Recipe; sortOrder: number }>({ sortItem: 'recipeCode' , sortOrder: 1 });
   const order : 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
@@ -146,40 +153,51 @@ const RecipeList = ({ recipes, displayRecipeForm, selectRecipe } : RecipeListPro
             onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof Recipe)}
           />
           <TableBody>
-            { sortedRecipes.map((recipe) => {
+            { sortedRecipes.map((recipe, index) => {
               return(
-                <TableRow hover role='checkbox' tabIndex={-1} key={recipe.id} >
-                  <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {recipe.recipeCode}
-                  </TableCell>
-                  <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {recipe.description}
-                  </TableCell>
-                  <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {recipe.station.stationName}
-                  </TableCell>
-                  <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {recipe.order}
-                  </TableCell>
-                  <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {recipe.timeDuration}
-                  </TableCell>
-                  <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    <Button onClick={() => selectRecipe(recipe)} variant='contained' color='primary'>
-                      Materials
-                    </Button>
-                  </TableCell>
-                  <TableCell align='center' >
-                    <Box justifyContent={'space-between'} >
-                      <Checkbox checked={recipe.active} style={{ height: '16px', width: '16px' }}/>
-                      <IconButton onClick={() => showEditRecipe(recipe.id)}
-                        title='Edit'
-                        style={{ height: '12px', width: '12px', marginLeft: 25 , color:'#1976d2d9' }}>
-                        <EditIcon />
-                      </IconButton>
-                    </Box>
-                  </TableCell>
-                </TableRow>
+                <React.Fragment key={recipe.id}>
+                  <TableRow hover role='checkbox' tabIndex={-1} key={recipe.id} >
+                    <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
+                      {recipe.recipeCode}
+                    </TableCell>
+                    <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
+                      {recipe.description}
+                    </TableCell>
+                    <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
+                      {recipe.station.stationName}
+                    </TableCell>
+                    <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
+                      {recipe.order}
+                    </TableCell>
+                    <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
+                      {recipe.timeDuration}
+                    </TableCell>
+                    <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
+                      <Button onClick={() => setShowMaterials({ index, show:!showMatrials.show })} variant='contained' color='primary'>
+                        {showMatrials.show && showMatrials.index === index ? 'Hide' : 'Show'} Materials
+                      </Button>
+                    </TableCell>
+                    <TableCell align='center' >
+                      <Box justifyContent={'space-between'} >
+                        <Checkbox checked={recipe.active} style={{ height: '16px', width: '16px' }}/>
+                        <IconButton onClick={() => showEditRecipe(recipe.id)}
+                          title='Edit'
+                          style={{ height: '12px', width: '12px', marginLeft: 25 , color:'#1976d2d9' }}>
+                          <EditIcon />
+                        </IconButton>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow key={index}>
+                    <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                      <Collapse in={showMatrials.show && showMatrials.index === index} timeout='auto' unmountOnExit>
+                        <Box margin={1}>
+                          <RecipeBOM bom={recipe.recipeMaterials ? recipe.recipeMaterials : []} updateBOM={() => null} readonly={true} />
+                        </Box>
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
               );
             })}
           </TableBody>

@@ -87,7 +87,11 @@ export interface RecipeData extends Omit<Recipe,'id' | 'product' | 'station' | '
   materialsData: ConsumingMaterialData[];
 }
 
-export enum Reusable  {'Yes', 'No', 'IQC'}
+export enum Reusable  {
+  YES ='YES',
+  NO = 'NO',
+  IQC = 'IQC'
+}
 
 export interface ConsumingMaterial {
   material: Material;

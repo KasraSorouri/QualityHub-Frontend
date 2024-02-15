@@ -45,6 +45,7 @@ interface EnhancedTableHeadProps {
 type RecipeBomProps = {
   bom: ConsumingMaterial[];
   updateBOM: (bom: ConsumingMaterial[]) => void;
+  readonly: boolean;
 }
 
 interface BomData extends Omit<ConsumingMaterialData, 'materialId'> {
@@ -53,7 +54,7 @@ interface BomData extends Omit<ConsumingMaterialData, 'materialId'> {
   bomIndex: number;
 }
 
-const RecipeBOM = ({ bom, updateBOM } : RecipeBomProps) => {
+const RecipeBOM = ({ bom, updateBOM, readonly } : RecipeBomProps) => {
 
   const setNotification = useNotificationSet();
 
@@ -75,8 +76,6 @@ const RecipeBOM = ({ bom, updateBOM } : RecipeBomProps) => {
       reusable: item.reusable
     })));
   }, [bom]);
-
-  console.log('BOM Form * BomData ->', bomData);
 
   // Get Material List
   const materialResults = useQuery('materials',materialServices.getMaterial, { refetchOnWindowFocus: false });
@@ -143,18 +142,20 @@ const RecipeBOM = ({ bom, updateBOM } : RecipeBomProps) => {
               </TableSortLabel>
             </TableCell>
           ))}
-          <TableCell
-            key='edit'
-            align= 'justify'
-            style={{ width: '60px' }}
-            sx={{ backgroundColor: '#1976d2', color: 'white' }}
-          >
-            <div style={{ margin: '10px' }} >
-              <IconButton onClick={addNewItem} style={{ height: '16px', width: '16px', color:'white' }}>
-                <AddIcon />
-              </IconButton>
-            </div>
-          </TableCell>
+          { !readonly ?
+            <TableCell
+              key='edit'
+              align= 'center'
+              style={{ width: '60px' }}
+              sx={{ backgroundColor: '#1976d2', color: 'white' }}
+            >
+              <div style={{ margin: '10px' }} >
+                <IconButton title='Add New Material' onClick={addNewItem} style={{ height: '16px', width: '16px', color:'white' }}>
+                  {'Add'}
+                  <AddIcon />
+                </IconButton>
+              </div>
+            </TableCell> : null}
         </TableRow>
       </TableHead>
     );
@@ -201,7 +202,6 @@ const RecipeBOM = ({ bom, updateBOM } : RecipeBomProps) => {
   };
 
   const handleMaterialChange = (newvalue: Material, index: number) => {
-    console.log('Material Changed !', newvalue, ' index : ', index);
     const updatedBom = bomData.map((item, i) => {
       if (i === index) {
         return {
@@ -215,7 +215,6 @@ const RecipeBOM = ({ bom, updateBOM } : RecipeBomProps) => {
   };
 
   const handleChange = (newValue: number, index: number ) => {
-    console.log('Change Event !', newValue, index);
     const newBom : BomData[] = bomData.map((item, i) => {
       if (i === index) {
         return {
@@ -229,7 +228,6 @@ const RecipeBOM = ({ bom, updateBOM } : RecipeBomProps) => {
   };
 
   const handleReusableChange = (newValue: Reusable, index: number) => {
-    console.log('Reusable Change Event !', newValue, index);
     const newBom : BomData[] = bomData.map((item, i) => {
       if (i === index) {
         return {
@@ -256,9 +254,10 @@ const RecipeBOM = ({ bom, updateBOM } : RecipeBomProps) => {
         return bomItem;
       }
     }).filter((item) => item !== undefined) as ConsumingMaterial[];
-    console.log('Updated BOM !', updatedBom);
     updateBOM(updatedBom);
   };
+
+  console.log('********',bomData);
 
   return(
     <Paper>
@@ -308,14 +307,17 @@ const RecipeBOM = ({ bom, updateBOM } : RecipeBomProps) => {
                         required /> :
                       bom.qty}
                   </TableCell>
-                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
+                  <TableCell align='center'
+                    sx={{ borderRight: '1px solid gray',
+                      backgroundColor: bom.reusable === Reusable.YES ? '#A8F285' :
+                        bom.reusable === Reusable.IQC ? '#FFFFAB' : '#F2A8A8' }}>
                     {bom.itemEditable ?
                       <ToggleButtonGroup
-                        color="primary"
+                        color='primary'
                         value={bom.reusable}
                         exclusive
                         onChange={(_event, target) => handleReusableChange(target, index)}
-                        aria-label="Platform"
+                        aria-label='Platform'
                       >
                         <ToggleButton value='NO'>No</ToggleButton>
                         <ToggleButton value='YES'>Yes</ToggleButton>
@@ -324,25 +326,27 @@ const RecipeBOM = ({ bom, updateBOM } : RecipeBomProps) => {
                       :
                       bom.reusable}
                   </TableCell>
-                  <TableCell align='justify'>
-                    <Stack direction={'row'} alignContent={'space-between'}>
-                      <IconButton onClick={() => editBomItem(bom.bomIndex)}
-                        title='Edit'
-                        style={{ height: '12px', width: '12px', margin: 5, color: '#1976d2d9' }}>
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton onClick={() => removeBomItem(bom.bomIndex)}
-                        title='Delete'
-                        style={{ height: '12px', width: '12px', margin: 5, color: '#1976d2d9' }}>
-                        <RemoveCircleOutlineIcon />
-                      </IconButton>
-                      <IconButton onClick={handleUpdateBOM}
-                        title='Save'
-                        style={{ height: '12px', width: '12px', margin: 5, color: '#1976d2d9' }}>
-                        <CheckCircleOutlineIcon />
-                      </IconButton>
-                    </Stack>
-                  </TableCell>
+                  { !readonly ?
+                    <TableCell align='justify'>
+                      <Stack direction={'row'} alignContent={'space-between'}>
+                        <IconButton onClick={() => editBomItem(bom.bomIndex)}
+                          title='Edit'
+                          style={{ height: '12px', width: '12px', margin: 5, color: '#1976d2d9' }}>
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton onClick={() => removeBomItem(bom.bomIndex)}
+                          title='Delete'
+                          style={{ height: '12px', width: '12px', margin: 5, color: '#1976d2d9' }}>
+                          <RemoveCircleOutlineIcon />
+                        </IconButton>
+                        <IconButton onClick={handleUpdateBOM}
+                          title='Save'
+                          style={{ height: '12px', width: '12px', margin: 5, color: '#1976d2d9' }}>
+                          <CheckCircleOutlineIcon />
+                        </IconButton>
+                      </Stack>
+                    </TableCell>
+                    : null }
                 </TableRow>
               );
             })}
