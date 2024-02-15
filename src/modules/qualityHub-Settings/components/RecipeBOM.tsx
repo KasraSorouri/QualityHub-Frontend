@@ -61,7 +61,7 @@ const RecipeBOM = ({ bom, updateBOM, readonly } : RecipeBomProps) => {
   const blankItem : BomData = {
     bomIndex: bom.length,
     qty: 0,
-    reusable: Reusable.No,
+    reusable: Reusable.NO,
     material: undefined,
     itemEditable: true,
   };
@@ -256,8 +256,6 @@ const RecipeBOM = ({ bom, updateBOM, readonly } : RecipeBomProps) => {
     }).filter((item) => item !== undefined) as ConsumingMaterial[];
     updateBOM(updatedBom);
   };
-
-  console.log('********',bomData);
 
   return(
     <Paper>
