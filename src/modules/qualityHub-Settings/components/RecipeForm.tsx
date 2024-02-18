@@ -15,14 +15,15 @@ import {
   OutlinedTextFieldProps,
   StandardTextFieldProps,
   TextFieldVariants,
-  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
 } from '@mui/material';
 
 import stationServices from '../services/stationServices';
 
 import RecipeBOM from './RecipeBOM';
 
-import { ConsumingMaterial, ConsumingMaterialData, Recipe, RecipeData, Reusable, Station } from '../../../types/QualityHubTypes';
+import { ConsumingMaterial, ConsumingMaterialData, Recipe, RecipeData, RecipeType, Reusable, Station } from '../../../types/QualityHubTypes';
 
 
 interface FormData {
@@ -32,6 +33,8 @@ interface FormData {
   station: Station | null;
   order: number;
   timeDuration?: number;
+  manpower?: number;
+  recipeType: RecipeType;
   active: boolean;
   materials?: ConsumingMaterial[];
 }
@@ -58,6 +61,8 @@ const RecipeForm = ({ recipeData, productId, formType, submitHandler, displayRec
     station: recipeData ? recipeData.station : null,
     order: recipeData ? recipeData.order : 1,
     timeDuration: recipeData ? recipeData.timeDuration : 0,
+    manpower: recipeData ? recipeData.manpower : 0,
+    recipeType: recipeData ? recipeData.recipeType : RecipeType.PRODUCTION,
     active: recipeData ? recipeData.active : false,
     materials: recipeData ? recipeData.recipeMaterials : [],
   };
@@ -72,6 +77,8 @@ const RecipeForm = ({ recipeData, productId, formType, submitHandler, displayRec
       station: recipeData ? recipeData.station : null,
       order: recipeData ? recipeData.order : 1,
       timeDuration: recipeData ? recipeData.timeDuration : 0,
+      recipeType: recipeData?.recipeType ? recipeData.recipeType : RecipeType.PRODUCTION,
+      manpower: recipeData ? recipeData.manpower : 0,
       active: recipeData ? recipeData.active : false,
       materials: recipeData ? recipeData.recipeMaterials : [],
     };
@@ -114,6 +121,18 @@ const RecipeForm = ({ recipeData, productId, formType, submitHandler, displayRec
     setFormValues(newFormValue);
   };
 
+  const handleRecipeType = (newValue: RecipeType) => {
+    console.log('** new walue -> ', newValue);
+
+    if (newValue !== null) {
+      setFormValues((prevValues: FormData) => ({
+        ...prevValues,
+        ['recipeType']: newValue === RecipeType.REWORK ? RecipeType.REWORK : RecipeType.PRODUCTION,
+      }));
+    }
+    console.log('** recipeType -> ', formValues.recipeType);
+  };
+
   const handleSubmit = (event: { preventDefault: () => void; }) => {
     event.preventDefault();
 
@@ -124,13 +143,13 @@ const RecipeForm = ({ recipeData, productId, formType, submitHandler, displayRec
         const materialData : ConsumingMaterialData = {
           materialId: item.material.id,
           qty: item.qty,
-          reusable: item.reusable ? item.reusable : Reusable.No,
+          reusable: item.reusable ? item.reusable : Reusable.NO,
         };
         return materialData;
       }
     }).filter(item => item !== undefined) as  ConsumingMaterialData [];
 
-    if (formValues.station) {
+    if (formValues.station && typeof formValues.station === 'object') {
       const newRecipe: RecipeData  = {
         id: (typeof formValues.id === 'number') ? formValues.id : 0,
         recipeCode: formValues.recipeCode,
@@ -139,6 +158,8 @@ const RecipeForm = ({ recipeData, productId, formType, submitHandler, displayRec
         stationId: formValues.station.id,
         order: formValues.order,
         timeDuration: Number(formValues.timeDuration),
+        manpower: (typeof formValues.manpower === 'number') ? Number(formValues.manpower) : 0,
+        recipeType: formValues.recipeType !== RecipeType.REWORK ? RecipeType.PRODUCTION : RecipeType.REWORK,
         active: formValues.active,
         materialsData: materialsData
       };
@@ -166,104 +187,125 @@ const RecipeForm = ({ recipeData, productId, formType, submitHandler, displayRec
       </Box>
       <form onSubmit={handleSubmit} >
         <Box display='flex'  margin={0} >
-          <Stack direction={'row'} >
-            <Grid container flexDirection={'column'} >
-              <Stack direction={'row'}>
-                <Grid container flexDirection={'row'}>
-                  <TextField
-                    label='recipe Code'
-                    name='recipeCode'
-                    sx={{ marginLeft: 2, width: '10%' }}
-                    value={formValues.recipeCode}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-                    margin='dense'
-                    variant='outlined'
-                    size='small'
-                    required
-                  />
-                  <TextField
-                    label='Description'
-                    name='description'
-                    sx={{ marginLeft: 1 ,minWidth: '30%' }}
-                    value={formValues.description}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-                    margin='dense'
-                    variant='outlined'
-                    size='small'
-                    required
-                  />
-                  <Autocomplete
-                    id='station'
-                    sx={{ marginLeft: 1, marginTop: 1, width: '20%' }}
-                    size='small'
-                    aria-required
-                    options={stationList}
-                    isOptionEqualToValue={
-                      (option: Station, value: Station) => option.stationName === value.stationName
-                    }
-                    value={formValues.station}
-                    onChange={(_event, newValue) => newValue && handleStationChange(newValue)}
-                    getOptionLabel={(option: { stationName: string; }) => option.stationName}
-                    renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
-                      <TextField
-                        {...params}
-                        label='Station'
-                        placeholder='Add Station'
-                        size='small'
-                        required
-                      />
-                    )}
-                  />
-                  <TextField
-                    label='order'
-                    name='order'
-                    sx={{ marginLeft: 1, width: '10%' }}
-                    value={formValues.order}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-                    margin='dense'
-                    variant='outlined'
-                    size='small'
-                    required
-                  />
-                  <TextField
-                    label='Duration'
-                    name='timeDuration'
-                    sx={{ marginLeft: 1, width: '10%' }}
-                    value={formValues.timeDuration}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-                    margin='dense'
-                    variant='outlined'
-                    size='small'
-                    required
-                  />
-                  <FormControlLabel
-                    sx={{ marginLeft: 1 }}
-                    control={
-                      <Checkbox
-                        checked={formValues.active}
-                        onChange={handleChange}
-                        name='active'
-                        color='primary'
-                      />
-                    }
-                    label='Active'
-                  />
-                </Grid>
-                <Button variant='contained' color='primary' sx={{ margin: 1, minWidth:'200px', maxHeight:40,  width: 'auto' }}
-                  onClick={() => setShowMaterials(!showMaterials)}>
-                  {showMaterials ? 'Hide Materials' : 'Show Materials'}
-                </Button>
-              </Stack>
-              <Grid margin={2}>
-                { showMaterials && <RecipeBOM bom={formValues.materials ? formValues.materials : []} updateBOM={handleMaterialChange} readonly={false} /> }
-              </Grid>
-            </Grid >
-            <Grid item xs={2} margin={1}>
-              <Button type='submit' variant='contained' color='primary' sx={{ minWidth: '200px' , width: 'auto' }}>
-                {submitTitle}
-              </Button>
+          <Grid container flexDirection={'column'} >
+            <Grid container flexDirection={'row'}>
+              <TextField
+                label='recipe Code'
+                name='recipeCode'
+                sx={{ marginLeft: 2, width: '10%' }}
+                value={formValues.recipeCode}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
+                margin='dense'
+                variant='outlined'
+                size='small'
+                required
+              />
+              <TextField
+                label='Description'
+                name='description'
+                sx={{ marginLeft: 1 ,minWidth: '85%' }}
+                value={formValues.description}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
+                margin='dense'
+                variant='outlined'
+                size='small'
+                required
+              />
             </Grid>
-          </Stack>
+            <Grid container flexDirection={'row'}>
+              <Autocomplete
+                id='station'
+                sx={{ marginLeft: 2, marginTop: 1, width: '22%' }}
+                size='small'
+                aria-required
+                options={stationList}
+                isOptionEqualToValue={
+                  (option: Station, value: Station) => option.stationName === value.stationName
+                }
+                value={formValues.station ? formValues.station : null}
+                onChange={(_event, newValue) => newValue && handleStationChange(newValue)}
+                getOptionLabel={(option: { stationName: string; }) => option.stationName}
+                renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
+                  <TextField
+                    {...params}
+                    label='Station'
+                    placeholder='Add Station'
+                    size='small'
+                    required
+                  />
+                )}
+              />
+              <TextField
+                label='order'
+                name='order'
+                sx={{ marginLeft: 1, width: '10%' }}
+                value={formValues.order}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
+                margin='dense'
+                variant='outlined'
+                size='small'
+                required
+              />
+              <TextField
+                label='Duration'
+                name='timeDuration'
+                sx={{ marginLeft: 1, width: '10%' }}
+                value={formValues.timeDuration}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
+                margin='dense'
+                variant='outlined'
+                size='small'
+              />
+              <TextField
+                label='Manpower'
+                name='manpower'
+                sx={{ marginLeft: 1, width: '10%' }}
+                value={formValues.manpower}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
+                margin='dense'
+                variant='outlined'
+                size='small'
+              />
+              <Typography variant='body2' sx={{ marginTop: 2, marginLeft: 2 }}>
+                Type:
+              </Typography>
+              <ToggleButtonGroup
+                value={formValues.recipeType}
+                exclusive
+                onChange={(_event, target) => handleRecipeType(target)}
+                aria-label='Platform'
+                size='small'
+                sx={{ marginLeft: 1, marginTop: 1, height: '40px' }}
+              >
+                <ToggleButton value='PRODUCTION' sx={{ '&.Mui-selected': { backgroundColor:  '#96FFD9' }, }}>Production</ToggleButton>
+                <ToggleButton value='REWORK' sx={{ '&.Mui-selected': { backgroundColor:  '#56F0FA' }, }}>Rework</ToggleButton>
+              </ToggleButtonGroup>
+              <FormControlLabel
+                sx={{ marginLeft: 1 }}
+                control={
+                  <Checkbox
+                    checked={formValues.active}
+                    onChange={handleChange}
+                    name='active'
+                    color='primary'
+                  />
+                }
+                label='Active'
+              />
+            </Grid>
+            <Grid margin={2}>
+              { showMaterials && <RecipeBOM bom={formValues.materials ? formValues.materials : []} updateBOM={handleMaterialChange} readonly={false} /> }
+            </Grid>
+          </Grid >
+          <Grid item xs={2} margin={1}>
+            <Button type='submit' variant='contained' color='primary' sx={{ minWidth: '200px' , width: 'auto' }}>
+              {submitTitle}
+            </Button>
+            <Button variant='contained' color='primary' sx={{ marginTop: 2, minWidth:'200px', maxHeight:40,  width: 'auto' }}
+              onClick={() => setShowMaterials(!showMaterials)}>
+              {showMaterials ? 'Hide Materials' : 'Show Materials'}
+            </Button>
+          </Grid>
         </Box>
       </form>
     </Paper>

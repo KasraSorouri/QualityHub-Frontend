@@ -24,6 +24,7 @@ interface FormData {
   itemShortName: string;
   itemLongName: string;
   itemCode: string;
+  traceable: boolean;
   price?: number | null;
   unit?: string;
   active: boolean;
@@ -49,6 +50,7 @@ const MaterialForm = ({ materialData, formType, submitHandler, displayMaterialFo
     itemShortName: materialData ? materialData.itemShortName : '',
     itemLongName: materialData ? materialData.itemLongName : '',
     itemCode: materialData ? materialData.itemCode : '',
+    traceable: materialData?.traceable ? materialData.traceable : false,
     price: materialData ? materialData.price : 0,
     unit: materialData ? materialData.unit : 'No',
     active: materialData ? materialData.active : false,
@@ -63,6 +65,7 @@ const MaterialForm = ({ materialData, formType, submitHandler, displayMaterialFo
       itemShortName: materialData ? materialData.itemShortName : '',
       itemLongName: materialData ? materialData.itemLongName : '',
       itemCode: materialData ? materialData.itemCode : '',
+      traceable: materialData?.traceable ? materialData.traceable : false,
       price: materialData ? materialData.price : 0,
       unit: materialData ? materialData.unit : 'No',
       active: materialData ? materialData.active : false,
@@ -83,7 +86,7 @@ const MaterialForm = ({ materialData, formType, submitHandler, displayMaterialFo
 
   const handleChange = (event: {target: { name: string, value: unknown, checked: boolean}}) => {
     const { name, value, checked } = event.target;
-    const newValue = name === 'active' ? checked : value;
+    const newValue = (name === 'active' || name ==='traceable') ? checked : value;
 
     setFormValues((prevValues: FormData) => ({
       ...prevValues,
@@ -106,6 +109,7 @@ const MaterialForm = ({ materialData, formType, submitHandler, displayMaterialFo
       itemShortName: formValues.itemShortName,
       itemLongName: formValues.itemLongName,
       itemCode: formValues.itemCode,
+      traceable: formValues.traceable,
       price: formValues.price ? formValues.price : 0,
       unit: formValues.unit ? formValues.unit : 'No',
       active: formValues.active,
@@ -195,6 +199,18 @@ const MaterialForm = ({ materialData, formType, submitHandler, displayMaterialFo
                     required
                   />
                 )}
+              />
+              <FormControlLabel
+                sx={{ marginLeft: 5 }}
+                control={
+                  <Checkbox
+                    checked={formValues.traceable}
+                    onChange={handleChange}
+                    name='traceable'
+                    color='primary'
+                  />
+                }
+                label='Traceable'
               />
               <FormControlLabel
                 sx={{ marginLeft: 5 }}

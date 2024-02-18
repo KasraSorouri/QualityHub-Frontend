@@ -74,7 +74,9 @@ const RecipeList = ({ recipes, displayRecipeForm, selectRecipe } : RecipeListPro
     { id: 'station', lable: 'Station', minWidth: 10, borderRight: true },
     { id: 'order', lable: 'order', minWidth: 10, borderRight: true },
     { id: 'timeDuration', lable: 'Duration', minWidth: 10, borderRight: true },
-    { id: 'materials', lable: 'Materials', minWidth: 10, borderRight: true },
+    { id: 'manpower', lable: 'Manpower', minWidth: 10, borderRight: true },
+    { id: 'recipeType', lable: 'Type', minWidth: 10, borderRight: true },
+    { id: 'materials', lable: 'Materials', width: 164, borderRight: true },
     { id: 'active', lable: 'Active', width: 3 },
   ];
 
@@ -157,22 +159,35 @@ const RecipeList = ({ recipes, displayRecipeForm, selectRecipe } : RecipeListPro
               return(
                 <React.Fragment key={recipe.id}>
                   <TableRow hover role='checkbox' tabIndex={-1} key={recipe.id} >
-                    <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
                       {recipe.recipeCode}
                     </TableCell>
                     <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
                       {recipe.description}
                     </TableCell>
-                    <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
                       {recipe.station.stationName}
                     </TableCell>
-                    <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
                       {recipe.order}
                     </TableCell>
-                    <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
                       {recipe.timeDuration}
                     </TableCell>
-                    <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
+                      {recipe.manpower}
+                    </TableCell>
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
+                      <span style={{
+                        backgroundColor: recipe.recipeType === 'PRODUCTION' ? '#96FFD9' : '#56F0FA',
+                        padding: '5px',
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                      }} >
+                        {recipe.recipeType}
+                      </span>
+                    </TableCell>
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
                       <Button onClick={() => setShowMaterials({ index, show:!showMatrials.show })} variant='contained' color='primary'>
                         {showMatrials.show && showMatrials.index === index ? 'Hide' : 'Show'} Materials
                       </Button>

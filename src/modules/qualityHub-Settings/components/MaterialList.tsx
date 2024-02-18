@@ -64,8 +64,9 @@ const MaterialList = ({ materials, displayMaterialForm, selectMaterial } : Mater
     { id: 'itemShortName', lable: 'Short Name', minWidth: 10, borderRight: true },
     { id: 'itemLongName', lable: 'Long Name', minWidth: 10, borderRight: true },
     { id: 'itemCode', lable: 'Item Code', minWidth: 10, borderRight: true },
-    { id: 'price', lable: 'Price', minWidth: 10, borderRight: true },
-    { id: 'unit', lable: 'Unit', minWidth: 10, borderRight: true },
+    { id: 'traceable', lable: 'Traceable', minWidth: 10,  width: '5%',borderRight: true },
+    { id: 'price', lable: 'Price', minWidth: 10, width: '10%', borderRight: true },
+    { id: 'unit', lable: 'Unit', minWidth: 10, width: '5%', borderRight: true },
     { id: 'active', lable: 'Active', width: 3 },
   ];
 
@@ -156,10 +157,13 @@ const MaterialList = ({ materials, displayMaterialForm, selectMaterial } : Mater
                   <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
                     {material.itemCode}
                   </TableCell>
-                  <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
+                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
+                    {material.traceable ? 'YES' : 'NO'}
+                  </TableCell>
+                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
                     {material.price}
                   </TableCell>
-                  <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
+                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
                     {material.unit}
                   </TableCell>
                   <TableCell align='center' >
