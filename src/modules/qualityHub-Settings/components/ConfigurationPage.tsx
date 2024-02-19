@@ -28,7 +28,7 @@ const ConfigurationPage = ({ signedUser } :{ signedUser: Token | null}) => {
       <Grid item margin={5}>
         { showConfigUser &&
           <Button
-            component={Link} to='/quality-setting/manage/Product'
+            component={Link} to='/quality-setting/product-management'
             style={buttonStyle}
             startIcon={<HardwareIcon style={{ fontSize: '80px' }}/>}
           >
@@ -38,11 +38,11 @@ const ConfigurationPage = ({ signedUser } :{ signedUser: Token | null}) => {
         <Stack margin={2}></Stack>
         { ShowConfigBom &&
           <Button
-            component={Link} to='/bomManagement'
+            component={Link} to='/quality-setting/system-setting'
             style={buttonStyle}
             startIcon={<PrecisionManufacturingIcon style={{ fontSize: '80px' }}/>}
           >
-            Shift Management
+            System Settings
           </Button>
         }
       </Grid>

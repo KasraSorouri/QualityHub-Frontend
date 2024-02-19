@@ -70,7 +70,7 @@ const Navigation = ({ signedUser } :{ signedUser: Token | null}) => {
                 variant="h6"
                 noWrap
                 component="a"
-                href= '/quality-setting/manage'
+                href= '/quality-setting'
                 sx={{
                   margin: 2,
                   display: { xs: 'none', md: 'flex' },

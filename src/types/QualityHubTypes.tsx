@@ -110,3 +110,15 @@ export enum RecipeType {
   PRODUCTION = 'PRODUCTION',
   REWORK = 'REWORK',
 }
+
+export interface NokGroup {
+  id: number;
+  nokGrpName: string;
+  nokGrpCode: string;
+  nokGrpDesc?: string;
+  active: boolean;
+}
+
+export interface NokGrpData extends Omit<NokGroup, 'id'> {
+  id? : number;
+}

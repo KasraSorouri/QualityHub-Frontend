@@ -11,6 +11,7 @@ import SignIn from './modules/usersAndAuthentications/components/Login';
 import UserManagement from './modules/usersAndAuthentications/components/UserManagement';
 import ConfigurationPage from './modules/qualityHub-Settings/components/ConfigurationPage';
 import ProductsManagement from './modules/qualityHub-Settings/components/ProductsManagement';
+import SystemSetting from './modules/qualityHub-Settings/components/SystemSetting';
 
 function App() {
 
@@ -33,8 +34,10 @@ function App() {
           <Route path='/' element={<HomePage />} />
           <Route path='/signin' element={<SignIn />} />
           <Route path='/user_management' element={<UserManagement />} />
-          <Route path='/quality-setting/manage' element={<ConfigurationPage signedUser={user} />} />
-          <Route path='/quality-setting/manage/Product' element={<ProductsManagement />} />
+          <Route path='/quality-setting/' element={<ConfigurationPage signedUser={user} />} />
+          <Route path='/quality-setting/product-management' element={<ProductsManagement />} />
+          <Route path='/quality-setting/system-setting' element={<SystemSetting />} />
+
         </Routes>
       </Router>
       <footer>
