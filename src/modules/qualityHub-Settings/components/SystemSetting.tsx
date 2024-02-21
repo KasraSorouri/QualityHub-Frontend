@@ -15,12 +15,13 @@ import {
 
 import NokGrps from './NokGrps';
 import NokCodes from './NokCodes';
+import RcaCodes from './rcaCode/RcaCodes';
 
 const SystemSetting = () => {
 
   const navigate = useNavigate();
 
-  type ShowListForm = 'NOK-CODE' | 'NOK-GRP' | '' | '' | '' | 'NONE'
+  type ShowListForm = 'NOK-CODE' | 'NOK-GRP' | 'RCA-CODE' | '' | '' | 'NONE'
 
   const [ showListForm, setShowListForm ] = useState<ShowListForm>('NONE');
 
@@ -52,8 +53,8 @@ const SystemSetting = () => {
               <ListItemText primary='NOK Groups' sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
-            <ListItem onClick={() => setShowListForm('')}>
-              <ListItemText primary='**' sx={{ color: 'black' }} />
+            <ListItem onClick={() => setShowListForm('RCA-CODE')}>
+              <ListItemText primary='RCA Code' sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
             <ListItem onClick={() => setShowListForm('')}>
@@ -69,7 +70,7 @@ const SystemSetting = () => {
           <Box>
             {showListForm === 'NOK-CODE' && <NokCodes /> }
             {showListForm === 'NOK-GRP' && <NokGrps /> }
-            {showListForm === '' && 'test' }
+            {showListForm === 'RCA-CODE' && <RcaCodes /> }
             {showListForm === '' &&'test'  }
             {showListForm === '' && 'test' }
           </Box>
