@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 
 import NokGrps from './NokGrps';
+import NokCodes from './NokCodes';
 
 const SystemSetting = () => {
 
@@ -66,7 +67,7 @@ const SystemSetting = () => {
         </Grid>
         <Grid item xs={10} p={2}>
           <Box>
-            {showListForm === 'NOK-CODE' && 'test' }
+            {showListForm === 'NOK-CODE' && <NokCodes /> }
             {showListForm === 'NOK-GRP' && <NokGrps /> }
             {showListForm === '' && 'test' }
             {showListForm === '' &&'test'  }

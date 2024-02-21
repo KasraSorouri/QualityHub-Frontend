@@ -52,8 +52,6 @@ const NokGrps = () => {
 
   const nokGrps: NokGroup[] = nokGrpResults.data || [];
 
-  console.log('* NOk Group ->', nokGrps);
-
   const handleNokGrpFormSubmit = (newUserData:  NokGrpData) => {
 
     if (showNokGrpForm.formType === 'ADD') {
