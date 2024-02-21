@@ -36,7 +36,7 @@ const editRight = async(rightData : Right) : Promise<Right | unknown> => {
 
   const { id, ...rightEditedData } = rightData;
   try{
-    const res = await axios.put(`${api_url}/auth/roles/${id}`, rightEditedData, config);
+    const res = await axios.put(`${api_url}/auth/rights/${id}`, rightEditedData, config);
     return res.data;
   } catch (err : unknown) {
     if (err instanceof Error) {
