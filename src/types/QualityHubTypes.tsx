@@ -159,3 +159,15 @@ export interface MachineData extends Omit<Machine, 'id'> {
   id?: number;
   stationId?: number;
 }
+
+export interface WorkShift {
+  id: number;
+  shiftName: string;
+  shiftCode: string;
+  active: boolean;
+}
+
+export interface WorkShiftData extends Omit<WorkShift, 'id'> {
+  id?: number;
+}
+

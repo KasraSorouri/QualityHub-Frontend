@@ -17,12 +17,13 @@ import NokGrps from './NokGrps';
 import NokCodes from './NokCodes';
 import RcaCodes from './rcaCode/RcaCodes';
 import Machines from './machine/Machines';
+import WorkShifts from './workShift/WorkShifts';
 
 const SystemSetting = () => {
 
   const navigate = useNavigate();
 
-  type ShowListForm = 'NOK-CODE' | 'NOK-GRP' | 'RCA-CODE' | 'Device-Tools' | '' | 'NONE'
+  type ShowListForm = 'NOK-CODE' | 'NOK-GRP' | 'RCA-CODE' | 'DEVICE-TOOLS' | 'SHIFT' | 'NONE'
 
   const [ showListForm, setShowListForm ] = useState<ShowListForm>('NONE');
 
@@ -58,12 +59,12 @@ const SystemSetting = () => {
               <ListItemText primary='RCA Code' sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
-            <ListItem onClick={() => setShowListForm('Device-Tools')}>
+            <ListItem onClick={() => setShowListForm('DEVICE-TOOLS')}>
               <ListItemText primary='Device / Tools' sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
-            <ListItem onClick={() => setShowListForm('')}>
-              <ListItemText primary='**' sx={{ color: 'black' }} />
+            <ListItem onClick={() => setShowListForm('SHIFT')}>
+              <ListItemText primary='Shifs' sx={{ color: 'black' }} />
             </ListItem>
           </List>
         </Grid>
@@ -72,8 +73,8 @@ const SystemSetting = () => {
             {showListForm === 'NOK-CODE' && <NokCodes /> }
             {showListForm === 'NOK-GRP' && <NokGrps /> }
             {showListForm === 'RCA-CODE' && <RcaCodes /> }
-            {showListForm === 'Device-Tools' && <Machines />  }
-            {showListForm === '' && 'test' }
+            {showListForm === 'DEVICE-TOOLS' && <Machines />  }
+            {showListForm === 'SHIFT' && <WorkShifts />  }
           </Box>
         </Grid>
       </Grid>
