@@ -145,3 +145,17 @@ export interface RcaCode {
 export interface RcaCodeData extends Omit<RcaCode, 'id'> {
   id?: number;
 }
+
+export interface Machine {
+  id: number;
+  machineName: string;
+  machineCode: string;
+  description?: string;
+  station?: Station;
+  active: boolean;
+}
+
+export interface MachineData extends Omit<Machine, 'id'> {
+  id?: number;
+  stationId?: number;
+}
