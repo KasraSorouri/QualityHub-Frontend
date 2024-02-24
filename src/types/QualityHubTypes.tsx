@@ -171,3 +171,14 @@ export interface WorkShiftData extends Omit<WorkShift, 'id'> {
   id?: number;
 }
 
+export interface ClassCode {
+  id: number;
+  className: string;
+  classCode: string;
+  classDesc: string;
+  active: boolean;
+}
+
+export interface ClassCodeData extends Omit<ClassCode, 'id'> {
+  id?: number;
+}
