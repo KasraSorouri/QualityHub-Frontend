@@ -13,8 +13,8 @@ import {
   Divider,
 } from '@mui/material';
 
-import NokGrps from './NokGrps';
-import NokCodes from './NokCodes';
+import NokGrps from './nokGroup/NokGrps';
+import NokCodes from './nokCode/NokCodes';
 import RcaCodes from './rcaCode/RcaCodes';
 import Machines from './machine/Machines';
 import WorkShifts from './workShift/WorkShifts';

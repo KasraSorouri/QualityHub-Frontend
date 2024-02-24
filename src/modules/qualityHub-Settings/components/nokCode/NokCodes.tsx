@@ -6,12 +6,12 @@ import {
   LinearProgress,
 } from '@mui/material';
 
-import nokCodeServices from '../services/nokCodeServices';
+import nokCodeServices from '../../services/nokCodeServices';
 import NokCodeList from './NokCodeList';
 
-import { useNotificationSet } from '../../../contexts/NotificationContext';
+import { useNotificationSet } from '../../../../contexts/NotificationContext';
 
-import { NokCodeData, NokCode } from '../../../types/QualityHubTypes';
+import { NokCodeData, NokCode } from '../../../../types/QualityHubTypes';
 import NokCodeForm from './NokCodeForm';
 
 const NokCodes = () => {

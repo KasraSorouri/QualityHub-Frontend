@@ -13,11 +13,11 @@ import {
   Divider,
 } from '@mui/material';
 
-import Product from './Products';
-import ProductGrp from './ProductGrps';
-import Station from './Stations';
-import Material from './Materials';
-import RecipeProductChoice from './RecipeProductChoice';
+import Product from './product/Products';
+import ProductGrp from './productGroup/ProductGrps';
+import Station from './station/Stations';
+import Material from './material/Materials';
+import RecipeProductChoice from './recipe/RecipeProductChoice';
 
 const ProductsManagement = () => {
 

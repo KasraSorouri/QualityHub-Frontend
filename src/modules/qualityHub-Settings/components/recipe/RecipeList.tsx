@@ -23,7 +23,7 @@ import { visuallyHidden } from '@mui/utils';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 
-import { Recipe } from '../../../types/QualityHubTypes';
+import { Recipe } from '../../../../types/QualityHubTypes';
 import RecipeBOM from './RecipeBOM';
 import React from 'react';
 

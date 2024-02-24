@@ -6,12 +6,12 @@ import {
   LinearProgress,
 } from '@mui/material';
 
-import nokGrpServices from '../services/nokGrpServices';
+import nokGrpServices from '../../services/nokGrpServices';
 import NokGrpList from './NokGrpList';
 
-import { useNotificationSet } from '../../../contexts/NotificationContext';
+import { useNotificationSet } from '../../../../contexts/NotificationContext';
 
-import { NokGroup, NokGrpData } from '../../../types/QualityHubTypes';
+import { NokGroup, NokGrpData } from '../../../../types/QualityHubTypes';
 import NokGrpForm from './NokGrpForm';
 
 const NokGrps = () => {

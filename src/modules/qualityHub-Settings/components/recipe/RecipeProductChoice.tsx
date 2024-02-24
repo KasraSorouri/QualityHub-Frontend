@@ -12,8 +12,8 @@ import {
   Typography,
 } from '@mui/material';
 
-import { Product } from '../../../types/QualityHubTypes';
-import productServices from '../services/productServices';
+import { Product } from '../../../../types/QualityHubTypes';
+import productServices from '../../services/productServices';
 import Recipes from './Recipes';
 
 const RecipeProductChoice = () => {

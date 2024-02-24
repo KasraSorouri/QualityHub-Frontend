@@ -6,13 +6,13 @@ import {
   LinearProgress,
 } from '@mui/material';
 
-import { useNotificationSet } from '../../../contexts/NotificationContext';
-import stationServices from '../services/stationServices';
+import { useNotificationSet } from '../../../../contexts/NotificationContext';
+import stationServices from '../../services/stationServices';
 
 import StationList from './StationList';
 import StationForm from './StationForm';
 
-import { NewStation, Station } from '../../../types/QualityHubTypes';
+import { NewStation, Station } from '../../../../types/QualityHubTypes';
 
 const Stations = () => {
 

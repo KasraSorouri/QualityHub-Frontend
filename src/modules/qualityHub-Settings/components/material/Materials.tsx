@@ -6,12 +6,12 @@ import {
   LinearProgress,
 } from '@mui/material';
 
-import materialServices from '../services/materialServices';
+import materialServices from '../../services/materialServices';
 import MaterialList from './MaterialList';
 
-import { useNotificationSet } from '../../../contexts/NotificationContext';
+import { useNotificationSet } from '../../../../contexts/NotificationContext';
 
-import { NewMaterial, Material } from '../../../types/QualityHubTypes';
+import { NewMaterial, Material } from '../../../../types/QualityHubTypes';
 import MaterialForm from './MaterialForm';
 
 const Materials = () => {

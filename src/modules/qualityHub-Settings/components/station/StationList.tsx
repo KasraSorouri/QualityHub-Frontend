@@ -21,7 +21,7 @@ import { visuallyHidden } from '@mui/utils';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 
-import { Station } from '../../../types/QualityHubTypes';
+import { Station } from '../../../../types/QualityHubTypes';
 
 interface EnhancedTableHeadProps {
   order: 'asc' | 'desc';

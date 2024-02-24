@@ -6,12 +6,12 @@ import {
   LinearProgress,
 } from '@mui/material';
 
-import recipeServices from '../services/recipeServices';
+import recipeServices from '../../services/recipeServices';
 import RecipeList from './RecipeList';
 
-import { useNotificationSet } from '../../../contexts/NotificationContext';
+import { useNotificationSet } from '../../../../contexts/NotificationContext';
 
-import { Product, Recipe, RecipeData } from '../../../types/QualityHubTypes';
+import { Product, Recipe, RecipeData } from '../../../../types/QualityHubTypes';
 import RecipeForm from './RecipeForm';
 
 type RecipeProps = {

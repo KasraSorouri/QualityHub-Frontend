@@ -16,9 +16,9 @@ import {
   TextFieldVariants,
 } from '@mui/material';
 
-import { NewProduct, ProductGroup, UpdateProductData } from '../../../types/QualityHubTypes';
-import { Product } from '../../../types/QualityHubTypes';
-import productGrpServices from '../services/productGrpServices';
+import { NewProduct, ProductGroup, UpdateProductData } from '../../../../types/QualityHubTypes';
+import { Product } from '../../../../types/QualityHubTypes';
+import productGrpServices from '../../services/productGrpServices';
 import { useQuery } from 'react-query';
 import { JSX } from 'react/jsx-runtime';
 

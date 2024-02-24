@@ -21,30 +21,30 @@ import { visuallyHidden } from '@mui/utils';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 
-import { Material } from '../../../types/QualityHubTypes';
+import { NokGroup } from '../../../../types/QualityHubTypes';
 
 interface EnhancedTableHeadProps {
   order: 'asc' | 'desc';
-  orderBy: keyof Material;
+  orderBy: keyof NokGroup;
   onRequestSort: (_event: React.MouseEvent<unknown>, property: string) => void;
 }
 
-type MaterialListProps = {
-  materials: Material[];
-  displayMaterialForm: ({ show, formType }:{show: boolean, formType: 'ADD' | 'EDIT'}) => void;
-  selectMaterial: (MaterialData: Material | null) => void;
+type NokGrpListProps = {
+  nokGrps: NokGroup[];
+  displayNokGrpForm: ({ show, formType }:{show: boolean, formType: 'ADD' | 'EDIT'}) => void;
+  selectNokGrp: (NokGrpData: NokGroup | null) => void;
 }
 
 
-const MaterialList = ({ materials, displayMaterialForm, selectMaterial } : MaterialListProps) => {
+const NokGrpList = ({ nokGrps, displayNokGrpForm, selectNokGrp } : NokGrpListProps) => {
 
 
   // Sort Items
-  const [ sort, setSort ] = useState<{ sortItem: keyof Material; sortOrder: number }>({ sortItem: 'itemShortName' , sortOrder: 1 });
+  const [ sort, setSort ] = useState<{ sortItem: keyof NokGroup; sortOrder: number }>({ sortItem: 'nokGrpName' , sortOrder: 1 });
   const order : 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
-  const orderBy : keyof Material = sort.sortItem;
+  const orderBy : keyof NokGroup = sort.sortItem;
 
-  const sortedMaterials: Material[]  = materials.sort((a, b) => {
+  const sortedNokGrps: NokGroup[]  = nokGrps.sort((a, b) => {
     const aValue = a[orderBy];
     const bValue = b[orderBy];
 
@@ -61,12 +61,9 @@ const MaterialList = ({ materials, displayMaterialForm, selectMaterial } : Mater
 
 
   const columnHeader = [
-    { id: 'itemShortName', lable: 'Short Name', minWidth: 10, borderRight: true },
-    { id: 'itemLongName', lable: 'Long Name', minWidth: 10, borderRight: true },
-    { id: 'itemCode', lable: 'Item Code', minWidth: 10, borderRight: true },
-    { id: 'traceable', lable: 'Traceable', minWidth: 10,  width: '5%',borderRight: true },
-    { id: 'price', lable: 'Price', minWidth: 10, width: '10%', borderRight: true },
-    { id: 'unit', lable: 'Unit', minWidth: 10, width: '5%', borderRight: true },
+    { id: 'groupName', lable: 'Group Name', minWidth: 10, borderRight: true },
+    { id: 'groupCode', lable: 'Group Code', minWidth: 10, borderRight: true },
+    { id: 'desc', lable: 'Description', minWidth: 10, borderRight: true },
     { id: 'active', lable: 'Active', width: 3 },
   ];
 
@@ -109,30 +106,30 @@ const MaterialList = ({ materials, displayMaterialForm, selectMaterial } : Mater
     );
   };
 
-  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Material) => {
+  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof NokGroup) => {
     const isAsc = orderBy === property && order ==='asc';
     setSort({ sortItem: property, sortOrder:isAsc ? -1 : 1 });
   };
 
-  const showEditMaterial = (id : number | string) => {
-    const materialData: Material = materials.filter((u) => u.id === id )[0];
-    selectMaterial(materialData);
-    displayMaterialForm({ show: true, formType: 'EDIT' });
+  const showEditNokGrp = (id : number | string) => {
+    const nokGrpGrpData: NokGroup = nokGrps.filter((u) => u.id === id )[0];
+    selectNokGrp(nokGrpGrpData);
+    displayNokGrpForm({ show: true, formType: 'EDIT' });
   };
 
-  const addNewMaterial = () => {
-    selectMaterial(null);
-    displayMaterialForm({ show: true, formType: 'ADD' });
+  const addNewNokGrp = () => {
+    selectNokGrp(null);
+    displayNokGrpForm({ show: true, formType: 'ADD' });
   };
 
 
   return(
     <Paper>
       <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'} >
-        <Typography margin={1} >MATERIAL LIST</Typography>
-        <Typography margin={1} >{materials.length} Materials</Typography>
+        <Typography margin={1} > NOK GROUP LIST</Typography>
+        <Typography margin={1} >{nokGrps.length} groups</Typography>
         <div style={{ margin: '10px' }} >
-          <IconButton onClick={addNewMaterial} style={{ height: '16px', width: '16px', color:'white' }}>
+          <IconButton onClick={addNewNokGrp} style={{ height: '16px', width: '16px', color:'white' }}>
             <AddIcon />
           </IconButton>
         </div>
@@ -142,34 +139,25 @@ const MaterialList = ({ materials, displayMaterialForm, selectMaterial } : Mater
           <EnhancedTableHead
             order={order}
             orderBy={orderBy}
-            onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof Material)}
+            onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof NokGroup)}
           />
           <TableBody>
-            { sortedMaterials.map((material) => {
+            { sortedNokGrps.map((nokGrp) => {
               return(
-                <TableRow hover role='checkbox' tabIndex={-1} key={material.id} >
+                <TableRow hover role='checkbox' tabIndex={-1} key={nokGrp.id} >
                   <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {material.itemShortName}
-                  </TableCell>
-                  <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {material.itemLongName}
+                    {nokGrp.nokGrpName}
                   </TableCell>
                   <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {material.itemCode}
+                    {nokGrp.nokGrpCode}
                   </TableCell>
-                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
-                    {material.traceable ? 'YES' : 'NO'}
-                  </TableCell>
-                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
-                    {material.price}
-                  </TableCell>
-                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
-                    {material.unit}
+                  <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
+                    {nokGrp.nokGrpDesc}
                   </TableCell>
                   <TableCell align='center' >
                     <Box justifyContent={'space-between'} >
-                      <Checkbox checked={material.active} style={{ height: '16px', width: '16px' }}/>
-                      <IconButton onClick={() => showEditMaterial(material.id)}
+                      <Checkbox checked={nokGrp.active} style={{ height: '16px', width: '16px' }}/>
+                      <IconButton onClick={() => showEditNokGrp(nokGrp.id)}
                         title='Edit'
                         style={{ height: '12px', width: '12px', marginLeft: 25 , color:'#1976d2d9' }}>
                         <EditIcon />
@@ -186,4 +174,4 @@ const MaterialList = ({ materials, displayMaterialForm, selectMaterial } : Mater
   );
 };
 
-export default MaterialList;
+export default NokGrpList;

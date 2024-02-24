@@ -31,10 +31,10 @@ import EditIcon from '@mui/icons-material/Edit';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
-import { useNotificationSet } from '../../../contexts/NotificationContext';
-import materialServices from '../services/materialServices';
+import { useNotificationSet } from '../../../../contexts/NotificationContext';
+import materialServices from '../../services/materialServices';
 
-import { ConsumingMaterial, ConsumingMaterialData, Material, Reusable } from '../../../types/QualityHubTypes';
+import { ConsumingMaterial, ConsumingMaterialData, Material, Reusable } from '../../../../types/QualityHubTypes';
 
 interface EnhancedTableHeadProps {
   order: 'asc' | 'desc';

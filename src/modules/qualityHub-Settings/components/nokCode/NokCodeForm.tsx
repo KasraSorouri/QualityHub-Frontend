@@ -16,9 +16,9 @@ import {
   TextFieldVariants,
 } from '@mui/material';
 
-import { NokCode, NokCodeData, NokGroup } from '../../../types/QualityHubTypes';
+import { NokCode, NokCodeData, NokGroup } from '../../../../types/QualityHubTypes';
 import { useQuery } from 'react-query';
-import nokGrpServices from '../services/nokGrpServices';
+import nokGrpServices from '../../services/nokGrpServices';
 
 interface FormData {
   id: number | string;

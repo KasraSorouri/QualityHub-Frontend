@@ -6,12 +6,12 @@ import {
   LinearProgress,
 } from '@mui/material';
 
-import productGrpServices from '../services/productGrpServices';
+import productGrpServices from '../../services/productGrpServices';
 import ProductGrpList from './ProductGrpList';
 
-import { useNotificationSet } from '../../../contexts/NotificationContext';
+import { useNotificationSet } from '../../../../contexts/NotificationContext';
 
-import { ProductGroup, NewProductGrp } from '../../../types/QualityHubTypes';
+import { ProductGroup, NewProductGrp } from '../../../../types/QualityHubTypes';
 import ProductGrpForm from './ProductGrpForm';
 
 const ProductGrps = () => {

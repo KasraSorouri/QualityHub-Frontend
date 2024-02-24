@@ -17,7 +17,7 @@ import {
   Stack,
 } from '@mui/material';
 
-import { Material, NewMaterial, Unit } from '../../../types/QualityHubTypes';
+import { Material, NewMaterial, Unit } from '../../../../types/QualityHubTypes';
 
 interface FormData {
   id: string | number;

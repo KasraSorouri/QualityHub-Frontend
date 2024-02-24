@@ -11,47 +11,47 @@ import {
   Grid,
 } from '@mui/material';
 
-import { Station, NewStation } from '../../../types/QualityHubTypes';
+import { ProductGroup, NewProductGrp } from '../../../../types/QualityHubTypes';
 
 interface FormData {
   id: number | string;
-  stationName: string;
-  stationCode:  string;
+  groupName: string;
+  groupCode:  string;
   active: boolean;
 }
 
-type StationFormProps = {
-  stationData: Station | null;
+type ProductGrpFormProps = {
+  productGrpData: ProductGroup | null;
   formType: 'ADD' | 'EDIT';
-  submitHandler: (station: NewStation | NewStation) => void;
-  displayStationForm: ({ show, formType } : { show: boolean, formType: 'ADD' | 'EDIT' }) => void;
+  submitHandler: (productGrp: NewProductGrp | NewProductGrp) => void;
+  displayProductGrpForm: ({ show, formType } : { show: boolean, formType: 'ADD' | 'EDIT' }) => void;
 }
 
 
 
-const StationForm = ({ stationData, formType, submitHandler, displayStationForm } : StationFormProps) => {
+const ProductGrpForm = ({ productGrpData, formType, submitHandler, displayProductGrpForm } : ProductGrpFormProps) => {
 
-  const formTitle = formType === 'ADD' ? 'Add New Station' : 'Edit Station';
-  const submitTitle = formType === 'ADD' ? 'Add Station' : 'Update Station';
+  const formTitle = formType === 'ADD' ? 'Add New ProductGrp' : 'Edit ProductGrp';
+  const submitTitle = formType === 'ADD' ? 'Add ProductGrp' : 'Update ProductGrp';
 
   const initialFormData : FormData = {
-    id: stationData ? stationData.id : '',
-    stationName: stationData ? stationData.stationName : '',
-    stationCode:  stationData ? stationData.stationCode : '',
-    active: stationData ? stationData.active : false,
+    id: productGrpData ? productGrpData.id : '',
+    groupName: productGrpData ? productGrpData.groupName : '',
+    groupCode:  productGrpData ? productGrpData.groupCode : '',
+    active: productGrpData ? productGrpData.active : false,
   };
 
   const [ formValues, setFormValues ] = useState<FormData>(initialFormData);
 
   useEffect(() => {
     const formData : FormData = {
-      id: stationData ? stationData.id : '',
-      stationName: stationData ? stationData.stationName : '',
-      stationCode:  stationData ? stationData.stationCode : '',
-      active: stationData ? stationData.active : false,
+      id: productGrpData ? productGrpData.id : '',
+      groupName: productGrpData ? productGrpData.groupName : '',
+      groupCode:  productGrpData ? productGrpData.groupCode : '',
+      active: productGrpData ? productGrpData.active : false,
     };
     setFormValues(formData);
-  },[formType, stationData]);
+  },[formType, productGrpData]);
 
   const handleChange = (event: {target: { name: string, value: unknown, checked: boolean}}) => {
     const { name, value, checked } = event.target;
@@ -65,13 +65,13 @@ const StationForm = ({ stationData, formType, submitHandler, displayStationForm 
 
   const handleSubmit = (event: { preventDefault: () => void; }) => {
     event.preventDefault();
-    const newStation: NewStation  = {
+    const newProductGrp: NewProductGrp  = {
       id: (typeof formValues.id === 'number') ? formValues.id : 0,
-      stationName: formValues.stationName,
-      stationCode: formValues.stationCode,
+      groupName: formValues.groupName,
+      groupCode: formValues.groupCode,
       active: formValues.active,
     };
-    submitHandler(newStation);
+    submitHandler(newProductGrp);
   };
 
   return(
@@ -80,7 +80,7 @@ const StationForm = ({ stationData, formType, submitHandler, displayStationForm 
         bgcolor={'#1976d270'}
       >
         <Typography variant='h6' marginLeft={2}  >{formTitle}</Typography>
-        <Button variant='contained'  size='small'  onClick={() => displayStationForm({ show: false, formType: 'ADD' })}>
+        <Button variant='contained'  size='small'  onClick={() => displayProductGrpForm({ show: false, formType: 'ADD' })}>
           close
         </Button>
       </Box>
@@ -88,10 +88,10 @@ const StationForm = ({ stationData, formType, submitHandler, displayStationForm 
         <Box display='flex'  margin={0} >
           <Grid container flexDirection={'row'} >
             <TextField
-              label='Station Name'
-              name='stationName'
+              label='Group Name'
+              name='groupName'
               sx={{ marginLeft: 2 }}
-              value={formValues.stationName}
+              value={formValues.groupName}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
               margin='dense'
               variant='outlined'
@@ -99,10 +99,10 @@ const StationForm = ({ stationData, formType, submitHandler, displayStationForm 
               required
             />
             <TextField
-              label='Station Code'
-              name='stationCode'
+              label='Group Code'
+              name='groupCode'
               sx={{ marginLeft: 2 }}
-              value={formValues.stationCode}
+              value={formValues.groupCode}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
               margin='dense'
               variant='outlined'
@@ -133,4 +133,4 @@ const StationForm = ({ stationData, formType, submitHandler, displayStationForm 
   );
 };
 
-export default StationForm;
+export default ProductGrpForm;

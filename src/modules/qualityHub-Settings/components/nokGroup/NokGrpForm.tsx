@@ -11,7 +11,7 @@ import {
   Grid,
 } from '@mui/material';
 
-import { NokGroup, NokGrpData } from '../../../types/QualityHubTypes';
+import { NokGroup, NokGrpData } from '../../../../types/QualityHubTypes';
 
 interface FormData {
   id: number | string;

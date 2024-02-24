@@ -21,30 +21,31 @@ import { visuallyHidden } from '@mui/utils';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 
-import { NokGroup } from '../../../types/QualityHubTypes';
+import { NokCode } from '../../../../types/QualityHubTypes';
 
 interface EnhancedTableHeadProps {
   order: 'asc' | 'desc';
-  orderBy: keyof NokGroup;
+  orderBy: keyof NokCode;
   onRequestSort: (_event: React.MouseEvent<unknown>, property: string) => void;
 }
 
-type NokGrpListProps = {
-  nokGrps: NokGroup[];
-  displayNokGrpForm: ({ show, formType }:{show: boolean, formType: 'ADD' | 'EDIT'}) => void;
-  selectNokGrp: (NokGrpData: NokGroup | null) => void;
+type NokCodeListProps = {
+  nokCodes: NokCode[];
+  displayNokCodeForm: ({ show, formType }:{show: boolean, formType: 'ADD' | 'EDIT'}) => void;
+  selectNokCode: (NokCodeData: NokCode | null) => void;
 }
 
 
-const NokGrpList = ({ nokGrps, displayNokGrpForm, selectNokGrp } : NokGrpListProps) => {
+const NokCodeList = ({ nokCodes, displayNokCodeForm, selectNokCode } : NokCodeListProps) => {
 
+  console.log(' Nok code list * nok codes ->', nokCodes);
 
   // Sort Items
-  const [ sort, setSort ] = useState<{ sortItem: keyof NokGroup; sortOrder: number }>({ sortItem: 'nokGrpName' , sortOrder: 1 });
+  const [ sort, setSort ] = useState<{ sortItem: keyof NokCode; sortOrder: number }>({ sortItem: 'nokCode' , sortOrder: 1 });
   const order : 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
-  const orderBy : keyof NokGroup = sort.sortItem;
+  const orderBy : keyof NokCode = sort.sortItem;
 
-  const sortedNokGrps: NokGroup[]  = nokGrps.sort((a, b) => {
+  const sortedNokCodes: NokCode[]  = nokCodes.sort((a, b) => {
     const aValue = a[orderBy];
     const bValue = b[orderBy];
 
@@ -61,9 +62,9 @@ const NokGrpList = ({ nokGrps, displayNokGrpForm, selectNokGrp } : NokGrpListPro
 
 
   const columnHeader = [
-    { id: 'groupName', lable: 'Group Name', minWidth: 10, borderRight: true },
-    { id: 'groupCode', lable: 'Group Code', minWidth: 10, borderRight: true },
-    { id: 'desc', lable: 'Description', minWidth: 10, borderRight: true },
+    { id: 'nokCode', lable: 'NOK Code', minWidth: 10, borderRight: true },
+    { id: 'nokDesc', lable: 'NOK Description', minWidth: 10, borderRight: true },
+    { id: 'nokGrp', lable: 'NOK Group', minWidth: 10, borderRight: true },
     { id: 'active', lable: 'Active', width: 3 },
   ];
 
@@ -106,30 +107,30 @@ const NokGrpList = ({ nokGrps, displayNokGrpForm, selectNokGrp } : NokGrpListPro
     );
   };
 
-  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof NokGroup) => {
+  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof NokCode) => {
     const isAsc = orderBy === property && order ==='asc';
     setSort({ sortItem: property, sortOrder:isAsc ? -1 : 1 });
   };
 
-  const showEditNokGrp = (id : number | string) => {
-    const nokGrpGrpData: NokGroup = nokGrps.filter((u) => u.id === id )[0];
-    selectNokGrp(nokGrpGrpData);
-    displayNokGrpForm({ show: true, formType: 'EDIT' });
+  const showEditNokCode = (id : number | string) => {
+    const nokCodeGrpData: NokCode = nokCodes.filter((u) => u.id === id )[0];
+    selectNokCode(nokCodeGrpData);
+    displayNokCodeForm({ show: true, formType: 'EDIT' });
   };
 
-  const addNewNokGrp = () => {
-    selectNokGrp(null);
-    displayNokGrpForm({ show: true, formType: 'ADD' });
+  const addNewNokCode = () => {
+    selectNokCode(null);
+    displayNokCodeForm({ show: true, formType: 'ADD' });
   };
 
 
   return(
     <Paper>
       <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'} >
-        <Typography margin={1} > NOK GROUP LIST</Typography>
-        <Typography margin={1} >{nokGrps.length} groups</Typography>
+        <Typography margin={1} > NOK CODE LIST</Typography>
+        <Typography margin={1} >{nokCodes.length} codes</Typography>
         <div style={{ margin: '10px' }} >
-          <IconButton onClick={addNewNokGrp} style={{ height: '16px', width: '16px', color:'white' }}>
+          <IconButton onClick={addNewNokCode} style={{ height: '16px', width: '16px', color:'white' }}>
             <AddIcon />
           </IconButton>
         </div>
@@ -139,25 +140,25 @@ const NokGrpList = ({ nokGrps, displayNokGrpForm, selectNokGrp } : NokGrpListPro
           <EnhancedTableHead
             order={order}
             orderBy={orderBy}
-            onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof NokGroup)}
+            onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof NokCode)}
           />
           <TableBody>
-            { sortedNokGrps.map((nokGrp) => {
+            { sortedNokCodes.map((nokCode) => {
               return(
-                <TableRow hover role='checkbox' tabIndex={-1} key={nokGrp.id} >
+                <TableRow hover role='checkbox' tabIndex={-1} key={nokCode.id} >
                   <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {nokGrp.nokGrpName}
+                    {nokCode.nokCode}
                   </TableCell>
                   <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {nokGrp.nokGrpCode}
+                    {nokCode.nokDesc}
                   </TableCell>
                   <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {nokGrp.nokGrpDesc}
+                    {nokCode.nokGrp.nokGrpCode}, {nokCode.nokGrp.nokGrpName}
                   </TableCell>
                   <TableCell align='center' >
                     <Box justifyContent={'space-between'} >
-                      <Checkbox checked={nokGrp.active} style={{ height: '16px', width: '16px' }}/>
-                      <IconButton onClick={() => showEditNokGrp(nokGrp.id)}
+                      <Checkbox checked={nokCode.active} style={{ height: '16px', width: '16px' }}/>
+                      <IconButton onClick={() => showEditNokCode(nokCode.id)}
                         title='Edit'
                         style={{ height: '12px', width: '12px', marginLeft: 25 , color:'#1976d2d9' }}>
                         <EditIcon />
@@ -174,4 +175,4 @@ const NokGrpList = ({ nokGrps, displayNokGrpForm, selectNokGrp } : NokGrpListPro
   );
 };
 
-export default NokGrpList;
+export default NokCodeList;

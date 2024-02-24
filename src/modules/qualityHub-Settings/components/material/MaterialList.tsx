@@ -21,30 +21,30 @@ import { visuallyHidden } from '@mui/utils';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 
-import { Product } from '../../../types/QualityHubTypes';
+import { Material } from '../../../../types/QualityHubTypes';
 
 interface EnhancedTableHeadProps {
   order: 'asc' | 'desc';
-  orderBy: keyof Product;
+  orderBy: keyof Material;
   onRequestSort: (_event: React.MouseEvent<unknown>, property: string) => void;
 }
 
-type ProductListProps = {
-  products: Product[];
-  displayProductForm: ({ show, formType }:{show: boolean, formType: 'ADD' | 'EDIT'}) => void;
-  selectProduct: (ProductData: Product | null) => void;
+type MaterialListProps = {
+  materials: Material[];
+  displayMaterialForm: ({ show, formType }:{show: boolean, formType: 'ADD' | 'EDIT'}) => void;
+  selectMaterial: (MaterialData: Material | null) => void;
 }
 
 
-const ProductList = ({ products, displayProductForm, selectProduct } : ProductListProps) => {
+const MaterialList = ({ materials, displayMaterialForm, selectMaterial } : MaterialListProps) => {
 
 
   // Sort Items
-  const [ sort, setSort ] = useState<{ sortItem: keyof Product; sortOrder: number }>({ sortItem: 'productName' , sortOrder: 1 });
+  const [ sort, setSort ] = useState<{ sortItem: keyof Material; sortOrder: number }>({ sortItem: 'itemShortName' , sortOrder: 1 });
   const order : 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
-  const orderBy : keyof Product = sort.sortItem;
+  const orderBy : keyof Material = sort.sortItem;
 
-  const sortedProducts: Product[]  = products.sort((a, b) => {
+  const sortedMaterials: Material[]  = materials.sort((a, b) => {
     const aValue = a[orderBy];
     const bValue = b[orderBy];
 
@@ -61,9 +61,12 @@ const ProductList = ({ products, displayProductForm, selectProduct } : ProductLi
 
 
   const columnHeader = [
-    { id: 'productName', lable: 'Product Name', minWidth: 10, borderRight: true },
-    { id: 'productCode', lable: 'product Code', minWidth: 10, borderRight: true },
-    { id: 'productGrp', lable: 'product Group', minWidth: 10, borderRight: true },
+    { id: 'itemShortName', lable: 'Short Name', minWidth: 10, borderRight: true },
+    { id: 'itemLongName', lable: 'Long Name', minWidth: 10, borderRight: true },
+    { id: 'itemCode', lable: 'Item Code', minWidth: 10, borderRight: true },
+    { id: 'traceable', lable: 'Traceable', minWidth: 10,  width: '5%',borderRight: true },
+    { id: 'price', lable: 'Price', minWidth: 10, width: '10%', borderRight: true },
+    { id: 'unit', lable: 'Unit', minWidth: 10, width: '5%', borderRight: true },
     { id: 'active', lable: 'Active', width: 3 },
   ];
 
@@ -106,30 +109,30 @@ const ProductList = ({ products, displayProductForm, selectProduct } : ProductLi
     );
   };
 
-  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Product) => {
+  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Material) => {
     const isAsc = orderBy === property && order ==='asc';
     setSort({ sortItem: property, sortOrder:isAsc ? -1 : 1 });
   };
 
-  const showEditProduct = (id : number | string) => {
-    const productData: Product = products.filter((u) => u.id === id )[0];
-    selectProduct(productData);
-    displayProductForm({ show: true, formType: 'EDIT' });
+  const showEditMaterial = (id : number | string) => {
+    const materialData: Material = materials.filter((u) => u.id === id )[0];
+    selectMaterial(materialData);
+    displayMaterialForm({ show: true, formType: 'EDIT' });
   };
 
-  const addNewProduct = () => {
-    selectProduct(null);
-    displayProductForm({ show: true, formType: 'ADD' });
+  const addNewMaterial = () => {
+    selectMaterial(null);
+    displayMaterialForm({ show: true, formType: 'ADD' });
   };
 
 
   return(
     <Paper>
       <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'} >
-        <Typography margin={1} >PRODUCT LIST</Typography>
-        <Typography margin={1} >{products.length} Products</Typography>
+        <Typography margin={1} >MATERIAL LIST</Typography>
+        <Typography margin={1} >{materials.length} Materials</Typography>
         <div style={{ margin: '10px' }} >
-          <IconButton onClick={addNewProduct} style={{ height: '16px', width: '16px', color:'white' }}>
+          <IconButton onClick={addNewMaterial} style={{ height: '16px', width: '16px', color:'white' }}>
             <AddIcon />
           </IconButton>
         </div>
@@ -139,25 +142,34 @@ const ProductList = ({ products, displayProductForm, selectProduct } : ProductLi
           <EnhancedTableHead
             order={order}
             orderBy={orderBy}
-            onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof Product)}
+            onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof Material)}
           />
           <TableBody>
-            { sortedProducts.map((product) => {
+            { sortedMaterials.map((material) => {
               return(
-                <TableRow hover role='checkbox' tabIndex={-1} key={product.id} >
+                <TableRow hover role='checkbox' tabIndex={-1} key={material.id} >
                   <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {product.productName}
+                    {material.itemShortName}
                   </TableCell>
                   <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {product.productCode}
+                    {material.itemLongName}
                   </TableCell>
                   <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {product.productGrp.groupName}
+                    {material.itemCode}
+                  </TableCell>
+                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
+                    {material.traceable ? 'YES' : 'NO'}
+                  </TableCell>
+                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
+                    {material.price}
+                  </TableCell>
+                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
+                    {material.unit}
                   </TableCell>
                   <TableCell align='center' >
                     <Box justifyContent={'space-between'} >
-                      <Checkbox checked={product.active} style={{ height: '16px', width: '16px' }}/>
-                      <IconButton onClick={() => showEditProduct(product.id)}
+                      <Checkbox checked={material.active} style={{ height: '16px', width: '16px' }}/>
+                      <IconButton onClick={() => showEditMaterial(material.id)}
                         title='Edit'
                         style={{ height: '12px', width: '12px', marginLeft: 25 , color:'#1976d2d9' }}>
                         <EditIcon />
@@ -174,4 +186,4 @@ const ProductList = ({ products, displayProductForm, selectProduct } : ProductLi
   );
 };
 
-export default ProductList;
+export default MaterialList;

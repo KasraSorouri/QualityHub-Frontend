@@ -21,31 +21,30 @@ import { visuallyHidden } from '@mui/utils';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 
-import { NokCode } from '../../../types/QualityHubTypes';
+import { Product } from '../../../../types/QualityHubTypes';
 
 interface EnhancedTableHeadProps {
   order: 'asc' | 'desc';
-  orderBy: keyof NokCode;
+  orderBy: keyof Product;
   onRequestSort: (_event: React.MouseEvent<unknown>, property: string) => void;
 }
 
-type NokCodeListProps = {
-  nokCodes: NokCode[];
-  displayNokCodeForm: ({ show, formType }:{show: boolean, formType: 'ADD' | 'EDIT'}) => void;
-  selectNokCode: (NokCodeData: NokCode | null) => void;
+type ProductListProps = {
+  products: Product[];
+  displayProductForm: ({ show, formType }:{show: boolean, formType: 'ADD' | 'EDIT'}) => void;
+  selectProduct: (ProductData: Product | null) => void;
 }
 
 
-const NokCodeList = ({ nokCodes, displayNokCodeForm, selectNokCode } : NokCodeListProps) => {
+const ProductList = ({ products, displayProductForm, selectProduct } : ProductListProps) => {
 
-  console.log(' Nok code list * nok codes ->', nokCodes);
 
   // Sort Items
-  const [ sort, setSort ] = useState<{ sortItem: keyof NokCode; sortOrder: number }>({ sortItem: 'nokCode' , sortOrder: 1 });
+  const [ sort, setSort ] = useState<{ sortItem: keyof Product; sortOrder: number }>({ sortItem: 'productName' , sortOrder: 1 });
   const order : 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
-  const orderBy : keyof NokCode = sort.sortItem;
+  const orderBy : keyof Product = sort.sortItem;
 
-  const sortedNokCodes: NokCode[]  = nokCodes.sort((a, b) => {
+  const sortedProducts: Product[]  = products.sort((a, b) => {
     const aValue = a[orderBy];
     const bValue = b[orderBy];
 
@@ -62,9 +61,9 @@ const NokCodeList = ({ nokCodes, displayNokCodeForm, selectNokCode } : NokCodeLi
 
 
   const columnHeader = [
-    { id: 'nokCode', lable: 'NOK Code', minWidth: 10, borderRight: true },
-    { id: 'nokDesc', lable: 'NOK Description', minWidth: 10, borderRight: true },
-    { id: 'nokGrp', lable: 'NOK Group', minWidth: 10, borderRight: true },
+    { id: 'productName', lable: 'Product Name', minWidth: 10, borderRight: true },
+    { id: 'productCode', lable: 'product Code', minWidth: 10, borderRight: true },
+    { id: 'productGrp', lable: 'product Group', minWidth: 10, borderRight: true },
     { id: 'active', lable: 'Active', width: 3 },
   ];
 
@@ -107,30 +106,30 @@ const NokCodeList = ({ nokCodes, displayNokCodeForm, selectNokCode } : NokCodeLi
     );
   };
 
-  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof NokCode) => {
+  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Product) => {
     const isAsc = orderBy === property && order ==='asc';
     setSort({ sortItem: property, sortOrder:isAsc ? -1 : 1 });
   };
 
-  const showEditNokCode = (id : number | string) => {
-    const nokCodeGrpData: NokCode = nokCodes.filter((u) => u.id === id )[0];
-    selectNokCode(nokCodeGrpData);
-    displayNokCodeForm({ show: true, formType: 'EDIT' });
+  const showEditProduct = (id : number | string) => {
+    const productData: Product = products.filter((u) => u.id === id )[0];
+    selectProduct(productData);
+    displayProductForm({ show: true, formType: 'EDIT' });
   };
 
-  const addNewNokCode = () => {
-    selectNokCode(null);
-    displayNokCodeForm({ show: true, formType: 'ADD' });
+  const addNewProduct = () => {
+    selectProduct(null);
+    displayProductForm({ show: true, formType: 'ADD' });
   };
 
 
   return(
     <Paper>
       <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'} >
-        <Typography margin={1} > NOK CODE LIST</Typography>
-        <Typography margin={1} >{nokCodes.length} codes</Typography>
+        <Typography margin={1} >PRODUCT LIST</Typography>
+        <Typography margin={1} >{products.length} Products</Typography>
         <div style={{ margin: '10px' }} >
-          <IconButton onClick={addNewNokCode} style={{ height: '16px', width: '16px', color:'white' }}>
+          <IconButton onClick={addNewProduct} style={{ height: '16px', width: '16px', color:'white' }}>
             <AddIcon />
           </IconButton>
         </div>
@@ -140,25 +139,25 @@ const NokCodeList = ({ nokCodes, displayNokCodeForm, selectNokCode } : NokCodeLi
           <EnhancedTableHead
             order={order}
             orderBy={orderBy}
-            onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof NokCode)}
+            onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof Product)}
           />
           <TableBody>
-            { sortedNokCodes.map((nokCode) => {
+            { sortedProducts.map((product) => {
               return(
-                <TableRow hover role='checkbox' tabIndex={-1} key={nokCode.id} >
+                <TableRow hover role='checkbox' tabIndex={-1} key={product.id} >
                   <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {nokCode.nokCode}
+                    {product.productName}
                   </TableCell>
                   <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {nokCode.nokDesc}
+                    {product.productCode}
                   </TableCell>
                   <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                    {nokCode.nokGrp.nokGrpCode}, {nokCode.nokGrp.nokGrpName}
+                    {product.productGrp.groupName}
                   </TableCell>
                   <TableCell align='center' >
                     <Box justifyContent={'space-between'} >
-                      <Checkbox checked={nokCode.active} style={{ height: '16px', width: '16px' }}/>
-                      <IconButton onClick={() => showEditNokCode(nokCode.id)}
+                      <Checkbox checked={product.active} style={{ height: '16px', width: '16px' }}/>
+                      <IconButton onClick={() => showEditProduct(product.id)}
                         title='Edit'
                         style={{ height: '12px', width: '12px', marginLeft: 25 , color:'#1976d2d9' }}>
                         <EditIcon />
@@ -175,4 +174,4 @@ const NokCodeList = ({ nokCodes, displayNokCodeForm, selectNokCode } : NokCodeLi
   );
 };
 
-export default NokCodeList;
+export default ProductList;

@@ -19,11 +19,11 @@ import {
   ToggleButtonGroup,
 } from '@mui/material';
 
-import stationServices from '../services/stationServices';
+import stationServices from '../../services/stationServices';
 
 import RecipeBOM from './RecipeBOM';
 
-import { ConsumingMaterial, ConsumingMaterialData, Recipe, RecipeData, RecipeType, Reusable, Station } from '../../../types/QualityHubTypes';
+import { ConsumingMaterial, ConsumingMaterialData, Recipe, RecipeData, RecipeType, Reusable, Station } from '../../../../types/QualityHubTypes';
 
 
 interface FormData {
