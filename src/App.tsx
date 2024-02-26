@@ -5,13 +5,14 @@ import { useUserSet, useUserValue } from './contexts/userContext';
 
 import Navigation from './modules/public/components/Navigation';
 import SoftwareCompany from './modules/public/components/SoftwareCompany';
-import HomePage from './modules/public/components/HomePage';
 import Notification from './modules/public/components/Notification';
 import SignIn from './modules/usersAndAuthentications/components/Login';
 import UserManagement from './modules/usersAndAuthentications/components/UserManagement';
 import ConfigurationPage from './modules/qualityHub-Settings/components/ConfigurationPage';
 import ProductsManagement from './modules/qualityHub-Settings/components/ProductsManagement';
 import SystemSetting from './modules/qualityHub-Settings/components/SystemSetting';
+import HomePageSubMenu from './modules/public/components/HomePageSubMenu';
+import RegNewNok from './modules/qualityHub-Settings/components/regNok/RegNewNoK';
 
 function App() {
 
@@ -31,12 +32,13 @@ function App() {
         <Navigation signedUser={user} />
         <Notification  />
         <Routes>
-          <Route path='/' element={<HomePage />} />
+          <Route path='/' element={<HomePageSubMenu />} />
           <Route path='/signin' element={<SignIn />} />
           <Route path='/user_management' element={<UserManagement />} />
           <Route path='/quality-setting/' element={<ConfigurationPage signedUser={user} />} />
           <Route path='/quality-setting/product-management' element={<ProductsManagement />} />
           <Route path='/quality-setting/system-setting' element={<SystemSetting />} />
+          <Route path='/nok/register' element={<RegNewNok />} />
 
         </Routes>
       </Router>

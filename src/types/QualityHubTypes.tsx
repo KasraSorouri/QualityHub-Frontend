@@ -182,3 +182,26 @@ export interface ClassCode {
 export interface ClassCodeData extends Omit<ClassCode, 'id'> {
   id?: number;
 }
+
+export interface NokData {
+  id: number;
+  product: Product;
+  productSN: string;
+  initNokCode: NokCode;
+  detectedStation: Station;
+  detectedShift: WorkShift;
+  detectedTime: Date;
+  description: string;
+}
+
+export interface NewNOkData extends Omit<NokData, 'id' | 'product' | 'initNokCode' | 'detectedStation' | 'detectedShift' > {
+  id?: number;
+  productId: number;
+  detectStationId: number;
+  detectShiftId: number;
+  initNokCodeId: number;
+  product?: Product;
+  initNokCode?: NokCode;
+  detectedStation?: Station;
+  detectedShift?: WorkShift;
+}
