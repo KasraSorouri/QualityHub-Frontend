@@ -194,7 +194,7 @@ export interface NokData {
   description: string;
 }
 
-export interface NewNOkData extends Omit<NokData, 'id' | 'product' | 'initNokCode' | 'detectedStation' | 'detectedShift' > {
+export interface NewNokData extends Omit<NokData, 'id' | 'product' | 'initNokCode' | 'detectedStation' | 'detectedShift' > {
   id?: number;
   productId: number;
   detectStationId: number;
@@ -204,4 +204,32 @@ export interface NewNOkData extends Omit<NokData, 'id' | 'product' | 'initNokCod
   initNokCode?: NokCode;
   detectedStation?: Station;
   detectedShift?: WorkShift;
+  nokStatus: NokStatus;
+  productStatus: ProductStatus;
+  removeReport: boolean;
+}
+
+export enum NokStatus {
+  PENDING = 'PENDING',
+  ANALYSED = 'ANALYSED',
+  NEED_INVESTIGATION = 'NEED INVESTIGATION',
+  NOT_FOUND = 'NOT FOUND'
+}
+
+export enum ProductStatus {
+  NOK = 'NOK',
+  REWORKED = 'REWORKED',
+  SCRAPPED = 'SCRAPPED',
+}
+
+export enum MaterialStatus {
+  OK = 'OK',
+  SCRAPPED = 'SCRAPPED',
+  CLAIMABLE = 'CLAIMABLE',
+}
+
+export enum ClaimStatus {
+  PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
+  DENIED = 'DENIED',
 }
