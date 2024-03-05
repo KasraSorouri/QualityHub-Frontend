@@ -9,24 +9,39 @@ import {
   ListItem,
   ListItemText,
   Divider,
+  Stack,
 } from '@mui/material';
 
 import HomePage from './HomePage-Data';
-import NokForm from '../../qualityHub-Settings/components/regNok/NokForm';
+import NokForm from '../../qualityHub-Settings/components/nokManagement/NOK_Reg_Form';
+import NokList from '../../qualityHub-Settings/components/nokManagement/NOK_List';
+import { NokData } from '../../../types/QualityHubTypes';
+import NOK_Analyse_Form from '../../qualityHub-Settings/components/nokManagement/NOK_Analyse_Form';
 
 const HomePageSubMenu = () => {
 
   const navigate = useNavigate();
 
-  type ShowListForm = 'NEW-NOK' | '*' | '**' | '***' | '' | 'NONE'
+  const [ selectedNok, setSelectedNok ] = useState<NokData | null>(null);
+
+
+  type ShowListForm = 'NEW-NOK' | 'NOK-LIST' | 'ANALYSE' | '***' | '' | 'NONE'
 
   const [ showListForm, setShowListForm ] = useState<ShowListForm>('NONE');
 
   return(
-    <Paper sx={{ marginTop: 1, border: 'solid', borderRadius: 2, borderColor: '#1976d270', width: '99.7%', height: '100%' }}>
-      <Grid container display={'flex'} direction={'row'} height={'650px'}>
-        <Grid item p={2}
-          width={'180x'}
+    <Paper elevation={3}
+      sx={{ marginTop: 1,
+        border: 'solid',
+        borderRadius: 2,
+        borderColor: '#1976d270',
+        width: '99.7%',
+        height: '100%',
+        minHeight: '70Vh',
+      }}>
+      <Stack direction={'row'} height={'650px'} width={'100%'} flexDirection={'row'} >
+        <Grid
+          minWidth={'180px'}
           bgcolor={'#E5E7E9'}
           color={'white'}
           flexDirection={'column'}
@@ -36,33 +51,33 @@ const HomePageSubMenu = () => {
               <ListItemText primary='Register New NOK' sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
+            <ListItem onClick={() => setShowListForm('ANALYSE')}>
+              <ListItemText primary='NOK Analyse' sx={{ color: 'black' }} />
+            </ListItem>
+            <Divider />
+            <ListItem onClick={() => setShowListForm('NOK-LIST')}>
+              <ListItemText primary='NOK List' sx={{ color: 'black' }} />
+            </ListItem>
+            <Divider />
+            <ListItem onClick={() => setShowListForm('')}>
+              <ListItemText primary='' sx={{ color: 'black' }} />
+            </ListItem>
+            <Divider />
             <ListItem onClick={() => navigate('/nok/register')}>
-              <ListItemText primary='' sx={{ color: 'black' }} />
-            </ListItem>
-            <Divider />
-            <ListItem onClick={() => setShowListForm('')}>
-              <ListItemText primary='' sx={{ color: 'black' }} />
-            </ListItem>
-            <Divider />
-            <ListItem onClick={() => setShowListForm('')}>
-              <ListItemText primary='' sx={{ color: 'black' }} />
-            </ListItem>
-            <Divider />
-            <ListItem onClick={() => setShowListForm('')}>
               <ListItemText primary='' sx={{ color: 'black' }} />
             </ListItem>
           </List>
         </Grid>
-        <Grid item xs={10} p={2}>
+        <Grid width={'90%'}>
           <Box>
             {showListForm === 'NEW-NOK' && <NokForm formType={'ADD'} /> }
-            {showListForm === '' && <HomePage /> }
-            {showListForm === '' && <HomePage /> }
+            {showListForm === 'NOK-LIST' && <NokList listType='' selectNok={setSelectedNok}/> }
+            {showListForm === 'ANALYSE' && (selectedNok ? <NOK_Analyse_Form nokId={selectedNok.id} formType='ADD'  removeNok={setSelectedNok} /> : <NokList listType='ANALYSE' selectNok={setSelectedNok}/> ) }
             {showListForm === '' && <HomePage /> }
             {showListForm === '' && <HomePage /> }
           </Box>
         </Grid>
-      </Grid>
+      </Stack>
     </Paper>
   );
 };

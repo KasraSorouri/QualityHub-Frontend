@@ -190,8 +190,10 @@ export interface NokData {
   initNokCode: NokCode;
   detectedStation: Station;
   detectedShift: WorkShift;
-  detectedTime: Date;
+  detectTime: Date;
   description: string;
+  nokStatus: NokStatus;
+  productStatus: ProductStatus;
 }
 
 export interface NewNokData extends Omit<NokData, 'id' | 'product' | 'initNokCode' | 'detectedStation' | 'detectedShift' > {
@@ -204,8 +206,6 @@ export interface NewNokData extends Omit<NokData, 'id' | 'product' | 'initNokCod
   initNokCode?: NokCode;
   detectedStation?: Station;
   detectedShift?: WorkShift;
-  nokStatus: NokStatus;
-  productStatus: ProductStatus;
   removeReport: boolean;
 }
 
@@ -232,4 +232,25 @@ export enum ClaimStatus {
   PENDING = 'PENDING',
   ACCEPTED = 'ACCEPTED',
   DENIED = 'DENIED',
+}
+
+export interface NokAnalyseData {
+  id: number;
+  nok: NokData;
+  nokCode: NokCode;
+  causeStation: Station;
+  causeShift: WorkShift;
+  description: string;
+  timeWaste?: number;
+  materialWaste?: number;
+  closed: boolean;
+  closeDate: Date;
+}
+
+export interface NewNokAnalyseData extends Omit<NokAnalyseData, 'id' | 'nokId' | 'nokCodeId' | 'causeStationId' | 'causeShiftId'> {
+  id?: number;
+  nokId: number;
+  nokCodeId: number;
+  causeStationId: number;
+  causeShiftId: number;
 }

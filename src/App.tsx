@@ -12,7 +12,6 @@ import ConfigurationPage from './modules/qualityHub-Settings/components/Configur
 import ProductsManagement from './modules/qualityHub-Settings/components/ProductsManagement';
 import SystemSetting from './modules/qualityHub-Settings/components/SystemSetting';
 import HomePageSubMenu from './modules/public/components/HomePageSubMenu';
-import RegNewNok from './modules/qualityHub-Settings/components/regNok/RegNewNoK';
 
 function App() {
 
@@ -38,8 +37,6 @@ function App() {
           <Route path='/quality-setting/' element={<ConfigurationPage signedUser={user} />} />
           <Route path='/quality-setting/product-management' element={<ProductsManagement />} />
           <Route path='/quality-setting/system-setting' element={<SystemSetting />} />
-          <Route path='/nok/register' element={<RegNewNok />} />
-
         </Routes>
       </Router>
       <footer>

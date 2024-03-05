@@ -10,6 +10,13 @@ const getNokDetect = async() : Promise<NokData[]> => {
   return res.data;
 };
 
+// Get NokDetect by ID
+const getNokDetectById = async( nokId : number) : Promise<NokData> => {
+
+  const res = await axios.get(`${api_url}/quality/nok_detect/${nokId}`);
+  return res.data;
+};
+
 // Get NokDetect by Product
 const getNokDetectByProduct = async( productId : number) : Promise<NokData[]> => {
 
@@ -60,6 +67,7 @@ const editNokDetect = async(nokDetectData : NewNokData) : Promise<NokData | unkn
 
 export default {
   getNokDetect,
+  getNokDetectById,
   getNokDetectByProduct,
   createNokDetect,
   editNokDetect,

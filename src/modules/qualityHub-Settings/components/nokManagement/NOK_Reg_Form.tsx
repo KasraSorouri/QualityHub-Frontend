@@ -1,11 +1,11 @@
 /* eslint-disable indent */
 import {
   Autocomplete,
+  Box,
   Button,
   FilledTextFieldProps,
   Grid,
   OutlinedTextFieldProps,
-  Paper,
   StandardTextFieldProps,
   TextField,
   TextFieldVariants
@@ -44,7 +44,6 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
 
   const submitTitle = formType === 'ADD' ? 'Add NOK' : 'Update NOK';
 
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const initFormValues: FormData = {
     product: nokData?.product ? nokData.product : null,
@@ -52,7 +51,7 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
     initNokCode: nokData?.initNokCode ? nokData.initNokCode : null,
     detectedStation: nokData?.detectedStation ? nokData.detectedStation : null,
     detectedShift: nokData?.detectedShift ? nokData.detectedShift : null,
-    detectedTime: nokData?.detectedTime ? dayjs(nokData.detectedTime) : dayjs(new Date()),
+    detectedTime: nokData?.detectTime ? dayjs(nokData.detectTime) : dayjs(new Date()),
     description: nokData ? nokData.description : '',
   };
 
@@ -60,7 +59,7 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
 
   useEffect(() => {
     setFormValues(initFormValues);
-  },[formType]);
+  },[formType,nokData]);
 
   // Get Production List
   const productResults = useQuery('productions', productServices.getProduct, { refetchOnWindowFocus: false });
@@ -118,14 +117,13 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
           initNokCodeId: formValues.initNokCode.id,
           detectStationId: formValues.detectedStation.id,
           detectShiftId: formValues.detectedShift.id,
-          detectedTime: new Date(formValues.detectedTime.toISOString()),
+          detectTime: new Date(formValues.detectedTime.toISOString()),
           description: formValues.description,
           nokStatus: NokStatus.PENDING,
           productStatus: ProductStatus.NOK,
           removeReport: false,
       };
 
-    console.log(' *** NOK registeration * Submit form * newNokData -> ',newNokData);
     const result = await nokDetectServices.createNokDetect(newNokData);
     console.log(' *** NOK registeration * Submit form * result -> ', result);
 
@@ -136,21 +134,15 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
   };
 
   return (
-    <Paper elevation={5} sx={{ borderRadius: 1,
-      backgroundColor: '#E5E7E9 ',
-      width: '100%',
-      height: '100%',
-      minHeight: '70Vh',
-      padding: 2,
-      margin: 0,
-    }}>
+      <Box>
       <form onSubmit={handleSubmit} >
         <Grid container direction={'column'} sx={{ background: '#9FEAF7' }}>
-          <Grid container width={'100%'} flexDirection={'row'} >
+          <Grid container width={'100%'} flexDirection={'row'}  marginTop={1} >
             <Autocomplete
               id='product'
               sx={{ marginLeft: 2, marginTop: 1, width: '20%', minWidth: '180px' }}
               size='small'
+              disabled={formType === 'VIEW'}
               aria-required
               options={productList}
               isOptionEqualToValue={
@@ -173,6 +165,7 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
               id="productSN"
               name="productSN"
               label="Product SN"
+              disabled={formType === 'VIEW'}
               sx={{ marginLeft: 2, marginTop: 1, width: '20%', minWidth: '180px' }}
               value={formValues.productSN}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
@@ -183,6 +176,7 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
                 <DateTimePicker
                   name='detectedTime'
                   label='Detect Time'
+                  disabled={formType === 'VIEW'}
                   viewRenderers={{
                     seconds: null
                   }}
@@ -198,9 +192,10 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
           <Grid container width={'100%'} flexDirection={'row'} >
             <Autocomplete
               id='detectedStation'
-              sx={{ marginLeft: 2, marginTop: 1, width: '15%', minWidth: '130px' }}
+              sx={{ marginLeft: 2, marginTop: 1, width: '20%', minWidth: '200px' }}
               size='small'
               aria-required
+              disabled={formType === 'VIEW'}
               options={stationList}
               isOptionEqualToValue={
                 (option: Station, value: Station) => option.stationName === value.stationName
@@ -220,9 +215,10 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
             />
             <Autocomplete
               id='initNokCode'
-              sx={{ marginLeft: 2, marginTop: 1, width: '15%', minWidth: '120px' }}
+              sx={{ marginLeft: 2, marginTop: 1, width: '15%', minWidth: '150px' }}
               size='small'
               aria-required
+              disabled={formType === 'VIEW'}
               options={nokCodeList}
               isOptionEqualToValue={
                 (option: NokCode, value: NokCode) => option.nokCode === value.nokCode
@@ -242,9 +238,10 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
             />
             <Autocomplete
               id='detectedShift'
-              sx={{ marginLeft: 2, marginTop: 1, width: '9%', minWidth:'130px' }}
+              sx={{ marginLeft: 2, marginTop: 1, width: '15%', minWidth:'140px' }}
               size='small'
               aria-required
+              disabled={formType === 'VIEW'}
               options={workShiftList}
               isOptionEqualToValue={
                 (option: WorkShift, value: WorkShift) => option.shiftName === value.shiftName
@@ -263,24 +260,25 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
               )}
             />
           </Grid>
-          <Grid display={'flex'}>
+          <Grid display={'flex'} marginBottom={1}>
           <TextField
               id="description"
               name="description"
               label="Description"
+              disabled={formType === 'VIEW'}
               sx={{ marginLeft: 2, marginTop: 1 , width:'85%' }}
               value={formValues.description}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
               fullWidth
               size='small'
             />
-            <Button type='submit' variant='contained' color='primary' size='small' sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}>
+            {formType !== 'VIEW' && <Button type='submit' variant='contained' color='primary' size='small' sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}>
               {submitTitle}
-            </Button>
+            </Button> }
           </Grid>
         </Grid>
       </form>
-    </Paper>
+    </Box>
   );
 };
 
