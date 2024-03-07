@@ -26,7 +26,7 @@ type FormData = {
   whCauseId?: number | string;
   whCauseName?: string;
   description?: string;
-  improveSugestion?: string;
+  improvSuggestion?: string;
 }
 
 const RCA_Form = ({ nokId, rcaData, formType }: NokFromProps) => {
@@ -39,7 +39,7 @@ const RCA_Form = ({ nokId, rcaData, formType }: NokFromProps) => {
     whCauseId: rcaData ? rcaData.whCauseId : '',
     whCauseName: rcaData ? rcaData.whCauseName : '',
     description: rcaData ? rcaData.description : '',
-    improveSugestion: rcaData ? rcaData.improveSugestion : '',
+    improvSuggestion: rcaData ? rcaData.improvSuggestion : '',
   };
 
   const [ formValues, setFormValues ] = useState<FormData>(initFormValues);
@@ -82,7 +82,7 @@ const RCA_Form = ({ nokId, rcaData, formType }: NokFromProps) => {
           whCauseId: formValues.whCauseId,
           whCauseName: formValues.whCauseName,
           description: formValues.description,
-          improveSugestion: formValues.improveSugestion,
+          improvSuggestion: formValues.improvSuggestion,
         };
 
         //const result = await nokDetectServices.createNokDetect(newRcaData);
@@ -148,8 +148,19 @@ const RCA_Form = ({ nokId, rcaData, formType }: NokFromProps) => {
             name="description"
             label="Description"
             disabled={formType === 'VIEW'}
-            sx={{ marginLeft: 2, marginTop: 1 , width:'50%' }}
+            sx={{ marginLeft: 2, marginTop: 1 , width:'25%' }}
             value={formValues.description}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
+            fullWidth
+            size='small'
+          />
+          <TextField
+            id="improvSuggestion"
+            name="improvSuggestion"
+            label="Suggestion"
+            disabled={formType === 'VIEW'}
+            sx={{ marginLeft: 2, marginTop: 1 , width:'33%' }}
+            value={formValues.improvSuggestion}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
             fullWidth
             size='small'
