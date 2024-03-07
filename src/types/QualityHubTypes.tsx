@@ -254,3 +254,19 @@ export interface NewNokAnalyseData extends Omit<NokAnalyseData, 'id' | 'nokId' |
   causeStationId: number;
   causeShiftId: number;
 }
+
+export interface RCA {
+  id: number;
+  rcaCode: RcaCode;
+  nokId: number;
+  whCauseId?: number | string;
+  whCauseName?: string;
+  description?: string;
+  improveSugestion?: string;
+}
+
+export interface NewRca extends Omit<RCA, 'id' | 'rcaCode'> {
+  id?: number;
+  rcaCodeId: number;
+  nokId: number;
+}

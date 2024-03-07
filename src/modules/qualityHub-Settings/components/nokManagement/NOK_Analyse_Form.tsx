@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import {
   Autocomplete,
   Box,
@@ -20,6 +19,7 @@ import nokCodeServices from '../../services/nokCodeServices';
 import workShiftServices from '../../services/workShiftServices';
 import nokDetectServices from '../../services/nokDetectServices';
 import NOK_Reg_Form from './NOK_Reg_Form';
+import RCA_Form from './RCA_Form';
 
 type NokFromProps = {
   nokId: number,
@@ -113,112 +113,113 @@ const NokForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromProps) =
     event.preventDefault();
     if (formType === 'ADD') {
 
-    console.log(' *** NOK registeration * Submit form * newNokData -> ',formValues);
-    //console.log(' *** NOK registeration * Submit form * result -> ', result);
+      console.log(' *** NOK registeration * Submit form * newNokData -> ',formValues);
+      //console.log(' *** NOK registeration * Submit form * result -> ', result);
 
-      } else {
-        console.log(' *** NOK registeration * Submit form * Error -> ', 'Missing data');
-      }
-    };
+    } else {
+      console.log(' *** NOK registeration * Submit form * Error -> ', 'Missing data');
+    }
+  };
 
 
   return (
-      <Grid container direction={'column'}>
-        <NOK_Reg_Form formType={'VIEW'} nokData={nok} />
-        <Divider sx={{ margin:1 }}/>
+    <Grid container direction={'column'}>
+      <NOK_Reg_Form formType={'VIEW'} nokData={nok} />
+      <Divider sx={{ margin:1 }}/>
       <Box>
-      <form onSubmit={handleSubmit} >
-        <Grid container direction={'column'} sx={{ background: '#FEC0D4' }}>
-          <Grid container width={'100%'} flexDirection={'row'} >
-            <Autocomplete
-              id='causeStation'
-              sx={{ marginLeft: 2, marginTop: 1, width: '20%', minWidth: '200px' }}
-              size='small'
-              aria-required
-              options={stationList}
-              isOptionEqualToValue={
-                (option: Station, value: Station) => option.stationName === value.stationName
-              }
-              value={formValues.causeStation ? formValues.causeStation : null}
-              onChange={(_event, newValue) => newValue && handleAutoCompeletChange('causeStation', newValue)}
-              getOptionLabel={(option: { stationName: string; }) => option.stationName}
-              renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
-                <TextField
-                  {...params}
-                  label='Station'
-                  placeholder='Add Station'
-                  size='small'
-                  required
-                />
-              )}
-            />
-            <Autocomplete
-              id='nokCode'
-              sx={{ marginLeft: 2, marginTop: 1, width: '15%', minWidth: '150px' }}
-              size='small'
-              aria-required
-              options={nokCodeList}
-              isOptionEqualToValue={
-                (option: NokCode, value: NokCode) => option.nokCode === value.nokCode
-              }
-              value={formValues.nokCode ? formValues.nokCode : null}
-              onChange={(_event, newValue) => newValue && handleAutoCompeletChange('nokCode', newValue)}
-              getOptionLabel={(option: { nokCode: string; }) => option.nokCode}
-              renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
-                <TextField
-                  {...params}
-                  label='NOK Code'
-                  placeholder='NOK Code'
-                  size='small'
-                  required
-                />
-              )}
-            />
-            <Autocomplete
-              id='causeShift'
-              sx={{ marginLeft: 2, marginTop: 1, width: '15%', minWidth:'140px' }}
-              size='small'
-              aria-required
-              options={workShiftList}
-              isOptionEqualToValue={
-                (option: WorkShift, value: WorkShift) => option.shiftName === value.shiftName
-              }
-              value={formValues.causeShift ? formValues.causeShift : null}
-              onChange={(_event, newValue) => newValue && handleAutoCompeletChange('causeShift', newValue)}
-              getOptionLabel={(option: { shiftName: string; }) => option.shiftName}
-              renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
-                <TextField
-                  {...params}
-                  label='Shift'
-                  placeholder='Shift'
-                  size='small'
-                  required
-                />
-              )}
-            />
-          </Grid>
-          <Grid display={'flex'}>
-          <TextField
-              id="description"
-              name="description"
-              label="Description"
-              sx={{ marginLeft: 2, marginTop: 1 , width:'85%' }}
-              value={formValues.description}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-              fullWidth
-              size='small'
-            />
-            <Button type='submit' variant='contained' color='primary' size='small' sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}>
-              {submitTitle}
-            </Button>
-            <Button onClick={() => removeNok(null)} variant='contained' color='primary' size='small' sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}>
+        <form onSubmit={handleSubmit} >
+          <Grid container direction={'column'} sx={{ background: '#FEC0D4' }}>
+            <Grid container width={'100%'} flexDirection={'row'} >
+              <Autocomplete
+                id='causeStation'
+                sx={{ marginLeft: 2, marginTop: 1, width: '20%', minWidth: '200px' }}
+                size='small'
+                aria-required
+                options={stationList}
+                isOptionEqualToValue={
+                  (option: Station, value: Station) => option.stationName === value.stationName
+                }
+                value={formValues.causeStation ? formValues.causeStation : null}
+                onChange={(_event, newValue) => newValue && handleAutoCompeletChange('causeStation', newValue)}
+                getOptionLabel={(option: { stationName: string; }) => option.stationName}
+                renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
+                  <TextField
+                    {...params}
+                    label='Station'
+                    placeholder='Add Station'
+                    size='small'
+                    required
+                  />
+                )}
+              />
+              <Autocomplete
+                id='nokCode'
+                sx={{ marginLeft: 2, marginTop: 1, width: '15%', minWidth: '150px' }}
+                size='small'
+                aria-required
+                options={nokCodeList}
+                isOptionEqualToValue={
+                  (option: NokCode, value: NokCode) => option.nokCode === value.nokCode
+                }
+                value={formValues.nokCode ? formValues.nokCode : null}
+                onChange={(_event, newValue) => newValue && handleAutoCompeletChange('nokCode', newValue)}
+                getOptionLabel={(option: { nokCode: string; }) => option.nokCode}
+                renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
+                  <TextField
+                    {...params}
+                    label='NOK Code'
+                    placeholder='NOK Code'
+                    size='small'
+                    required
+                  />
+                )}
+              />
+              <Autocomplete
+                id='causeShift'
+                sx={{ marginLeft: 2, marginTop: 1, width: '15%', minWidth:'140px' }}
+                size='small'
+                aria-required
+                options={workShiftList}
+                isOptionEqualToValue={
+                  (option: WorkShift, value: WorkShift) => option.shiftName === value.shiftName
+                }
+                value={formValues.causeShift ? formValues.causeShift : null}
+                onChange={(_event, newValue) => newValue && handleAutoCompeletChange('causeShift', newValue)}
+                getOptionLabel={(option: { shiftName: string; }) => option.shiftName}
+                renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
+                  <TextField
+                    {...params}
+                    label='Shift'
+                    placeholder='Shift'
+                    size='small'
+                    required
+                  />
+                )}
+              />
+            </Grid>
+            <Grid display={'flex'}>
+              <TextField
+                id="description"
+                name="description"
+                label="Description"
+                sx={{ marginLeft: 2, marginTop: 1 , width:'85%' }}
+                value={formValues.description}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
+                fullWidth
+                size='small'
+              />
+              <Button type='submit' variant='contained' color='primary' size='small' sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}>
+                {submitTitle}
+              </Button>
+              <Button onClick={() => removeNok(null)} variant='contained' color='primary' size='small' sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}>
               Back
-            </Button>
+              </Button>
+            </Grid>
           </Grid>
-        </Grid>
-      </form>
+        </form>
+        <RCA_Form nokId={nokId} formType={'ADD'} rcaData={null} />
       </Box>
-      </Grid>
+    </Grid>
   );
 };
 

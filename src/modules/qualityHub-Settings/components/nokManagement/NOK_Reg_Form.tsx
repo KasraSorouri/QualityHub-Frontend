@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import {
   Autocomplete,
   Box,
@@ -122,10 +121,10 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
           nokStatus: NokStatus.PENDING,
           productStatus: ProductStatus.NOK,
           removeReport: false,
-      };
+        };
 
-    const result = await nokDetectServices.createNokDetect(newNokData);
-    console.log(' *** NOK registeration * Submit form * result -> ', result);
+        const result = await nokDetectServices.createNokDetect(newNokData);
+        console.log(' *** NOK registeration * Submit form * result -> ', result);
 
       } else {
         console.log(' *** NOK registeration * Submit form * Error -> ', 'Missing data');
@@ -134,7 +133,7 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
   };
 
   return (
-      <Box>
+    <Box>
       <form onSubmit={handleSubmit} >
         <Grid container direction={'column'} sx={{ background: '#9FEAF7' }}>
           <Grid container width={'100%'} flexDirection={'row'}  marginTop={1} >
@@ -173,19 +172,19 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
               required
             />
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateTimePicker
-                  name='detectedTime'
-                  label='Detect Time'
-                  disabled={formType === 'VIEW'}
-                  viewRenderers={{
-                    seconds: null
-                  }}
-                  value={formValues.detectedTime}
-                  onChange={(newValue) => timeHandler(newValue)}
-                  sx={{ marginLeft: 2, marginTop: 1, width: '210px','& .MuiInputBase-root': { height: '40px' } }}
-                  disableFuture
-                  format= 'YYYY.MM.DD    HH:mm'
-                  maxDate={dayjs(new Date())}
+              <DateTimePicker
+                name='detectedTime'
+                label='Detect Time'
+                disabled={formType === 'VIEW'}
+                viewRenderers={{
+                  seconds: null
+                }}
+                value={formValues.detectedTime}
+                onChange={(newValue) => timeHandler(newValue)}
+                sx={{ marginLeft: 2, marginTop: 1, width: '210px','& .MuiInputBase-root': { height: '40px' } }}
+                disableFuture
+                format= 'YYYY.MM.DD    HH:mm'
+                maxDate={dayjs(new Date())}
               />
             </LocalizationProvider>
           </Grid>
@@ -261,7 +260,7 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
             />
           </Grid>
           <Grid display={'flex'} marginBottom={1}>
-          <TextField
+            <TextField
               id="description"
               name="description"
               label="Description"
