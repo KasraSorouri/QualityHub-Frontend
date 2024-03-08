@@ -8,10 +8,11 @@ import {
   OutlinedTextFieldProps,
   StandardTextFieldProps,
   TextField,
-  TextFieldVariants
+  TextFieldVariants,
+  Typography
 } from '@mui/material';
 
-import { NokCode, Station, WorkShift, Product, NokAnalyseData, NewNokAnalyseData, NokData } from '../../../../types/QualityHubTypes';
+import { NokCode, Station, WorkShift, Product, NokAnalyseData, NewNokAnalyseData, NokData, RCA } from '../../../../types/QualityHubTypes';
 import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import stationServices from '../../services/stationServices';
@@ -19,7 +20,7 @@ import nokCodeServices from '../../services/nokCodeServices';
 import workShiftServices from '../../services/workShiftServices';
 import nokDetectServices from '../../services/nokDetectServices';
 import NOK_Reg_Form from './NOK_Reg_Form';
-import RCA_Form from './RCA_Form';
+import RCAs_Form from './RCAs_Form';
 
 type NokFromProps = {
   nokId: number,
@@ -40,6 +41,11 @@ type FormData = {
 
 const NokForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromProps) => {
   console.log('nok ID ->', nokId);
+
+  const fakeRCA : RCA[] = [
+    { id: 1, nokId: 1, rcaCode: { id: 1, rcaCode: 'RCA1', rcaDesc: 'RCA1', active: true }, description: 'RCA1', improvSuggestion: 'RCA1' },
+    { id: 1, nokId: 1, rcaCode: { id: 1, rcaCode: 'RCA1', rcaDesc: 'RCA1', active: true }, description: 'RCA1', improvSuggestion: 'RCA1' },
+  ];
 
   const submitTitle = formType === 'ADD' ? 'Add' : 'Update';
 
@@ -98,6 +104,11 @@ const NokForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromProps) =
     }));
   };
 
+  const handleUpdateRCA = (rcas: RCA[]) => {
+    console.log(' *** NOK registeration * Update RCA * rcas -> ', rcas);
+  };
+
+
   /*
   const timeHandler = (value: Dayjs | null) => {
     if (value) {
@@ -124,8 +135,14 @@ const NokForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromProps) =
 
   return (
     <Grid container direction={'column'}>
+      <Typography variant='h5' marginLeft={2}>
+        Detect Information
+      </Typography>
       <NOK_Reg_Form formType={'VIEW'} nokData={nok} />
       <Divider sx={{ margin:1 }}/>
+      <Typography variant='h5' marginLeft={2}>
+        Origin of NOK
+      </Typography>
       <Box>
         <form onSubmit={handleSubmit} >
           <Grid container direction={'column'} sx={{ background: '#FEC0D4' }}>
@@ -217,8 +234,12 @@ const NokForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromProps) =
             </Grid>
           </Grid>
         </form>
-        <RCA_Form nokId={nokId} formType={'ADD'} rcaData={null} />
       </Box>
+      <Divider sx={{ margin:1 }}/>
+      <Typography variant='h5' marginLeft={2} >
+        Root Cause Analysis
+      </Typography>
+      <RCAs_Form formType={'ADD'} rcas={fakeRCA} updateRCA={handleUpdateRCA} />
     </Grid>
   );
 };
