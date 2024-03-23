@@ -17,6 +17,7 @@ import NokForm from '../../qualityHub-Settings/components/nokManagement/NOK_Reg_
 import NokList from '../../qualityHub-Settings/components/nokManagement/NOK_List';
 import { NokData } from '../../../types/QualityHubTypes';
 import NOK_Analyse_Form from '../../qualityHub-Settings/components/nokManagement/NOK_Analyse_Form';
+import NokReworkForm from '../../qualityHub-Settings/components/nokManagement/NOK_Rework_Form';
 
 const HomePageSubMenu = () => {
 
@@ -25,7 +26,7 @@ const HomePageSubMenu = () => {
   const [ selectedNok, setSelectedNok ] = useState<NokData | null>(null);
 
 
-  type ShowListForm = 'NEW-NOK' | 'NOK-LIST' | 'ANALYSE' | '***' | '' | 'NONE'
+  type ShowListForm = 'NEW-NOK' | 'NOK-LIST' | 'ANALYSE' | 'REWORK' | '' | 'NONE'
 
   const [ showListForm, setShowListForm ] = useState<ShowListForm>('NONE');
 
@@ -55,12 +56,12 @@ const HomePageSubMenu = () => {
               <ListItemText primary='NOK Analyse' sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
-            <ListItem onClick={() => setShowListForm('NOK-LIST')}>
-              <ListItemText primary='NOK List' sx={{ color: 'black' }} />
+            <ListItem onClick={() => setShowListForm('REWORK')}>
+              <ListItemText primary='Rework' sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
-            <ListItem onClick={() => setShowListForm('')}>
-              <ListItemText primary='' sx={{ color: 'black' }} />
+            <ListItem onClick={() => setShowListForm('NOK-LIST')}>
+              <ListItemText primary='NOK List' sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
             <ListItem onClick={() => navigate('/nok/register')}>
@@ -73,7 +74,7 @@ const HomePageSubMenu = () => {
             {showListForm === 'NEW-NOK' && <NokForm formType={'ADD'} /> }
             {showListForm === 'NOK-LIST' && <NokList listType='' selectNok={setSelectedNok}/> }
             {showListForm === 'ANALYSE' && (selectedNok ? <NOK_Analyse_Form nokId={selectedNok.id} formType='ADD'  removeNok={setSelectedNok} /> : <NokList listType='ANALYSE' selectNok={setSelectedNok}/> ) }
-            {showListForm === '' && <HomePage /> }
+            {showListForm === 'REWORK' &&  (selectedNok ? <NokReworkForm nokId={selectedNok.id} formType='ADD' removeNok={setSelectedNok} /> : <NokList listType='ANALYSE' selectNok={setSelectedNok}/> )}
             {showListForm === '' && <HomePage /> }
           </Box>
         </Grid>

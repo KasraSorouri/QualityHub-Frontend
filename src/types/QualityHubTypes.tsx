@@ -247,7 +247,7 @@ export interface NokAnalyseData {
   closeDate: Date;
 }
 
-export interface NewNokAnalyseData extends Omit<NokAnalyseData, 'id' | 'nokId' | 'nokCodeId' | 'causeStationId' | 'causeShiftId'> {
+export interface NewNokAnalyseData extends Omit<NokAnalyseData, 'id' | 'causeStationId' | 'causeShiftId'> {
   id?: number;
   nokId: number;
   nokCodeId: number;
@@ -268,5 +268,27 @@ export interface RCA {
 export interface NewRca extends Omit<RCA, 'id' | 'rcaCode'> {
   id?: number;
   rcaCodeId: number;
-  nokId: number;
+}
+
+
+export interface Rework {
+  id: number;
+  Product: Product;
+  reworkShortDesc: string;
+  description?: string;
+  order: number;
+  nokCode: number;
+  useRecipes: Recipe[];
+  affectedRecipes: Recipe[];
+  station: number;
+  timeDuration?: number;
+  active: boolean;
+  deprecated: boolean;
+}
+
+export interface NewRework extends Omit<Rework, 'id' | 'product' | 'nokCode' | 'station'> {
+  id?: number;
+  productId: number;
+  nokCodeId: number;
+  stationId: number;
 }
