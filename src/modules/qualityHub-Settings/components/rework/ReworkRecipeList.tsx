@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import {
   Paper,
@@ -14,7 +14,8 @@ import {
   Typography,
   Grid,
   Button,
-  Collapse
+  Collapse,
+  Stack
 } from '@mui/material';
 
 import { visuallyHidden } from '@mui/utils';
@@ -22,8 +23,6 @@ import { visuallyHidden } from '@mui/utils';
 import { Recipe } from '../../../../types/QualityHubTypes';
 import RecipeBOM from '../recipe/RecipeBOM';
 import React from 'react';
-import { useQuery, useQueryClient } from 'react-query';
-import recipeServices from '../../services/recipeServices';
 
 interface EnhancedTableHeadProps {
   order: 'asc' | 'desc';
@@ -32,7 +31,8 @@ interface EnhancedTableHeadProps {
 }
 
 type RecipeListProps = {
-  productId: number;
+  recipes: Recipe[];
+  confirmSelection: (recipes : number[]) => void;
 }
 
 type ShowDetails = {
@@ -40,39 +40,13 @@ type ShowDetails = {
   index: number | undefined;
 }
 
-const ReworkRecipeList = ({ productId } : RecipeListProps) => {
+const ReworkRecipeList = ({ recipes, confirmSelection } : RecipeListProps) => {
 
   const [ selectedRwRecipes, setSelectedRwRecipes ] = useState<number[]>([]);
 
   const [ showMatrials, setShowMaterials ] = useState<ShowDetails>({ index: undefined, show: false });
 
   console.log('** Rework Recipe list * selected recipes ->', selectedRwRecipes);
-
-
-  // Query implementation
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    const updateRecipeQuery = async() => {
-      await queryClient.invalidateQueries('recipes');
-    };
-    updateRecipeQuery();
-  },[productId, queryClient]);
-
-
-  // Get Recipe List
-  const recipeResults = useQuery(['recipes',productId], async() => {
-    const response = recipeServices.getRecipeByProduct(productId);
-    if (!response) {
-      throw new Error('Failed to fetch recipes');
-    }
-    return response;
-  },{ refetchOnWindowFocus: false, enabled: true });
-
-  const recipes: Recipe[] = recipeResults.data || [];
-
-
-
 
   // Sort Items
   const [ sort, setSort ] = useState<{ sortItem: keyof Recipe; sortOrder: number }>({ sortItem: 'recipeCode' , sortOrder: 1 });
@@ -172,11 +146,23 @@ const ReworkRecipeList = ({ productId } : RecipeListProps) => {
   const isSelected = (id: number) => selectedRwRecipes.indexOf(id) !== -1;
 
 
+  const handleConfirmSelection = () => {
+    confirmSelection(selectedRwRecipes);
+  };
+
   return(
     <Paper>
       <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'} >
         <Typography margin={1} > REWORK RECIPES</Typography>
         <Typography margin={1} >{selectedRwRecipes.length} Recipes is Selected</Typography>
+        <Stack direction={'row'} spacing={1} margin={.5} >
+          <Button variant='contained' color='primary' sx={{ height: '30px' }} onClick={() => setSelectedRwRecipes([])} >
+            Clear Selection
+          </Button>
+          <Button variant='contained' color='primary' sx={{ height: '30px' }} onClick={handleConfirmSelection} >
+            Confirm
+          </Button>
+        </Stack>
       </Grid>
       <TableContainer sx={{ maxHeight: '550Px' }}>
         <Table stickyHeader aria-label='sticky table' size='small'>

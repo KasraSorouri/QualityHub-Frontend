@@ -14,13 +14,14 @@ import {
   Typography,
 } from '@mui/material';
 
-import { NokCode, Station, WorkShift, Product } from '../../../../types/QualityHubTypes';
+import { NokCode, Station, WorkShift, Product, Recipe } from '../../../../types/QualityHubTypes';
 import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import stationServices from '../../services/stationServices';
 import nokCodeServices from '../../services/nokCodeServices';
 import productServices from '../../services/productServices';
 import ReworkRecipeList from './ReworkRecipeList';
+import recipeServices from '../../services/recipeServices';
 
 type NokFromProps = {
   formType: 'ADD' | 'EDIT' | 'VIEW';
@@ -64,6 +65,7 @@ const ReworkForm = ({ formType }: NokFromProps) => {
 
   useEffect(() => {
     setFormValues(initFormValues);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[formType]);
 
   // get Product List
@@ -77,6 +79,19 @@ const ReworkForm = ({ formType }: NokFromProps) => {
   // Get NOK Code List
   const nokCodeResults = useQuery('nokCodes', nokCodeServices.getNokCode, { refetchOnWindowFocus: false });
   const nokCodeList: NokCode[] = nokCodeResults.data || [];
+
+  // Get Recipe List
+  const recipeResults = useQuery(['recipes',formValues.product.id], async() => {
+    const response = recipeServices.getRecipeByProduct(formValues.product.id);
+    if (!response) {
+      throw new Error('Failed to fetch recipes');
+    }
+    return response;
+  },{ refetchOnWindowFocus: false, enabled: true });
+
+  const reworkRecipes: Recipe[] = recipeResults.data?.filter(r => r.recipeType === 'REWORK') || [];
+  const affectedRecipes: Recipe[] = recipeResults.data?.filter(r => r.recipeType === 'PRODUCTION') || [];
+
 
   // handle Changes
   const handleChange = (event: {target: { name: string, value: unknown, checked: boolean}}) => {
@@ -110,6 +125,16 @@ const ReworkForm = ({ formType }: NokFromProps) => {
     }
   };
   */
+
+  const selectReworkRecipes = (recipeIds: number[]) => {
+    const rwRecipes = recipeIds;
+    console.log('rework Recipes ids => ', rwRecipes);
+  };
+
+  const selectAffectedRecipes = (recipeIds: number[]) => {
+    const affectedRecipes = recipeIds;
+    console.log('affected Recipes ids => ', affectedRecipes);
+  };
 
   const handleSubmit = async (event: {preventDefault: () => void}) => {
     event.preventDefault();
@@ -277,11 +302,11 @@ const ReworkForm = ({ formType }: NokFromProps) => {
             <Typography>
               Recipes used for rework
             </Typography>
-            <ReworkRecipeList productId={formValues.product.id} />
+            <ReworkRecipeList recipes={reworkRecipes} confirmSelection={selectReworkRecipes}  />
             <Typography>
               Recipes affected by rework
             </Typography>
-            <ReworkRecipeList productId={formValues.product.id} />
+            <ReworkRecipeList recipes={affectedRecipes}confirmSelection={selectAffectedRecipes} />
           </Grid>
         </form>
       </Box>
