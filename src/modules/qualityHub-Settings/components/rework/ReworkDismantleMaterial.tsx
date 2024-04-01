@@ -42,9 +42,10 @@ interface DismantledMaterial extends ConsumingMaterial {
 type DismantleMaterialListProps = {
   affectedMaterials: DismantledMaterial[];
   confirmSelection: (dismantledMaterial: DismantledMaterial[]) => void;
+  confirmChange: (value: boolean ) => void;
 }
 
-const ReworkDismantledMaterial = ({ affectedMaterials, confirmSelection } : DismantleMaterialListProps) => {
+const ReworkDismantledMaterial = ({ affectedMaterials, confirmSelection, confirmChange } : DismantleMaterialListProps) => {
 
   const [ selectedMaterials, setSelectedMaterials ] = useState<number[]>([]);
   const [ dismantledMaterial, setDismantledMaterial ] = useState<DismantledMaterial[]>([]);
@@ -144,12 +145,14 @@ const ReworkDismantledMaterial = ({ affectedMaterials, confirmSelection } : Dism
     if (selectedMaterials.includes(selectedIndex)){
       const newSelected = selectedMaterials.filter((id) => id !== selectedIndex);
       setSelectedMaterials(newSelected);
+      setDismantledMaterial(dismantledMaterial.filter((item) => item.id !== selectedIndex));
     } else {
       const newSelected = selectedMaterials.concat(selectedIndex);
       const newDismantledMaterial = affectedMaterials.filter((item) => newSelected.includes(item.id));
       setDismantledMaterial(newDismantledMaterial);
       setSelectedMaterials(newSelected);
     }
+    confirmChange(false);
   };
 
   const isSelected = (id: number) => selectedMaterials.indexOf(id) !== -1;
@@ -170,6 +173,7 @@ const ReworkDismantledMaterial = ({ affectedMaterials, confirmSelection } : Dism
       const newDismantledMaterial = [...dismantledMaterial];
       setDismantledMaterial(newDismantledMaterial);
     }
+    confirmChange(false);
   };
 
   // Set Dismantle Note
@@ -180,6 +184,7 @@ const ReworkDismantledMaterial = ({ affectedMaterials, confirmSelection } : Dism
     }
     const newDismantledMaterial = [...dismantledMaterial];
     setDismantledMaterial(newDismantledMaterial);
+    confirmChange(false);
   };
 
   // Set Mandatory Remove
@@ -190,16 +195,17 @@ const ReworkDismantledMaterial = ({ affectedMaterials, confirmSelection } : Dism
     }
     const newDismantledMaterial = [...dismantledMaterial];
     setDismantledMaterial(newDismantledMaterial);
+    confirmChange(false);
   };
 
   const handleResetSelection = () => {
     setSelectedMaterials([]);
     setDismantledMaterial([]);
+    confirmChange(false);
   };
 
   const handleConfirmSelection = () => {
-    console.log('** * **Confirm dismantle material ->', dismantledMaterial);
-
+    confirmChange(true);
     confirmSelection(dismantledMaterial);
   };
 
@@ -279,7 +285,7 @@ const ReworkDismantledMaterial = ({ affectedMaterials, confirmSelection } : Dism
                           name='qty'
                           sx={{ '& .MuiInputBase-input': { maxHeight: 'inhirent', margin: 0, padding: '0px', textAlign: 'center' } , overflow: 'hidden' }}
                           variant= 'filled'
-                          value={material.dismantledQty}
+                          value={material.dismantledQty || ''}
                           onChange={(event) => handleDismantleQty(parseInt(event.target.value), material.id)}
                           InputProps={{ inputProps: { min: 1, max: material. qty, step: 1 } } }
                           required /> :
@@ -291,27 +297,19 @@ const ReworkDismantledMaterial = ({ affectedMaterials, confirmSelection } : Dism
                           name='note'
                           sx={{ '& .MuiInputBase-input': { maxHeight: 'inhirent', margin: 0, padding: '0px' } , overflow: 'hidden' }}
                           variant= 'filled'
-                          value={material.note}
+                          value={material.note || ''}
                           onChange={(event) => handleDismantleNote((event.target.value), material.id)}
                         /> :
                         '' }
                     </TableCell>
                     <TableCell align='center' >
                       <Box justifyContent={'space-between'} >
-                        {selectedMaterials.includes(material.id) ?
-                          <Checkbox
-                            style={{ height: '16px', width: '16px' }}
-                            disabled={!selectedMaterials.includes(material.id)}
-                            checked={material.mandatoryRemove}
-                            onChange={(event) => handleMandatoryRemove(event.target.checked, material.id)}
-                          />
-                          :
-                          <Checkbox
-                            style={{ height: '16px', width: '16px' }}
-                            disabled={!selectedMaterials.includes(material.id)}
-                            checked={false}
-                          />
-                        }
+                        <Checkbox
+                          style={{ height: '16px', width: '16px' }}
+                          value={selectedMaterials.includes(material.id) ? material.mandatoryRemove : false}
+                          disabled={!selectedMaterials.includes(material.id)}
+                          onChange={(event) => handleMandatoryRemove(event.target.checked, material.id)}
+                        />
                       </Box>
                     </TableCell>
                   </TableRow>

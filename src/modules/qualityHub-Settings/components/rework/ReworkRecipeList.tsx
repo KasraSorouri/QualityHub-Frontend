@@ -33,6 +33,7 @@ interface EnhancedTableHeadProps {
 type RecipeListProps = {
   recipes: Recipe[];
   confirmSelection: (recipes : number[]) => void;
+  confirmChange: (value: boolean ) => void;
   title: string;
 }
 
@@ -41,13 +42,11 @@ type ShowDetails = {
   index: number | undefined;
 }
 
-const ReworkRecipeList = ({ recipes, confirmSelection, title } : RecipeListProps) => {
+const ReworkRecipeList = ({ recipes, confirmSelection, confirmChange, title } : RecipeListProps) => {
 
   const [ selectedRwRecipes, setSelectedRwRecipes ] = useState<number[]>([]);
 
   const [ showMatrials, setShowMaterials ] = useState<ShowDetails>({ index: undefined, show: false });
-
-  console.log('** Rework Recipe list * selected recipes ->', selectedRwRecipes);
 
   // Sort Items
   const [ sort, setSort ] = useState<{ sortItem: keyof Recipe; sortOrder: number }>({ sortItem: 'recipeCode' , sortOrder: 1 });
@@ -140,12 +139,18 @@ const ReworkRecipeList = ({ recipes, confirmSelection, title } : RecipeListProps
       const newSelected = selectedRwRecipes.concat(selectedIndex);
       setSelectedRwRecipes(newSelected);
     }
+    confirmChange(false);
   };
 
   const isSelected = (id: number) => selectedRwRecipes.indexOf(id) !== -1;
 
+  const handleResetSelection = () => {
+    setSelectedRwRecipes([]);
+    confirmChange(false);
+  };
 
   const handleConfirmSelection = () => {
+    confirmChange(true);
     confirmSelection(selectedRwRecipes);
   };
 
@@ -155,7 +160,7 @@ const ReworkRecipeList = ({ recipes, confirmSelection, title } : RecipeListProps
         <Typography margin={1} >{title}</Typography>
         <Typography margin={1} >{selectedRwRecipes.length} Recipes is Selected</Typography>
         <Stack direction={'row'} spacing={1} margin={.5} >
-          <Button variant='contained' color='primary' sx={{ height: '30px' }} onClick={() => setSelectedRwRecipes([])} >
+          <Button variant='contained' color='primary' sx={{ height: '30px' }} onClick={handleResetSelection} >
             Clear Selection
           </Button>
           <Button variant='contained' color='primary' sx={{ height: '30px' }} onClick={handleConfirmSelection} >

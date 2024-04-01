@@ -37,6 +37,9 @@ type FormData = {
   timeDuration?: number;
   active: boolean;
   deprecated: boolean;
+  reworkRecipes: number[];
+  affectedRecipes: number[];
+  dismantledMaterials: DismantledMaterial[];
 }
 
 interface DismantledMaterial extends ConsumingMaterial {
@@ -64,12 +67,17 @@ const ReworkForm = ({ formType }: NokFromProps) => {
     timeDuration: 120,
     active: true,
     deprecated: false,
+    reworkRecipes:[],
+    affectedRecipes: [],
+    dismantledMaterials:[],
   };
 
   const [ formValues, setFormValues ] = useState<FormData>(initFormValues);
   const [ affectedMaterial, setAffectedMaterial ] = useState<DismantledMaterial[]>([]);
+  const [ confirmation, setConfirmation ] = useState<{reworkRecipes: boolean, affectedRecipes: boolean, dismantledMaterials: boolean}>({ reworkRecipes: false, affectedRecipes: false, dismantledMaterials: false });
 
   console.log('**** rework * form Values -> ', formValues);
+  console.log('**** rework * confirmation -> ', confirmation);
 
 
   useEffect(() => {
@@ -137,20 +145,18 @@ const ReworkForm = ({ formType }: NokFromProps) => {
 
   const selectReworkRecipes = (recipeIds: number[]) => {
     const rwRecipes = recipeIds;
-    console.log('rework Recipes ids => ', rwRecipes);
+    setFormValues({ ...formValues,reworkRecipes: rwRecipes });
   };
 
   const selectAffectedRecipes = (recipeIds: number[]) => {
     const affectedRecipes = recipeIds;
-    console.log('affected Recipes ids => ', affectedRecipes);
+    setFormValues({ ...formValues,affectedRecipes: affectedRecipes });
 
     // affected materials
     const affectedMaterials : DismantledMaterial[] = [];
     affectedRecipes.map(recipeId => {
       const recipe = productionRecipes.find(r => r.id === recipeId);
       if (recipe) {
-        console.log('**** ** recipe ->', recipe);
-
         recipe.recipeMaterials?.map(recipeMaterial => {
           const newMaterial = {
             ...recipeMaterial,
@@ -163,24 +169,30 @@ const ReworkForm = ({ formType }: NokFromProps) => {
     }
     );
     setAffectedMaterial(affectedMaterials);
-    console.log('affected Materials => ', affectedMaterials);
   };
 
   // Dismantled Materials
   const selectDismantledMaterials = (dismantledMaterial: DismantledMaterial[]) => {
     const dismantledMaterials = dismantledMaterial;
-    console.log('dismantled Materials ** => ', dismantledMaterials);
+    setFormValues({ ...formValues,dismantledMaterials: dismantledMaterials });
+  };
+
+  // set confirmation
+  const handleConfirmChange = (form: string, value: boolean) => {
+    console.log(' *++* confirmation change -> form:', form, ' ** value:', value);
+    const newConfirmation = { ...confirmation, [form]: value };
+    console.log(' *++* confirmation change -> newConfirmation:', newConfirmation);
+    setConfirmation(newConfirmation);
   };
 
   const handleSubmit = async (event: {preventDefault: () => void}) => {
     event.preventDefault();
     if (formType === 'ADD') {
-
-      console.log(' *** NOK registeration * Submit form * newNokData -> ',formValues);
+      console.log(' *** Rework * Submit form * newNokData -> ',formValues);
       //console.log(' *** NOK registeration * Submit form * result -> ', result);
 
     } else {
-      console.log(' *** NOK registeration * Submit form * Error -> ', 'Missing data');
+      console.log(' *** Rework * Submit form * Error -> ', 'Missing data');
     }
   };
 
@@ -327,19 +339,25 @@ const ReworkForm = ({ formType }: NokFromProps) => {
             </Grid>
             <Grid display={'flex'}>
 
-              <Button type='submit' variant='contained' color='primary' size='small' sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}>
+              <Button
+                type='submit'
+                disabled={!confirmation.reworkRecipes || !confirmation.affectedRecipes || !confirmation.dismantledMaterials}
+                variant='contained'
+                color='primary'
+                sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}
+                size='small'>
                 {submitTitle}
               </Button>
-              <Button onClick={() => { console.log(' log out '); }} variant='contained' color='primary' size='small' sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}>
+              <Button onClick={() => { console.log(' exit '); }} variant='contained' color='primary' size='small' sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}>
               Back
               </Button>
             </Grid>
             <Divider sx={{ margin:1 }}/>
-            <ReworkRecipeList recipes={reworkRecipes} confirmSelection={selectReworkRecipes} title='Rework Recipes (Recipes used for rework)'  />
+            <ReworkRecipeList recipes={reworkRecipes} confirmSelection={selectReworkRecipes} confirmChange={(value) => handleConfirmChange('reworkRecipes', value)} title='Rework Recipes (Recipes used for rework)'  />
             <Divider sx={{ margin:1 }}/>
-            <ReworkRecipeList recipes={productionRecipes}confirmSelection={selectAffectedRecipes} title='Affected Recipes (Recipes affected by rework)' />
+            <ReworkRecipeList recipes={productionRecipes}confirmSelection={selectAffectedRecipes} confirmChange={(value) => handleConfirmChange('affectedRecipes', value)} title='Affected Recipes (Recipes affected by rework)' />
             <Divider sx={{ margin:1 }}/>
-            <ReworkDismantledMaterial affectedMaterials={affectedMaterial} confirmSelection={selectDismantledMaterials}  />
+            <ReworkDismantledMaterial affectedMaterials={affectedMaterial} confirmSelection={selectDismantledMaterials} confirmChange={(value) => handleConfirmChange('dismantledMaterials', value)}  />
           </Grid>
         </form>
       </Box>
