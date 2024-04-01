@@ -97,6 +97,7 @@ export enum Reusable  {
 }
 
 export interface ConsumingMaterial {
+  id : number;
   material: Material;
   qty: number;
   reusable: Reusable;

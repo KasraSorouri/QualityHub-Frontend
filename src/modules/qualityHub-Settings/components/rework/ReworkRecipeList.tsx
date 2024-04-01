@@ -33,6 +33,7 @@ interface EnhancedTableHeadProps {
 type RecipeListProps = {
   recipes: Recipe[];
   confirmSelection: (recipes : number[]) => void;
+  title: string;
 }
 
 type ShowDetails = {
@@ -40,7 +41,7 @@ type ShowDetails = {
   index: number | undefined;
 }
 
-const ReworkRecipeList = ({ recipes, confirmSelection } : RecipeListProps) => {
+const ReworkRecipeList = ({ recipes, confirmSelection, title } : RecipeListProps) => {
 
   const [ selectedRwRecipes, setSelectedRwRecipes ] = useState<number[]>([]);
 
@@ -70,14 +71,13 @@ const ReworkRecipeList = ({ recipes, confirmSelection } : RecipeListProps) => {
 
 
   const columnHeader = [
-    { id: 'recipeCode', lable: 'Code', with: '10%', minWidth: 10, borderRight: true },
-    { id: 'description', lable: 'Description', with: '20%', minWidth: 10, borderRight: true },
-    { id: 'station', lable: 'Station', with: '20%', minWidth: 10, borderRight: true },
-    { id: 'order', lable: 'order', with: '10%', minWidth: 10, borderRight: true },
-    { id: 'timeDuration', lable: 'Duration', with: '10%', minWidth: 10, borderRight: true },
-    { id: 'manpower', lable: 'Manpower', with: '10%', minWidth: 10, borderRight: true },
-    { id: 'recipeType', lable: 'Type', with: '10%', minWidth: 10, borderRight: true },
-    { id: 'materials', lable: 'Materials', with: '10%', width: 164, borderRight: true },
+    { id: 'recipeCode', lable: 'Code', witdh: '7%', minWidth: 10, borderRight: true },
+    { id: 'description', lable: 'Description', width: '35%', minWidth: 20, borderRight: true },
+    { id: 'station', lable: 'Station', width: '10%', minWidth: 10, borderRight: true },
+    { id: 'order', lable: 'order', width: '7%', minWidth: 10, borderRight: true },
+    { id: 'timeDuration', lable: 'Duration', width: '7%', minWidth: 10, borderRight: true },
+    { id: 'manpower', lable: 'Manpower', width: '7%', minWidth: 10, borderRight: true },
+    { id: 'materials', lable: 'Materials', width: '10%', minWidth: 164, borderRight: true },
     { id: 'active', lable: 'Active', width: 2 },
   ];
 
@@ -96,8 +96,7 @@ const ReworkRecipeList = ({ recipes, confirmSelection } : RecipeListProps) => {
           <TableCell
             key={'select'}
             align='right'
-            style={{ width: 40 }}
-            sx={{ backgroundColor: '#B7FFB3', color: 'white' }}
+            sx={{ backgroundColor: '#1976d2', color: 'white', maxWidth: '10px',  borderRight: '1px solid white' }}
           />
           {columnHeader.map((column) => (
             <TableCell
@@ -153,7 +152,7 @@ const ReworkRecipeList = ({ recipes, confirmSelection } : RecipeListProps) => {
   return(
     <Paper>
       <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'} >
-        <Typography margin={1} > REWORK RECIPES</Typography>
+        <Typography margin={1} >{title}</Typography>
         <Typography margin={1} >{selectedRwRecipes.length} Recipes is Selected</Typography>
         <Stack direction={'row'} spacing={1} margin={.5} >
           <Button variant='contained' color='primary' sx={{ height: '30px' }} onClick={() => setSelectedRwRecipes([])} >
@@ -164,8 +163,8 @@ const ReworkRecipeList = ({ recipes, confirmSelection } : RecipeListProps) => {
           </Button>
         </Stack>
       </Grid>
-      <TableContainer sx={{ maxHeight: '550Px' }}>
-        <Table stickyHeader aria-label='sticky table' size='small'>
+      <TableContainer sx={{ maxHeight: '550Px' }} >
+        <Table stickyHeader aria-label='sticky table' size='small' >
           <EnhancedTableHead
             order={order}
             orderBy={orderBy}
@@ -214,16 +213,6 @@ const ReworkRecipeList = ({ recipes, confirmSelection } : RecipeListProps) => {
                     </TableCell>
                     <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
                       {recipe.manpower}
-                    </TableCell>
-                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
-                      <span style={{
-                        backgroundColor: recipe.recipeType === 'PRODUCTION' ? '#96FFD9' : '#56F0FA',
-                        padding: '5px',
-                        fontSize: '14px',
-                        fontWeight: 'bold',
-                      }} >
-                        {recipe.recipeType}
-                      </span>
                     </TableCell>
                     <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
                       <Button onClick={() => setShowMaterials({ index, show:!showMatrials.show })} variant='contained' color='primary'>

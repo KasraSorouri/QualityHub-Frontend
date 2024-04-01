@@ -11,10 +11,9 @@ import {
   StandardTextFieldProps,
   TextField,
   TextFieldVariants,
-  Typography,
 } from '@mui/material';
 
-import { NokCode, Station, WorkShift, Product, Recipe } from '../../../../types/QualityHubTypes';
+import { NokCode, Station, WorkShift, Product, Recipe, ConsumingMaterial } from '../../../../types/QualityHubTypes';
 import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import stationServices from '../../services/stationServices';
@@ -22,6 +21,7 @@ import nokCodeServices from '../../services/nokCodeServices';
 import productServices from '../../services/productServices';
 import ReworkRecipeList from './ReworkRecipeList';
 import recipeServices from '../../services/recipeServices';
+import ReworkDismantledMaterial from './ReworkDismantleMaterial';
 
 type NokFromProps = {
   formType: 'ADD' | 'EDIT' | 'VIEW';
@@ -37,6 +37,14 @@ type FormData = {
   timeDuration?: number;
   active: boolean;
   deprecated: boolean;
+}
+
+interface DismantledMaterial extends ConsumingMaterial {
+  id: number;
+  recipeCode: string;
+  dismantledQty? : number;
+  note?: string;
+  mandatoryRemove?: boolean;
 }
 
 const ReworkForm = ({ formType }: NokFromProps) => {
@@ -59,6 +67,7 @@ const ReworkForm = ({ formType }: NokFromProps) => {
   };
 
   const [ formValues, setFormValues ] = useState<FormData>(initFormValues);
+  const [ affectedMaterial, setAffectedMaterial ] = useState<DismantledMaterial[]>([]);
 
   console.log('**** rework * form Values -> ', formValues);
 
@@ -90,7 +99,7 @@ const ReworkForm = ({ formType }: NokFromProps) => {
   },{ refetchOnWindowFocus: false, enabled: true });
 
   const reworkRecipes: Recipe[] = recipeResults.data?.filter(r => r.recipeType === 'REWORK') || [];
-  const affectedRecipes: Recipe[] = recipeResults.data?.filter(r => r.recipeType === 'PRODUCTION') || [];
+  const productionRecipes: Recipe[] = recipeResults.data?.filter(r => r.recipeType === 'PRODUCTION') || [];
 
 
   // handle Changes
@@ -134,6 +143,33 @@ const ReworkForm = ({ formType }: NokFromProps) => {
   const selectAffectedRecipes = (recipeIds: number[]) => {
     const affectedRecipes = recipeIds;
     console.log('affected Recipes ids => ', affectedRecipes);
+
+    // affected materials
+    const affectedMaterials : DismantledMaterial[] = [];
+    affectedRecipes.map(recipeId => {
+      const recipe = productionRecipes.find(r => r.id === recipeId);
+      if (recipe) {
+        console.log('**** ** recipe ->', recipe);
+
+        recipe.recipeMaterials?.map(recipeMaterial => {
+          const newMaterial = {
+            ...recipeMaterial,
+            id: recipeMaterial.id,
+            recipeCode: recipe.recipeCode
+          };
+          affectedMaterials.push(newMaterial);
+        });
+      }
+    }
+    );
+    setAffectedMaterial(affectedMaterials);
+    console.log('affected Materials => ', affectedMaterials);
+  };
+
+  // Dismantled Materials
+  const selectDismantledMaterials = (dismantledMaterial: DismantledMaterial[]) => {
+    const dismantledMaterials = dismantledMaterial;
+    console.log('dismantled Materials ** => ', dismantledMaterials);
   };
 
   const handleSubmit = async (event: {preventDefault: () => void}) => {
@@ -150,8 +186,8 @@ const ReworkForm = ({ formType }: NokFromProps) => {
 
 
   return (
-    <Grid container direction={'column'}>
-      <Box>
+    <Grid container direction={'column'} >
+      <Box  sx={{ height: '600px', overflowY: 'scroll' , paddingRight:'10px' }}>
         <form onSubmit={handleSubmit} >
           <Grid container direction={'column'} sx={{ background: '#FEC0D4' }}>
             <Grid container width={'100%'} flexDirection={'row'} >
@@ -299,14 +335,11 @@ const ReworkForm = ({ formType }: NokFromProps) => {
               </Button>
             </Grid>
             <Divider sx={{ margin:1 }}/>
-            <Typography>
-              Recipes used for rework
-            </Typography>
-            <ReworkRecipeList recipes={reworkRecipes} confirmSelection={selectReworkRecipes}  />
-            <Typography>
-              Recipes affected by rework
-            </Typography>
-            <ReworkRecipeList recipes={affectedRecipes}confirmSelection={selectAffectedRecipes} />
+            <ReworkRecipeList recipes={reworkRecipes} confirmSelection={selectReworkRecipes} title='Rework Recipes (Recipes used for rework)'  />
+            <Divider sx={{ margin:1 }}/>
+            <ReworkRecipeList recipes={productionRecipes}confirmSelection={selectAffectedRecipes} title='Affected Recipes (Recipes affected by rework)' />
+            <Divider sx={{ margin:1 }}/>
+            <ReworkDismantledMaterial affectedMaterials={affectedMaterial} confirmSelection={selectDismantledMaterials}  />
           </Grid>
         </form>
       </Box>
