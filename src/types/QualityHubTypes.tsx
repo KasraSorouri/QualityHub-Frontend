@@ -274,22 +274,33 @@ export interface NewRca extends Omit<RCA, 'id' | 'rcaCode'> {
 
 export interface Rework {
   id: number;
-  Product: Product;
+  product: Product;
   reworkShortDesc: string;
   description?: string;
   order: number;
   nokCode: number;
-  useRecipes: Recipe[];
+  reworkRecipes: Recipe[];
   affectedRecipes: Recipe[];
-  station: number;
+  station: Station;
   timeDuration?: number;
   active: boolean;
   deprecated: boolean;
 }
 
-export interface NewRework extends Omit<Rework, 'id' | 'product' | 'nokCode' | 'station'> {
+export interface NewRework extends Omit<Rework, 'id' | 'product' | 'nokCode' | 'station' | 'useRecipe' | 'reworkRecipes' | 'affectedRecipes'> {
   id?: number;
   productId: number;
   nokCodeId: number;
   stationId: number;
+  reworkRecipes: number[];
+  affectedRecipes: number[];
+  dismantledMaterials: DismantledMaterial [];
+}
+
+export interface DismantledMaterial {
+  id: number;
+  recipeCode: string;
+  dismantledQty? : number;
+  note?: string;
+  mandatoryRemove?: boolean;
 }

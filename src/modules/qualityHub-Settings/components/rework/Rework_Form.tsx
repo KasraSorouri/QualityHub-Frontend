@@ -13,7 +13,7 @@ import {
   TextFieldVariants,
 } from '@mui/material';
 
-import { NokCode, Station, WorkShift, Product, Recipe, ConsumingMaterial } from '../../../../types/QualityHubTypes';
+import { NokCode, Station, WorkShift, Product, Recipe, ConsumingMaterial, NewRework } from '../../../../types/QualityHubTypes';
 import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import stationServices from '../../services/stationServices';
@@ -22,6 +22,7 @@ import productServices from '../../services/productServices';
 import ReworkRecipeList from './ReworkRecipeList';
 import recipeServices from '../../services/recipeServices';
 import ReworkDismantledMaterial from './ReworkDismantleMaterial';
+import reworkServices from '../../services/reworkServices';
 
 type NokFromProps = {
   formType: 'ADD' | 'EDIT' | 'VIEW';
@@ -189,7 +190,23 @@ const ReworkForm = ({ formType }: NokFromProps) => {
     event.preventDefault();
     if (formType === 'ADD') {
       console.log(' *** Rework * Submit form * newNokData -> ',formValues);
-      //console.log(' *** NOK registeration * Submit form * result -> ', result);
+      const reworkData : NewRework = {
+        productId: formValues.product.id,
+        stationId: formValues.station.id,
+        nokCodeId: formValues.nokCode.id,
+        reworkShortDesc: formValues.reworkShortDesc,
+        description: formValues.description,
+        order: formValues.order,
+        timeDuration: formValues.timeDuration,
+        active: formValues.active,
+        deprecated: formValues.deprecated,
+        reworkRecipes: formValues.reworkRecipes,
+        affectedRecipes: formValues.affectedRecipes,
+        dismantledMaterials: formValues.dismantledMaterials,
+      };
+
+      const result = await reworkServices.createRework(reworkData);
+      console.log(' *** NOK registeration * Submit form * result -> ', result);
 
     } else {
       console.log(' *** Rework * Submit form * Error -> ', 'Missing data');
