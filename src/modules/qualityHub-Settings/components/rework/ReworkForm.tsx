@@ -71,8 +71,8 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
     timeDuration: reworkData ? reworkData.timeDuration : 0,
     active: reworkData ? reworkData.active :true,
     deprecated: reworkData ? reworkData.deprecated :false,
-    reworkRecipes:reworkData?.reworkRecipes ? reworkData.reworkRecipes.map(recipe => (recipe.id)) :[],
-    affectedRecipes: reworkData?.affectedRecipes ? reworkData.affectedRecipes.map(recipe => (recipe.id)) : [],
+    reworkRecipes:reworkData?.reworkRecipes ? reworkData.reworkRecipes :[],
+    affectedRecipes: reworkData?.affectedRecipes ? reworkData.affectedRecipes : [],
     dismantledMaterials: [],
   };
 
