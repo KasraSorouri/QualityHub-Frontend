@@ -32,6 +32,7 @@ interface EnhancedTableHeadProps {
 
 type RecipeListProps = {
   recipes: Recipe[];
+  selectedRecipes: number[];
   confirmSelection: (recipes : number[]) => void;
   confirmChange: (value: boolean ) => void;
   title: string;
@@ -42,9 +43,10 @@ type ShowDetails = {
   index: number | undefined;
 }
 
-const ReworkRecipeList = ({ recipes, confirmSelection, confirmChange, title } : RecipeListProps) => {
+const ReworkRecipeList = ({ recipes, selectedRecipes, confirmSelection, confirmChange, title } : RecipeListProps) => {
 
-  const [ selectedRwRecipes, setSelectedRwRecipes ] = useState<number[]>([]);
+  const [ selectedRwRecipes, setSelectedRwRecipes ] = useState<number[]>(selectedRecipes);
+  console.log(' selected recipes ->', selectedRwRecipes);
 
   const [ showMatrials, setShowMaterials ] = useState<ShowDetails>({ index: undefined, show: false });
 

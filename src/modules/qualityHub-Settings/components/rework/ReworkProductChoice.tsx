@@ -14,7 +14,7 @@ import {
 
 import { Product } from '../../../../types/QualityHubTypes';
 import productServices from '../../services/productServices';
-import Recipes from './Recipes';
+import Reworks from './Rework';
 
 const ReworkProductChoice = () => {
 
@@ -57,11 +57,11 @@ const ReworkProductChoice = () => {
       </Grid>
       <Grid item>
         { selectedProduct ?
-          <Recipes product={selectedProduct} />
+          <Reworks product={selectedProduct} />
           :
           <Grid>
             <Typography variant='h6' marginLeft={2}>
-        Please select a product to view recipes.
+        Please select a product to view reworks.
               <br/>
         If you do not see any products, please add a new product.
               <br/>

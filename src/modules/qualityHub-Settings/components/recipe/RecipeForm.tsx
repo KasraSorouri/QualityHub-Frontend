@@ -109,6 +109,7 @@ const RecipeForm = ({ recipeData, productId, formType, submitHandler, displayRec
 
   const handleMaterialChange = (newValue: ConsumingMaterial[]) => {
     const newMaterials = newValue.map(item => { return({
+      id: item.id,
       material: item.material,
       qty: item.qty,
       reusable: item.reusable
@@ -141,6 +142,7 @@ const RecipeForm = ({ recipeData, productId, formType, submitHandler, displayRec
         return undefined;
       } else {
         const materialData : ConsumingMaterialData = {
+          id: item.id,
           materialId: item.material.id,
           qty: item.qty,
           reusable: item.reusable ? item.reusable : Reusable.NO,

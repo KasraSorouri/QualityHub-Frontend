@@ -278,16 +278,18 @@ export interface Rework {
   reworkShortDesc: string;
   description?: string;
   order: number;
-  nokCode: number;
-  reworkRecipes: Recipe[];
-  affectedRecipes: Recipe[];
+  nokCode: NokCode;
+  reworkRecipes: number[];
+  affectedRecipes: number[];
   station: Station;
   timeDuration?: number;
   active: boolean;
   deprecated: boolean;
+  creationDate: Date;
+  deprecatedDate?: Date;
 }
 
-export interface NewRework extends Omit<Rework, 'id' | 'product' | 'nokCode' | 'station' | 'useRecipe' | 'reworkRecipes' | 'affectedRecipes'> {
+export interface NewRework extends Omit<Rework, 'id' | 'product' | 'nokCode' | 'station' | 'useRecipe' | 'reworkRecipes' | 'affectedRecipes' | 'creationDate'> {
   id?: number;
   productId: number;
   nokCodeId: number;
