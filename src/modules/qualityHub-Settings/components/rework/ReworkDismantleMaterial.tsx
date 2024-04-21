@@ -36,19 +36,20 @@ type DismantleMaterialListProps = {
   rwDismantledMaterial? : DismantledMaterial[];
   confirmSelection: (dismantledMaterial: DismantledMaterial[]) => void;
   confirmChange: (value: boolean ) => void;
+  editable: boolean;
 }
 
 interface FormData extends DismantledMaterial {
   isSelected: boolean;
 }
 
-const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confirmSelection, confirmChange } : DismantleMaterialListProps) => {
+const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confirmSelection, confirmChange, editable } : DismantleMaterialListProps) => {
 
   const [ selectedMaterials, setSelectedMaterials ] = useState<number[]>([]);
-
   const [ formValues, setFormValues ] = useState<FormData[]>([]);
-  const setNotification = useNotificationSet();
+  const [ confirmActive, setConfirmActive ] = useState<boolean>(false);
 
+  const setNotification = useNotificationSet();
 
   useEffect(() => {
     const initialFormValues = affectedMaterials.map(material => {
@@ -104,8 +105,8 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
     { id: 'traceable', lable: 'Traceable', width: '5%', minWidth: 10, borderRight: true },
     { id: 'reusable', lable: 'Reusable', width: '5%', minWidth: 10, borderRight: true },
     { id: 'dismantleQty', lable: 'Dismantle Qty', width: '10%', minWidth: 10, borderRight: true },
-    { id: 'note', lable: 'Note', width: '35%', minWidth: 10, borderRight: true },
-    { id: 'mandatoryRemove', lable: 'Mandatory Remove', width: '3%', minWidth: 5, borderRight: true },
+    { id: 'note', lable: 'Note', width: '45%', minWidth: 12, borderRight: true },
+    { id: 'mandatoryRemove', lable: 'Mandatory Remove', width: '3%', minWidth: 5, borderRight: false },
   ];
 
   const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
@@ -164,17 +165,19 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
       const newSelected = selectedMaterials.filter((id) => id !== selectedIndex);
       setSelectedMaterials(newSelected);
       // remove dismantled data
-      const updateValue = formValues.filter((item) => item.id === selectedIndex);
-      if (updateValue.length > 0) {
-        updateValue[0].dismantledQty = 0;
-        updateValue[0].note = '';
-        updateValue[0].mandatoryRemove = false;
+      const updateValue = formValues.find((item) => item.id === selectedIndex);
+      if (updateValue) {
+        updateValue.isSelected = false;
+        updateValue.dismantledQty = 0;
+        updateValue.note = '';
+        updateValue.mandatoryRemove = false;
       }
+      setConfirmActive(true);
     } else {
       const newSelected = selectedMaterials.concat(selectedIndex);
-      const updateValue = formValues.filter((item) => item.id === selectedIndex);
-      if (updateValue.length > 0) {
-        updateValue[0].isSelected = true;
+      const updateValue = formValues.find((item) => item.id === selectedIndex);
+      if (updateValue) {
+        updateValue.isSelected = true;
       }
       setSelectedMaterials(newSelected);
     }
@@ -197,6 +200,7 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
         updateValue[0].dismantledQty = value;
       }
     }
+    setConfirmActive(true);
     confirmChange(false);
   };
 
@@ -206,6 +210,7 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
     if (updateValue.length > 0) {
       updateValue[0].note = value;
     }
+    setConfirmActive(true);
     confirmChange(false);
   };
 
@@ -215,11 +220,13 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
     if (updateValue.length > 0) {
       updateValue[0].mandatoryRemove = value;
     }
+    setConfirmActive(true);
     confirmChange(false);
   };
 
   const handleResetSelection = () => {
     setSelectedMaterials([]);
+    setConfirmActive(true);
     confirmChange(false);
   };
 
@@ -228,13 +235,14 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
     const isDataCorrect = dismantledmaterials.every(item => item.dismantledQty > 0);
     if (isDataCorrect) {
       confirmChange(true);
+      setConfirmActive(false);
       confirmSelection(dismantledmaterials);
     }
 
   };
 
   return(
-    <Paper>
+    <Paper sx={{ pointerEvents: editable ? 'all' : 'none' }}>
       <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'} >
         <Typography margin={1} >Material Dismantle (Material will be removed)</Typography>
         <Typography margin={1} >{selectedMaterials.length} Items is Selected</Typography>
@@ -247,7 +255,7 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
             color='primary'
             sx={{ height: '30px' }}
             onClick={handleConfirmSelection}
-            disabled={false}
+            disabled={!confirmActive}
           >
             Confirm
           </Button>

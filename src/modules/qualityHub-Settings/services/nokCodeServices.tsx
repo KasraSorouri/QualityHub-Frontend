@@ -7,8 +7,6 @@ import { NokCodeData, NokCode } from '../../../types/QualityHubTypes';
 // Get all NokCode
 const getNokCode = async() : Promise<NokCode[]> => {
   const res = await axios.get(`${api_url}/quality/nok_codes`);
-  console.log(' * Nok group *servise * test ->', res.data);
-
   return res.data;
 };
 

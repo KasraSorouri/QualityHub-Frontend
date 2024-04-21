@@ -36,6 +36,7 @@ type RecipeListProps = {
   confirmSelection: (recipes : number[]) => void;
   confirmChange: (value: boolean ) => void;
   title: string;
+  editable: boolean;
 }
 
 type ShowDetails = {
@@ -43,11 +44,11 @@ type ShowDetails = {
   index: number | undefined;
 }
 
-const ReworkRecipeList = ({ recipes, selectedRecipes, confirmSelection, confirmChange, title } : RecipeListProps) => {
+const ReworkRecipeList = ({ recipes, selectedRecipes, confirmSelection, confirmChange, title, editable } : RecipeListProps) => {
 
   const [ selectedRwRecipes, setSelectedRwRecipes ] = useState<number[]>(selectedRecipes);
-
   const [ showMatrials, setShowMaterials ] = useState<ShowDetails>({ index: undefined, show: false });
+  const [ confirmActive, setConfirmActive ] = useState<boolean>(false);
 
   // Sort Items
   const [ sort, setSort ] = useState<{ sortItem: keyof Recipe; sortOrder: number }>({ sortItem: 'recipeCode' , sortOrder: 1 });
@@ -133,6 +134,7 @@ const ReworkRecipeList = ({ recipes, selectedRecipes, confirmSelection, confirmC
 
   const handleSelect = (_event: React.MouseEvent<unknown>, id: number) => {
     const selectedIndex = id;
+    setConfirmActive(true);
     if (selectedRwRecipes.includes(selectedIndex)){
       const newSelected = selectedRwRecipes.filter((id) => id !== selectedIndex);
       setSelectedRwRecipes(newSelected);
@@ -147,16 +149,18 @@ const ReworkRecipeList = ({ recipes, selectedRecipes, confirmSelection, confirmC
 
   const handleResetSelection = () => {
     setSelectedRwRecipes([]);
+    setConfirmActive(true);
     confirmChange(false);
   };
 
   const handleConfirmSelection = () => {
     confirmChange(true);
+    setConfirmActive(false);
     confirmSelection(selectedRwRecipes);
   };
 
   return(
-    <Paper>
+    <Paper sx={{ pointerEvents: editable ? 'all' : 'none' }}>
       <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'} >
         <Typography margin={1} >{title}</Typography>
         <Typography margin={1} >{selectedRwRecipes.length} Recipes is Selected</Typography>
@@ -164,12 +168,12 @@ const ReworkRecipeList = ({ recipes, selectedRecipes, confirmSelection, confirmC
           <Button variant='contained' color='primary' sx={{ height: '30px' }} onClick={handleResetSelection} >
             Clear Selection
           </Button>
-          <Button variant='contained' color='primary' sx={{ height: '30px' }} onClick={handleConfirmSelection} >
+          <Button variant='contained' color='primary' disabled={!confirmActive} sx={{ height: '30px' }} onClick={handleConfirmSelection} >
             Confirm
           </Button>
         </Stack>
       </Grid>
-      <TableContainer sx={{ maxHeight: '550Px' }} >
+      <TableContainer sx={{ maxHeight: '550Px' }}  >
         <Table stickyHeader aria-label='sticky table' size='small' >
           <EnhancedTableHead
             order={order}
