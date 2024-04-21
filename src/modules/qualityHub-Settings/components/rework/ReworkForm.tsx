@@ -75,36 +75,8 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
 
   const [ formValues, setFormValues ] = useState<FormData>(initFormValues);
   const [ affectedMaterial, setAffectedMaterial ] = useState<AffectedMaterial[]>([]);
+  const [ recipeList, setRecipeList ] = useState<Recipe[]>([]);
   const [ confirmation, setConfirmation ] = useState<{reworkRecipes: boolean, affectedRecipes: boolean, dismantledMaterials: boolean}>({ reworkRecipes: false, affectedRecipes: false, dismantledMaterials: false });
-
-
-  const updateAffectedMaterial = (affectedRecipes : number[]) => {
-    const affectedMaterials : AffectedMaterial[] = [];
-    affectedRecipes.map(recipeId => {
-      const recipe = productionRecipes.find(r => r.id === recipeId);
-      if (recipe) {
-        recipe.recipeMaterials?.map(recipeMaterial => {
-          const newMaterial = {
-            ...recipeMaterial,
-            id: recipeMaterial.id,
-            recipeId: recipe.id,
-            recipeCode: recipe.recipeCode,
-            recipeQty: recipeMaterial.qty
-          };
-          affectedMaterials.push(newMaterial);
-        });
-      }
-    }
-    );
-    return affectedMaterials;
-  };
-
-
-  useEffect(() => {
-    setFormValues(initFormValues);
-    setAffectedMaterial(updateAffectedMaterial(initFormValues.affectedRecipes));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[formType]);
 
   // get Station List
   const stationResults = useQuery('stations',stationServices.getStation, { refetchOnWindowFocus: false });
@@ -115,17 +87,47 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
   const nokCodeList: NokCode[] = nokCodeResults.data || [];
 
   // Get Recipe List
-  const recipeResults = useQuery(['recipes',formValues.product.id], async() => {
+  useQuery(['recipes',formValues.product.id], async() => {
     const response = recipeServices.getRecipeByProduct(formValues.product.id);
     if (!response) {
       throw new Error('Failed to fetch recipes');
     }
     return response;
-  },{ refetchOnWindowFocus: false, enabled: true });
+  },{ refetchOnWindowFocus: false, enabled: true, onSuccess : (data) => {
+    setRecipeList(data);
+    updateAffectedMaterial(data, initFormValues.affectedRecipes);
+  } });
 
-  const reworkRecipes: Recipe[] = recipeResults.data?.filter(r => r.recipeType === 'REWORK') || [];
-  const productionRecipes: Recipe[] = recipeResults.data?.filter(r => r.recipeType === 'PRODUCTION') || [];
+  const reworkRecipes: Recipe[] = recipeList?.filter(r => r.recipeType === 'REWORK') || [];
+  const productionRecipes: Recipe[] = recipeList?.filter(r => r.recipeType === 'PRODUCTION') || [];
 
+
+  const updateAffectedMaterial = (recipeList: Recipe[], affectedRecipes : number[]) => {
+    const affectedMaterials : AffectedMaterial[] = [];
+    affectedRecipes.map(recipeId => {
+      const recipe = recipeList.filter(r => r.recipeType === 'PRODUCTION').find(r => r.id === recipeId);
+      if (recipe) {
+        recipe.recipeMaterials?.map(recipeMaterial => {
+          const newMaterial = {
+            recipeBom: {
+              id: recipeMaterial.id,
+              recipe: recipe,
+              qty: recipeMaterial.qty,
+              material: recipeMaterial.material,
+              reusable: recipeMaterial.reusable
+            },
+          };
+          affectedMaterials.push(newMaterial);
+        });
+      }
+    });
+    setAffectedMaterial(affectedMaterials);
+  };
+
+  useEffect(() => {
+    setFormValues(initFormValues);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[]);
 
   // handle Changes
   const handleChange = (event: {target: { name: string, value: unknown, checked: boolean}}) => {
@@ -168,10 +170,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
   const selectAffectedRecipes = (recipeIds: number[]) => {
     const affectedRecipes = recipeIds;
     setFormValues({ ...formValues,affectedRecipes: affectedRecipes });
-
-    // affected materials
-    const  affectedMaterials = updateAffectedMaterial(affectedRecipes);
-    setAffectedMaterial(affectedMaterials);
+    updateAffectedMaterial(recipeList, affectedRecipes);
   };
 
   // Dismantled Materials
@@ -182,16 +181,13 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
 
   // set confirmation
   const handleConfirmChange = (form: string, value: boolean) => {
-    console.log(' *++* confirmation change -> form:', form, ' ** value:', value);
     const newConfirmation = { ...confirmation, [form]: value };
-    console.log(' *++* confirmation change -> newConfirmation:', newConfirmation);
     setConfirmation(newConfirmation);
   };
 
   const handleSubmit = async (event: {preventDefault: () => void}) => {
     event.preventDefault();
     if (formType === 'ADD') {
-      console.log(' *** Rework * Submit form * newNokData -> ',formValues);
       if (formValues.station && formValues.nokCode) {
         const reworkData : NewRework = {
           productId: formValues.product.id,
@@ -207,7 +203,6 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
           affectedRecipes: formValues.affectedRecipes,
           dismantledMaterials: formValues.dismantledMaterials ? formValues.dismantledMaterials : [],
         };
-
         const result = await reworkServices.createRework(reworkData);
         console.log(' *** NOK registeration * Submit form * result -> ', result);
 

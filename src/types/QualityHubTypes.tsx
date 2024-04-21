@@ -300,18 +300,22 @@ export interface NewRework extends Omit<Rework, 'id' | 'product' | 'nokCode' | '
   dismantledMaterials: DismantledMaterial[];
 }
 
-export interface DismantledMaterial {
+interface RecipeBOM {
   id: number;
-  recipeId: number;
-  recipeCode: string;
-  dismantledQty : number;
-  note?: string;
-  mandatoryRemove?: boolean;
+  recipe: Recipe;
+  qty: number;
   material: Material;
-  recipeQty: number;
   reusable: Reusable;
 }
 
-export interface AffectedMaterial extends Omit<DismantledMaterial, 'dismantledQty'> {
+export interface DismantledMaterial {
+  id: number;
+  recipeBom: RecipeBOM;
+  dismantledQty : number;
+  note?: string;
+  mandatoryRemove?: boolean;
+}
+
+export interface AffectedMaterial extends Omit<DismantledMaterial, 'id' | 'dismantledQty'> {
   dismantledQty? : number;
 }
