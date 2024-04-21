@@ -13,17 +13,18 @@ import {
   Divider,
 } from '@mui/material';
 
-import Product from './Products';
-import ProductGrp from './ProductGrps';
-import Station from './Stations';
-import Material from './Materials';
-import RecipeProductChoice from './RecipeProductChoice';
+import Product from './product/Products';
+import ProductGrp from './productGroup/ProductGrps';
+import Station from './station/Stations';
+import Material from './material/Materials';
+import RecipeProductChoice from './recipe/RecipeProductChoice';
+import ReworkProductChoice from './rework/ReworkProductChoice';
 
 const ProductsManagement = () => {
 
   const navigate = useNavigate();
 
-  type ShowListForm = 'PRODUCT' | 'PRODUCT_GRP' | 'RECIPE' | 'MATERIAL' | 'STATION' | 'NONE'
+  type ShowListForm = 'PRODUCT' | 'PRODUCT_GRP' | 'RECIPE' | 'MATERIAL' | 'STATION' | 'REWORK' | 'NONE'
 
   const [ showListForm, setShowListForm ] = useState<ShowListForm>('NONE');
 
@@ -47,24 +48,28 @@ const ProductsManagement = () => {
           flexDirection={'column'}
           borderColor={'#1976d270'}>
           <List>
-            <ListItem onClick={() => setShowListForm('PRODUCT')}>
-              <ListItemText primary='Products' sx={{ color: 'black' }} />
-            </ListItem>
-            <Divider />
             <ListItem onClick={() => setShowListForm('PRODUCT_GRP')}>
               <ListItemText primary='Product Groups' sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
-            <ListItem onClick={() => setShowListForm('RECIPE')}>
-              <ListItemText primary='Recipes' sx={{ color: 'black' }} />
+            <ListItem onClick={() => setShowListForm('PRODUCT')}>
+              <ListItemText primary='Products' sx={{ color: 'black' }} />
+            </ListItem>
+            <Divider />
+            <ListItem onClick={() => setShowListForm('STATION')}>
+              <ListItemText primary='Stations' sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
             <ListItem onClick={() => setShowListForm('MATERIAL')}>
               <ListItemText primary='Materials' sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
-            <ListItem onClick={() => setShowListForm('STATION')}>
-              <ListItemText primary='Stations' sx={{ color: 'black' }} />
+            <ListItem onClick={() => setShowListForm('RECIPE')}>
+              <ListItemText primary='Recipes' sx={{ color: 'black' }} />
+            </ListItem>
+            <Divider />
+            <ListItem onClick={() => setShowListForm('REWORK')}>
+              <ListItemText primary='Rework' sx={{ color: 'black' }} />
             </ListItem>
           </List>
         </Grid>
@@ -75,6 +80,7 @@ const ProductsManagement = () => {
             {showListForm === 'STATION' && <Station /> }
             {showListForm === 'MATERIAL' && <Material /> }
             {showListForm === 'RECIPE' && <RecipeProductChoice /> }
+            {showListForm === 'REWORK' && <ReworkProductChoice /> }
           </Box>
         </Grid>
       </Grid>

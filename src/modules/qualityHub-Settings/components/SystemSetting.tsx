@@ -13,15 +13,18 @@ import {
   Divider,
 } from '@mui/material';
 
-import NokGrps from './NokGrps';
-import NokCodes from './NokCodes';
+import NokGrps from './nokGroup/NokGrps';
+import NokCodes from './nokCode/NokCodes';
 import RcaCodes from './rcaCode/RcaCodes';
+import Machines from './machine/Machines';
+import WorkShifts from './workShift/WorkShifts';
+import ClassCodes from './classCode/ClassCodes';
 
 const SystemSetting = () => {
 
   const navigate = useNavigate();
 
-  type ShowListForm = 'NOK-CODE' | 'NOK-GRP' | 'RCA-CODE' | '' | '' | 'NONE'
+  type ShowListForm = 'NOK-CODE' | 'NOK-GRP' | 'RCA-CODE' | 'CLASS-CODE' | 'DEVICE-TOOLS' | 'SHIFT' | 'NONE'
 
   const [ showListForm, setShowListForm ] = useState<ShowListForm>('NONE');
 
@@ -57,12 +60,16 @@ const SystemSetting = () => {
               <ListItemText primary='RCA Code' sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
-            <ListItem onClick={() => setShowListForm('')}>
-              <ListItemText primary='**' sx={{ color: 'black' }} />
+            <ListItem onClick={() => setShowListForm('CLASS-CODE')}>
+              <ListItemText primary='Defect Classification' sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
-            <ListItem onClick={() => setShowListForm('')}>
-              <ListItemText primary='**' sx={{ color: 'black' }} />
+            <ListItem onClick={() => setShowListForm('DEVICE-TOOLS')}>
+              <ListItemText primary='Device / Tools' sx={{ color: 'black' }} />
+            </ListItem>
+            <Divider />
+            <ListItem onClick={() => setShowListForm('SHIFT')}>
+              <ListItemText primary='Shifs' sx={{ color: 'black' }} />
             </ListItem>
           </List>
         </Grid>
@@ -71,8 +78,9 @@ const SystemSetting = () => {
             {showListForm === 'NOK-CODE' && <NokCodes /> }
             {showListForm === 'NOK-GRP' && <NokGrps /> }
             {showListForm === 'RCA-CODE' && <RcaCodes /> }
-            {showListForm === '' &&'test'  }
-            {showListForm === '' && 'test' }
+            {showListForm === 'CLASS-CODE' && <ClassCodes /> }
+            {showListForm === 'DEVICE-TOOLS' && <Machines />  }
+            {showListForm === 'SHIFT' && <WorkShifts />  }
           </Box>
         </Grid>
       </Grid>
