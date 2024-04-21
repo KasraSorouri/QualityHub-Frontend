@@ -48,7 +48,7 @@ const ReworkRecipeList = ({ recipes, selectedRecipes, confirmSelection, confirmC
 
   const [ selectedRwRecipes, setSelectedRwRecipes ] = useState<number[]>(selectedRecipes);
   const [ showMatrials, setShowMaterials ] = useState<ShowDetails>({ index: undefined, show: false });
-  const [ confirmActive, setConfirmActive ] = useState<boolean>(false);
+  const [ confirmActive, setConfirmActive ] = useState<boolean>(recipes.length > 0 ? false : true);
 
   // Sort Items
   const [ sort, setSort ] = useState<{ sortItem: keyof Recipe; sortOrder: number }>({ sortItem: 'recipeCode' , sortOrder: 1 });

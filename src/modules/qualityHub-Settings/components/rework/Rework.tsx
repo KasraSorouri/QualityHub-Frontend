@@ -19,6 +19,7 @@ const Reworks = () => {
   const [ showReworkForm, setShowReworkForm ] = useState<{ show: boolean, formType: 'ADD' | 'EDIT' | 'VIEW' }>({ show: false, formType: 'ADD' });
   const [ selectedRework, setSelectedRework ] = useState<Rework | null>(null);
   const [ product, setProduct ] = useState<Product | null>(null);
+  const [ update, setUpdate ] = useState<boolean>(false);
 
   // Query implementation
   const queryClient = useQueryClient();
@@ -28,7 +29,7 @@ const Reworks = () => {
       await queryClient.invalidateQueries('reworks');
     };
     updateReworkQuery();
-  },[product, queryClient]);
+  },[product, queryClient, update]);
 
   const handleSelectedProduct = (product : Product) => {
     setProduct(product);
@@ -44,6 +45,10 @@ const Reworks = () => {
 
   const reworks: Rework[] = reworkResults.data || [];
 
+  const handleUpdate = () => {
+    setUpdate(!update);
+  };
+
   return(
     <Grid container direction={'column'} spacing={2} marginLeft={2}>
       { product ?
@@ -51,7 +56,7 @@ const Reworks = () => {
           {(!showReworkForm.show) && <ReworkProductChoice selectProduct={handleSelectedProduct} />}
           <Grid item>
             {reworkResults.isLoading && <LinearProgress sx={{ margin: 1 }} />}
-            {showReworkForm.show && <ReworkForm reworkData={selectedRework} product={product} formType={showReworkForm.formType} displayReworkForm={setShowReworkForm} />}
+            {showReworkForm.show && <ReworkForm reworkData={selectedRework} product={product} formType={showReworkForm.formType} displayReworkForm={setShowReworkForm} updateRequest={handleUpdate} />}
           </Grid>
           <Grid item>
             {(reworkResults.data && !showReworkForm.show) && <ReworkList reworks={reworks} selectRework={setSelectedRework} displayReworkForm={setShowReworkForm} />}

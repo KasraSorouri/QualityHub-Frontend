@@ -29,6 +29,7 @@ type ReworkFromProps = {
   product: Product;
   formType: 'ADD' | 'EDIT' | 'VIEW';
   displayReworkForm: ({ show, formType } : { show: boolean, formType: 'ADD' | 'EDIT' | 'VIEW' }) => void;
+  updateRequest : () => void;
 }
 
 type FormData = {
@@ -46,7 +47,7 @@ type FormData = {
   dismantledMaterials?: DismantledMaterial[];
 }
 
-const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: ReworkFromProps) => {
+const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRequest }: ReworkFromProps) => {
 
   const submitTitle = formType === 'ADD' ? 'Add' : 'Update';
 
@@ -78,7 +79,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
   const [ recipeList, setRecipeList ] = useState<Recipe[]>([]);
   const [ confirmation, setConfirmation ] = useState<{reworkRecipes: boolean, affectedRecipes: boolean, dismantledMaterials: boolean}>({ reworkRecipes: false, affectedRecipes: false, dismantledMaterials: false });
 
-  console.log('reworkData ->', reworkData);
+  console.log('formValues ->', formValues);
 
   // get Station List
   const stationResults = useQuery('stations',stationServices.getStation, { refetchOnWindowFocus: false });
@@ -185,13 +186,13 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
   };
 
   // enable Submit Button
-  let enableSubmmit : boolean = false;
+  let disableSubmmit : boolean = true;
   if (formType === 'ADD') {
-    enableSubmmit = (!formValues.reworkShortDesc && !formValues.nokCode && !formValues.station && formValues.reworkRecipes.length > 0);
+    disableSubmmit = (!formValues.reworkShortDesc || !formValues.nokCode || !formValues.station || !confirmation.affectedRecipes || !confirmation.reworkRecipes || !confirmation.dismantledMaterials );
   }
   else {
     if (formType === 'EDIT') {
-      enableSubmmit = true;
+      disableSubmmit = false;
     }
   }
 
@@ -245,6 +246,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
         console.log(' *** Rework * Submit form * Error -> ', 'Missing data');
       }
     }
+    updateRequest();
   };
 
   return (
@@ -375,7 +377,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
               <Stack direction={'column'} >
                 <Button
                   type='submit'
-                  disabled={!enableSubmmit}
+                  disabled={disableSubmmit}
                   variant='contained'
                   color='primary'
                   sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}
