@@ -37,8 +37,6 @@ type ReworkListProps = {
 
 const ReworkList = ({ reworks, displayReworkForm, selectRework } : ReworkListProps) => {
 
-  console.log(' reworks fpr this product -> ', reworks);
-
   // Sort Items
   const [ sort, setSort ] = useState<{ sortItem: keyof Rework; sortOrder: number }>({ sortItem: 'creationDate' , sortOrder: 1 });
   const order : 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';

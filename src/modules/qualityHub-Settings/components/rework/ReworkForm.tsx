@@ -14,7 +14,7 @@ import {
   TextFieldVariants,
 } from '@mui/material';
 
-import { NokCode, Station, WorkShift, Product, Recipe, ConsumingMaterial, NewRework, Rework } from '../../../../types/QualityHubTypes';
+import { NokCode, Station, WorkShift, Product, Recipe, NewRework, Rework, DismantledMaterial, AffectedMaterial } from '../../../../types/QualityHubTypes';
 import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import stationServices from '../../services/stationServices';
@@ -46,20 +46,17 @@ type FormData = {
   dismantledMaterials?: DismantledMaterial[];
 }
 
-interface DismantledMaterial extends ConsumingMaterial {
-  id: number;
-  recipeCode: string;
-  dismantledQty? : number;
-  note?: string;
-  mandatoryRemove?: boolean;
-}
-
 const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: ReworkFromProps) => {
 
-  console.log('*** Rework Data ->', reworkData);
-
-
   const submitTitle = formType === 'ADD' ? 'Add' : 'Update';
+
+  // convert rwDismanled Material
+  const dismantledMaterials = reworkData?.RwDismantledMaterials?.map(material => {
+    return {
+      ...material,
+      dismantledQty: material.dismantledQty,
+    };
+  });
 
   const initFormValues: FormData = {
     product: product,
@@ -73,19 +70,39 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
     deprecated: reworkData ? reworkData.deprecated :false,
     reworkRecipes:reworkData?.reworkRecipes ? reworkData.reworkRecipes :[],
     affectedRecipes: reworkData?.affectedRecipes ? reworkData.affectedRecipes : [],
-    dismantledMaterials: [],
+    dismantledMaterials: reworkData?.RwDismantledMaterials ? dismantledMaterials : [],
   };
 
   const [ formValues, setFormValues ] = useState<FormData>(initFormValues);
-  const [ affectedMaterial, setAffectedMaterial ] = useState<DismantledMaterial[]>([]);
+  const [ affectedMaterial, setAffectedMaterial ] = useState<AffectedMaterial[]>([]);
   const [ confirmation, setConfirmation ] = useState<{reworkRecipes: boolean, affectedRecipes: boolean, dismantledMaterials: boolean}>({ reworkRecipes: false, affectedRecipes: false, dismantledMaterials: false });
 
-  console.log('**** rework * form Values -> ', formValues);
-  console.log('**** rework * confirmation -> ', confirmation);
+
+  const updateAffectedMaterial = (affectedRecipes : number[]) => {
+    const affectedMaterials : AffectedMaterial[] = [];
+    affectedRecipes.map(recipeId => {
+      const recipe = productionRecipes.find(r => r.id === recipeId);
+      if (recipe) {
+        recipe.recipeMaterials?.map(recipeMaterial => {
+          const newMaterial = {
+            ...recipeMaterial,
+            id: recipeMaterial.id,
+            recipeId: recipe.id,
+            recipeCode: recipe.recipeCode,
+            recipeQty: recipeMaterial.qty
+          };
+          affectedMaterials.push(newMaterial);
+        });
+      }
+    }
+    );
+    return affectedMaterials;
+  };
 
 
   useEffect(() => {
     setFormValues(initFormValues);
+    setAffectedMaterial(updateAffectedMaterial(initFormValues.affectedRecipes));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[formType]);
 
@@ -153,21 +170,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
     setFormValues({ ...formValues,affectedRecipes: affectedRecipes });
 
     // affected materials
-    const affectedMaterials : DismantledMaterial[] = [];
-    affectedRecipes.map(recipeId => {
-      const recipe = productionRecipes.find(r => r.id === recipeId);
-      if (recipe) {
-        recipe.recipeMaterials?.map(recipeMaterial => {
-          const newMaterial = {
-            ...recipeMaterial,
-            id: recipeMaterial.id,
-            recipeCode: recipe.recipeCode
-          };
-          affectedMaterials.push(newMaterial);
-        });
-      }
-    }
-    );
+    const  affectedMaterials = updateAffectedMaterial(affectedRecipes);
     setAffectedMaterial(affectedMaterials);
   };
 
@@ -362,7 +365,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
           <Divider sx={{ margin:1 }}/>
           <ReworkRecipeList recipes={productionRecipes} selectedRecipes={reworkData?.affectedRecipes ? reworkData.affectedRecipes : []} confirmSelection={selectAffectedRecipes} confirmChange={(value) => handleConfirmChange('affectedRecipes', value)} title='Affected Recipes (Recipes affected by rework)' />
           <Divider sx={{ margin:1 }}/>
-          <ReworkDismantledMaterial affectedMaterials={affectedMaterial} confirmSelection={selectDismantledMaterials} confirmChange={(value) => handleConfirmChange('dismantledMaterials', value)}  />
+          <ReworkDismantledMaterial affectedMaterials={affectedMaterial} rwDismantledMaterial={reworkData?.RwDismantledMaterials} confirmSelection={selectDismantledMaterials} confirmChange={(value) => handleConfirmChange('dismantledMaterials', value)}  />
         </form>
       </Box>
     </Grid>

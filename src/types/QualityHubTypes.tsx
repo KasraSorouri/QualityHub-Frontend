@@ -287,6 +287,7 @@ export interface Rework {
   deprecated: boolean;
   creationDate: Date;
   deprecatedDate?: Date;
+  RwDismantledMaterials?: DismantledMaterial[];
 }
 
 export interface NewRework extends Omit<Rework, 'id' | 'product' | 'nokCode' | 'station' | 'useRecipe' | 'reworkRecipes' | 'affectedRecipes' | 'creationDate'> {
@@ -296,13 +297,21 @@ export interface NewRework extends Omit<Rework, 'id' | 'product' | 'nokCode' | '
   stationId: number;
   reworkRecipes: number[];
   affectedRecipes: number[];
-  dismantledMaterials: DismantledMaterial [];
+  dismantledMaterials: DismantledMaterial[];
 }
 
 export interface DismantledMaterial {
   id: number;
+  recipeId: number;
   recipeCode: string;
-  dismantledQty? : number;
+  dismantledQty : number;
   note?: string;
   mandatoryRemove?: boolean;
+  material: Material;
+  recipeQty: number;
+  reusable: Reusable;
+}
+
+export interface AffectedMaterial extends Omit<DismantledMaterial, 'dismantledQty'> {
+  dismantledQty? : number;
 }

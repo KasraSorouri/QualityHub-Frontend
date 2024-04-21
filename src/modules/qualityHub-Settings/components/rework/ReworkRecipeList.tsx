@@ -46,7 +46,6 @@ type ShowDetails = {
 const ReworkRecipeList = ({ recipes, selectedRecipes, confirmSelection, confirmChange, title } : RecipeListProps) => {
 
   const [ selectedRwRecipes, setSelectedRwRecipes ] = useState<number[]>(selectedRecipes);
-  console.log(' selected recipes ->', selectedRwRecipes);
 
   const [ showMatrials, setShowMaterials ] = useState<ShowDetails>({ index: undefined, show: false });
 

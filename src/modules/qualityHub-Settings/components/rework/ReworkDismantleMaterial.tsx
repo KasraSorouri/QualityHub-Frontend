@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 
 import {
@@ -23,47 +23,59 @@ import { visuallyHidden } from '@mui/utils';
 
 import { useNotificationSet } from '../../../../contexts/NotificationContext';
 
-import { ConsumingMaterial, Reusable } from '../../../../types/QualityHubTypes';
+import { AffectedMaterial, DismantledMaterial, Reusable } from '../../../../types/QualityHubTypes';
 
 interface EnhancedTableHeadProps {
   order: 'asc' | 'desc';
-  orderBy: keyof DismantledMaterial;
+  orderBy: keyof FormData;
   onRequestSort: (_event: React.MouseEvent<unknown>, property: string) => void;
 }
 
-interface DismantledMaterial extends ConsumingMaterial {
-  id: number;
-  recipeCode: string;
-  dismantledQty? : number;
-  note?: string;
-  mandatoryRemove?: boolean;
-}
-
 type DismantleMaterialListProps = {
-  affectedMaterials: DismantledMaterial[];
+  affectedMaterials: AffectedMaterial[];
+  rwDismantledMaterial? : DismantledMaterial[];
   confirmSelection: (dismantledMaterial: DismantledMaterial[]) => void;
   confirmChange: (value: boolean ) => void;
 }
 
-const ReworkDismantledMaterial = ({ affectedMaterials, confirmSelection, confirmChange } : DismantleMaterialListProps) => {
+interface FormData extends DismantledMaterial {
+  isSelected: boolean;
+}
+
+const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confirmSelection, confirmChange } : DismantleMaterialListProps) => {
 
   const [ selectedMaterials, setSelectedMaterials ] = useState<number[]>([]);
-  const [ dismantledMaterial, setDismantledMaterial ] = useState<DismantledMaterial[]>([]);
 
+  const [ formValues, setFormValues ] = useState<FormData[]>([]);
   const setNotification = useNotificationSet();
 
-  console.log('** ** ** Rework Materials list * Affected Materials ->', affectedMaterials);
 
-  console.log('* Rework Materials list * selected Materials ->', selectedMaterials);
-  console.log('**** Rework Materials list * Dismantled Materials ->', dismantledMaterial);
+  useEffect(() => {
+    const initialFormValues = affectedMaterials.map(material => {
+      return {
+        isSelected: false,
+        ...material,
+        dismantledQty: 0,
+        note: '',
+        mandatoryRemove: false
+      };
+    });
+    setFormValues(initialFormValues);
+    setSelectedMaterials([]);
+  }, [affectedMaterials]);
+
+  console.log('*   Rework Materials list * Affected Materials ->', affectedMaterials);
+  console.log('**  Rework Materials list * selected Materials ->', selectedMaterials);
+  console.log('*** Rework Materials list * formValues ->', formValues);
+  console.log('*** Rework Materials list * Dismantled Materials ->', rwDismantledMaterial);
 
 
   // Sort Items
-  const [ sort, setSort ] = useState<{ sortItem: keyof DismantledMaterial; sortOrder: number }>({ sortItem: 'recipeCode' , sortOrder: 1 });
+  const [ sort, setSort ] = useState<{ sortItem: keyof FormData; sortOrder: number }>({ sortItem: 'recipeCode' , sortOrder: 1 });
   const order : 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
-  const orderBy : keyof DismantledMaterial = sort.sortItem;
+  const orderBy : keyof FormData = sort.sortItem;
 
-  const sortedMaterials: DismantledMaterial[]  = affectedMaterials.sort((a, b) => {
+  const sortedMaterials: FormData[]  = formValues.sort((a, b) => {
     const aValue = a[orderBy];
     const bValue = b[orderBy];
 
@@ -82,7 +94,7 @@ const ReworkDismantledMaterial = ({ affectedMaterials, confirmSelection, confirm
   const columnHeader = [
     { id: 'recipeCode', lable: 'Recipe', width: '7%', minWidth: 10, borderRight: true },
     { id: 'material', lable: 'Material', width: '25%', minWidth: 10, borderRight: true },
-    { id: 'qty', lable: 'Qty', width: '5%', minWidth: '7%', borderRight: true },
+    { id: 'recipeQty', lable: 'Recipe Qty', width: '5%', minWidth: '7%', borderRight: true },
     { id: 'traceable', lable: 'Traceable', width: '5%', minWidth: 10, borderRight: true },
     { id: 'reusable', lable: 'Reusable', width: '5%', minWidth: 10, borderRight: true },
     { id: 'dismantleQty', lable: 'Dismantle Qty', width: '10%', minWidth: 10, borderRight: true },
@@ -134,7 +146,7 @@ const ReworkDismantledMaterial = ({ affectedMaterials, confirmSelection, confirm
     );
   };
 
-  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof DismantledMaterial) => {
+  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof AffectedMaterial) => {
     const isAsc = orderBy === property && order ==='asc';
     setSort({ sortItem: property, sortOrder:isAsc ? -1 : 1 });
   };
@@ -145,11 +157,19 @@ const ReworkDismantledMaterial = ({ affectedMaterials, confirmSelection, confirm
     if (selectedMaterials.includes(selectedIndex)){
       const newSelected = selectedMaterials.filter((id) => id !== selectedIndex);
       setSelectedMaterials(newSelected);
-      setDismantledMaterial(dismantledMaterial.filter((item) => item.id !== selectedIndex));
+      // remove dismantled data
+      const updateValue = formValues.filter((item) => item.id === selectedIndex);
+      if (updateValue.length > 0) {
+        updateValue[0].dismantledQty = 0;
+        updateValue[0].note = '';
+        updateValue[0].mandatoryRemove = false;
+      }
     } else {
       const newSelected = selectedMaterials.concat(selectedIndex);
-      const newDismantledMaterial = affectedMaterials.filter((item) => newSelected.includes(item.id));
-      setDismantledMaterial(newDismantledMaterial);
+      const updateValue = formValues.filter((item) => item.id === selectedIndex);
+      if (updateValue.length > 0) {
+        updateValue[0].isSelected = true;
+      }
       setSelectedMaterials(newSelected);
     }
     confirmChange(false);
@@ -160,53 +180,53 @@ const ReworkDismantledMaterial = ({ affectedMaterials, confirmSelection, confirm
   // Set Dismantle Qty
   const handleDismantleQty = (value: number, index: number) => {
 
-    const updateDismantled = dismantledMaterial.filter((item) => item.id === index);
+    const updateValue = formValues.filter((item) => item.id === index);
     if (value <= 0) {
       setNotification({ message: 'Dismantled Qty must be greater than 0', type: 'error', time: 5 });
     }
-    if (value > updateDismantled[0].qty) {
+    if (value > updateValue[0].recipeQty) {
       setNotification({ message: 'Dismantled Qty must be less than or equal to the Qty', type: 'error', time: 5 });
     } else {
-      if (updateDismantled.length > 0 && value > 0) {
-        updateDismantled[0].dismantledQty = value;
+      if (updateValue.length > 0 && value > 0) {
+        updateValue[0].dismantledQty = value;
       }
-      const newDismantledMaterial = [...dismantledMaterial];
-      setDismantledMaterial(newDismantledMaterial);
     }
     confirmChange(false);
   };
 
   // Set Dismantle Note
   const handleDismantleNote = (value: string, index: number) => {
-    const updateDismantled = dismantledMaterial.filter((item) => item.id === index);
-    if (updateDismantled.length > 0) {
-      updateDismantled[0].note = value;
+    const updateValue = formValues.filter((item) => item.id === index);
+    if (updateValue.length > 0) {
+      updateValue[0].note = value;
     }
-    const newDismantledMaterial = [...dismantledMaterial];
-    setDismantledMaterial(newDismantledMaterial);
     confirmChange(false);
   };
 
   // Set Mandatory Remove
   const handleMandatoryRemove = (value: boolean, index: number) => {
-    const updateDismantled = dismantledMaterial.filter((item) => item.id === index);
-    if (updateDismantled.length > 0) {
-      updateDismantled[0].mandatoryRemove = value;
+    const updateValue = formValues.filter((item) => item.id === index);
+    if (updateValue.length > 0) {
+      updateValue[0].mandatoryRemove = value;
     }
-    const newDismantledMaterial = [...dismantledMaterial];
-    setDismantledMaterial(newDismantledMaterial);
     confirmChange(false);
   };
 
   const handleResetSelection = () => {
     setSelectedMaterials([]);
-    setDismantledMaterial([]);
     confirmChange(false);
   };
 
   const handleConfirmSelection = () => {
-    confirmChange(true);
-    confirmSelection(dismantledMaterial);
+    const dismantledmaterials : DismantledMaterial[] = formValues.filter(material => material.isSelected);
+    const isDataCorrect = dismantledmaterials.every(item => item.dismantledQty > 0);
+    console.log('** dismantele form * confirmation * isDataCorrect ->', isDataCorrect);
+
+    if (isDataCorrect) {
+      confirmChange(true);
+      confirmSelection(dismantledmaterials);
+    }
+
   };
 
   return(
@@ -223,7 +243,7 @@ const ReworkDismantledMaterial = ({ affectedMaterials, confirmSelection, confirm
             color='primary'
             sx={{ height: '30px' }}
             onClick={handleConfirmSelection}
-            disabled={!dismantledMaterial.every(item => item.dismantledQty && item.dismantledQty > 0)}
+            disabled={false}
           >
             Confirm
           </Button>
@@ -240,7 +260,7 @@ const ReworkDismantledMaterial = ({ affectedMaterials, confirmSelection, confirm
             { sortedMaterials.map((material, index) => {
               const isItemSelected = isSelected(material.id);
               const labelId = `enhanced-table-checkbox-${index}`;
-
+              //const formValue = formValues.filter((item) => item.id === material.id);
               return(
                 <React.Fragment key={material.id}>
                   <TableRow
@@ -270,7 +290,7 @@ const ReworkDismantledMaterial = ({ affectedMaterials, confirmSelection, confirm
                       {material.material.itemShortName}
                     </TableCell>
                     <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
-                      {material.qty}
+                      {material.recipeQty}
                     </TableCell>
                     <TableCell align='center' sx={{ borderRight: '1px solid gray' , background: material.material.traceable ? '#FCFEA0' : '#A0F1FE' }} >
                       {material.material.traceable ? 'Yes' : 'No'}
@@ -280,19 +300,19 @@ const ReworkDismantledMaterial = ({ affectedMaterials, confirmSelection, confirm
                       {material.reusable}
                     </TableCell>
                     <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
-                      {selectedMaterials.includes(material.id) ?
+                      {material.isSelected ?
                         <TextField
                           name='qty'
                           sx={{ '& .MuiInputBase-input': { maxHeight: 'inhirent', margin: 0, padding: '0px', textAlign: 'center' } , overflow: 'hidden' }}
                           variant= 'filled'
                           value={material.dismantledQty || ''}
                           onChange={(event) => handleDismantleQty(parseInt(event.target.value), material.id)}
-                          InputProps={{ inputProps: { min: 1, max: material. qty, step: 1 } } }
+                          InputProps={{ inputProps: { min: 1, max: material.recipeQty, step: 1 } } }
                           required /> :
                         '' }
                     </TableCell>
                     <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                      {selectedMaterials.includes(material.id) ?
+                      {material.isSelected ?
                         <TextField
                           name='note'
                           sx={{ '& .MuiInputBase-input': { maxHeight: 'inhirent', margin: 0, padding: '0px' } , overflow: 'hidden' }}
@@ -306,8 +326,8 @@ const ReworkDismantledMaterial = ({ affectedMaterials, confirmSelection, confirm
                       <Box justifyContent={'space-between'} >
                         <Checkbox
                           style={{ height: '16px', width: '16px' }}
-                          value={selectedMaterials.includes(material.id) ? material.mandatoryRemove : false}
-                          disabled={!selectedMaterials.includes(material.id)}
+                          value={material.isSelected ? material.mandatoryRemove : false}
+                          disabled={!material.isSelected}
                           onChange={(event) => handleMandatoryRemove(event.target.checked, material.id)}
                         />
                       </Box>
