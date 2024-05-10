@@ -1,3 +1,5 @@
+import { ReactNode } from 'react';
+
 export interface Product {
   id: number;
   productName: string;
@@ -47,8 +49,8 @@ export interface NewStation extends Omit<Station,'id'> {
   id?: number;
 }
 
-
 export interface Material {
+  [x: string]: ReactNode;
   id: number;
   itemShortName: string;
   itemLongName: string;
@@ -287,7 +289,7 @@ export interface Rework {
   deprecated: boolean;
   creationDate: Date;
   deprecatedDate?: Date;
-  RwDismantledMaterials?: DismantledMaterial[];
+  rwDismantledMaterials?: RwDismantledMaterial[];
 }
 
 export interface NewRework extends Omit<Rework, 'id' | 'product' | 'nokCode' | 'station' | 'useRecipe' | 'reworkRecipes' | 'affectedRecipes' | 'creationDate'> {
@@ -320,7 +322,14 @@ export interface AffectedMaterial extends Omit<RwDismantledMaterial, 'id' | 'dis
   dismantledQty? : number;
 }
 
-export interface DismantledMaterial extends RwDismantledMaterial {
+export interface DismantledMaterial extends Omit<RwDismantledMaterial, 'id' | 'recipeBom' | 'dismantledQty'> {
+  recipeCode?: string;
+  recipeDescription?: string;
+  material: Material;
+  recipeBomId: number;
+  qty: number;
+  suggestedDismantledQty?: number;
+  reusable?: Reusable;
   actualDismantledQty: number;
   materialStatus? : MaterialStatus;
 }

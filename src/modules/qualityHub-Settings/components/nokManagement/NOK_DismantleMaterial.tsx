@@ -23,13 +23,23 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Autocomplete,
+  TextFieldVariants,
+  FilledTextFieldProps,
+  OutlinedTextFieldProps,
+  StandardTextFieldProps,
+  IconButton,
 } from '@mui/material';
 
 import { visuallyHidden } from '@mui/utils';
 
+import DeleteIcon from '@mui/icons-material/Delete';
+
 import { useNotificationSet } from '../../../../contexts/NotificationContext';
 
-import { AffectedMaterial, MaterialStatus, DismantledMaterial, Reusable, RwDismantledMaterial } from '../../../../types/QualityHubTypes';
+import { MaterialStatus, DismantledMaterial, Reusable, RwDismantledMaterial, Material } from '../../../../types/QualityHubTypes';
+import { useQuery } from 'react-query';
+import materialServices from '../../services/materialServices';
 
 interface EnhancedTableHeadProps {
   order: 'asc' | 'desc';
@@ -50,17 +60,28 @@ interface FormData extends DismantledMaterial {
   materialStatus?: MaterialStatus;
 }
 
+type ExtraMaterial = {
+    isSelected: boolean;
+    id: string;
+    material?: Material;
+    actualDismantledQty: number;
+    status?: MaterialStatus;
+}
+
 const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confirmSelection, confirmChange, editable } : DismantleMaterialListProps) => {
 
   const [ selectedMaterials, setSelectedMaterials ] = useState<number[]>([]);
   const [ formValues, setFormValues ] = useState<FormData[]>([]);
   const [ confirmActive, setConfirmActive ] = useState<boolean>(false);
   const [ openDialog , setOpenDialog ] = useState<boolean>(false);
+  const [ extraAffectedMaterials , setExteraAffectedMaterials ] = useState<ExtraMaterial[]>([]);
 
   const setNotification = useNotificationSet();
 
   console.log(' rework Dismantled materail in NOK * affectedMaterials ', affectedMaterials);
   console.log(' rework Dismantled materail in NOK * rwDismantledMaterial ', rwDismantledMaterial);
+  console.log(' rework Dismantled materail in NOK * extraAffectedMaterials ', extraAffectedMaterials);
+
   console.log('******* rework Dismantled materail in NOK * formValues ', formValues);
 
 
@@ -68,19 +89,26 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
     const initialFormValues = affectedMaterials.map(material => {
 
       // find the rwDismantled Material where id is equal to material id
-      const rwDismantled = rwDismantledMaterial?.find(rwm => rwm.recipeBom.id === material.recipeBom.id);
-      return {
-        isSelected: rwDismantledMaterial?.map(dm => (dm.recipeBom.id)).includes(material.recipeBom.id) || false,
-        ...material,
-        mandatoryRemove: rwDismantled ? rwDismantled.mandatoryRemove : false,
+      const rwDismantled = rwDismantledMaterial?.find(rwm => rwm.recipeBomId === material.recipeBom.id);
+      const data : FormData = {
+        isSelected: rwDismantledMaterial?.map(dm => (dm.recipeBomId)).includes(material.recipeBom.id) || false,
+        recipeCode: material.recipeBom.recipe.recipeCode,
+        recipeDescription: material.recipeBom.recipe.description,
+        material: material.recipeBom.material,
+        recipeBomId: material.recipeBom.id,
+        qty: material.recipeBom.qty,
+        suggestedDismantledQty: material.dismantledQty,
+        note: material.note,
+        reusable: material.recipeBom.reusable,
         actualDismantledQty: rwDismantled ? rwDismantled?.actualDismantledQty : 0
       };
+      return data;
     });
 
     const select : number[] = [];
     initialFormValues.map(material => {
       if (material.isSelected) {
-        select.push(material.recipeBom.id);
+        select.push(material.recipeBomId);
       }
     });
     setFormValues(initialFormValues);
@@ -88,8 +116,12 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [affectedMaterials]);
 
+  // Get Material List
+  const materialResult = useQuery('materialList',materialServices.getMaterial, { refetchOnWindowFocus: false });
+  const materialList = materialResult.data ? materialResult.data : [];
+
   // Sort Items
-  const [ sort, setSort ] = useState<{ sortItem: keyof FormData; sortOrder: number }>({ sortItem: 'id' , sortOrder: 1 });
+  const [ sort, setSort ] = useState<{ sortItem: keyof FormData; sortOrder: number }>({ sortItem: 'material' , sortOrder: 1 });
   const order : 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
   const orderBy : keyof FormData = sort.sortItem;
 
@@ -166,7 +198,7 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
     );
   };
 
-  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof AffectedMaterial) => {
+  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof FormData) => {
     const isAsc = orderBy === property && order ==='asc';
     setSort({ sortItem: property, sortOrder:isAsc ? -1 : 1 });
   };
@@ -179,7 +211,7 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
       const newSelected = selectedMaterials.filter((id) => id !== selectedIndex);
       setSelectedMaterials(newSelected);
       // remove dismantled data
-      const updateValue = formValues.find((item) => item.recipeBom.id === selectedIndex);
+      const updateValue = formValues.find((item) => item.recipeBomId === selectedIndex);
       if (updateValue) {
         updateValue.isSelected = false;
         updateValue.actualDismantledQty = 0;
@@ -188,7 +220,7 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
       setConfirmActive(true);
     } else {
       const newSelected = selectedMaterials.concat(selectedIndex);
-      const updateValue = formValues.find((item) => item.recipeBom.id === selectedIndex);
+      const updateValue = formValues.find((item) => item.recipeBomId === selectedIndex);
       if (updateValue) {
         updateValue.isSelected = true;
       }
@@ -201,7 +233,7 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
   const selectAll = () => {
     const selectedItem: number[] = [];
     formValues.forEach(item => {
-      selectedItem.push(item.recipeBom.id);
+      selectedItem.push(item.recipeBomId);
     });
 
     console.log('* selected material *** elect all * new select ->' , selectedItem);
@@ -216,7 +248,7 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
   // Set Dismantle Qty
   const handleActualDismantleQty = (value: number, index: number) => {
 
-    const updateValue = formValues.find((item) => item.recipeBom.id === index);
+    const updateValue = formValues.find((item) => item.recipeBomId === index);
     if (value <= 0) {
       setNotification({ message: 'Dismantled Qty must be greater than 0', type: 'error', time: 5 });
     }
@@ -226,13 +258,13 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
       setConfirmActive(true);
       confirmChange(false);
     }
-    if (updateValue && value > updateValue.recipeBom.qty) {
+    if (updateValue && value > updateValue.qty) {
       setOpenDialog(true);
     }
   };
 
   const handleStatus = (newValue: MaterialStatus, index: number) => {
-    const updateValue = formValues.find((item) => item.recipeBom.id === index);
+    const updateValue = formValues.find((item) => item.recipeBomId === index);
     if (updateValue) {
       updateValue.materialStatus = newValue;
     }
@@ -251,13 +283,82 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
     setOpenDialog(false);
   };
 
+  const handleAddExtra = () => {
+    console.log('extraAffectedMaterial');
+    const newExtraMaterial : ExtraMaterial = { isSelected: true, id:'extra', actualDismantledQty: 1 };
+    setExteraAffectedMaterials(extraAffectedMaterials.concat(newExtraMaterial));
+  };
+
+  const handleAddMaterial = (newValue: Material, index: number) => {
+    const updatedBom = extraAffectedMaterials.map((item, i) => {
+      if (i === index) {
+        return {
+          ...item,
+          material: newValue,
+        };
+      }
+      return item;
+    });
+    setExteraAffectedMaterials(updatedBom);
+    setConfirmActive(true);
+  };
+
+  const handleExtraMatrialQty = (value: number, index: number) => {
+    const updatedBom = extraAffectedMaterials.map((item, i) => {
+      if (i === index) {
+        return {
+          ...item,
+          actualDismantledQty: value,
+        };
+      }
+      return item;
+    });
+    setExteraAffectedMaterials(updatedBom);
+  };
+
+  const handleExtraMatrialStatus = (newValue: MaterialStatus, index: number) => {
+    const updatedBom = extraAffectedMaterials.map((item, i) => {
+      if (i === index) {
+        return {
+          ...item,
+          status: newValue,
+        };
+      }
+      return item;
+    });
+    setExteraAffectedMaterials(updatedBom);
+  };
+
+  const handleExtraMatrialRemove = (index: number) => {
+    const extraMaterial = extraAffectedMaterials.filter((_item, i) => i !== index);
+    setExteraAffectedMaterials(extraMaterial);
+    setConfirmActive(true);
+  };
+
   const handleConfirmSelection = () => {
     const dismantledmaterials : DismantledMaterial[] = formValues.filter(material => material.isSelected);
     dismantledmaterials.forEach(material => {
       if (material.actualDismantledQty === 0) {
-        material.actualDismantledQty = material.dismantledQty;
+        material.actualDismantledQty = material.suggestedDismantledQty ? material.suggestedDismantledQty : material.qty;
       }
     });
+
+    if (extraAffectedMaterials.length > 0) {
+      extraAffectedMaterials.forEach( em => {
+        if (em.material && em.actualDismantledQty > 0) {
+          const newMaterial : DismantledMaterial = {
+            recipeBomId: 0,
+            recipeCode: 'extra',
+            material: em.material,
+            actualDismantledQty: em.actualDismantledQty,
+            materialStatus: em.status ? em.status : MaterialStatus.SCRAPPED,
+            qty: 0
+          };
+          dismantledmaterials.push(newMaterial);
+        }
+      });
+
+    }
     confirmChange(true);
     setConfirmActive(false);
     confirmSelection(dismantledmaterials);
@@ -265,11 +366,14 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
 
   return(
     <Paper sx={{ pointerEvents: editable ? 'all' : 'none' }}>
-      <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'} >
-        <Typography margin={1} >Material Dismantle</Typography>
-        <Typography margin={1} >{selectedMaterials.length} Items is Selected</Typography>
-        <Stack direction={'row'} spacing={1} margin={.5} >
-          <Button variant='contained' color='primary' sx={{ height: '30px' }} onClick={handleResetSelection} >
+      <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'}>
+        <Typography margin={1}>Material Dismantle</Typography>
+        <Typography margin={1}>{selectedMaterials.length} Items is Selected</Typography>
+        <Stack direction={'row'} spacing={1} margin={.5}>
+          <Button variant='contained' color='primary' sx={{ height: '30px' }} onClick={handleAddExtra}>
+            Add Extra Material
+          </Button>
+          <Button variant='contained' color='primary' sx={{ height: '30px' }} onClick={handleResetSelection}>
             Clear Selection
           </Button>
           <Button variant='contained' color='primary' sx={{ height: '30px' }} onClick={selectAll} disabled={formValues.length === selectedMaterials.length}>
@@ -291,106 +395,192 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
           <EnhancedTableHead
             order={order}
             orderBy={orderBy}
-            onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof AffectedMaterial)}
-          />
+            onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof FormData)} />
           <TableBody>
-            { sortedMaterials.map((material, index) => {
-              const isItemSelected = isSelected(material.recipeBom.id);
-              const labelId = `enhanced-table-checkbox-${index}`;
-              //const formValue = formValues.filter((item) => item.id === material.id);
-              return(
-                <React.Fragment key={material.recipeBom.id}>
-                  <TableRow
-                    role="checkbox"
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={material.recipeBom.id}
-                    selected={isItemSelected}
-                    sx={{ cursor: 'pointer' }}
-                  >
-                    <TableCell
-                      padding="checkbox"
-                      onClick={(event) => handleSelect(event, material.recipeBom.id)}
-                    >
-                      <Checkbox
-                        color="primary"
-                        checked={isItemSelected}
-                        inputProps={{
-                          'aria-labelledby': labelId,
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
-                      {material.recipeBom.recipe.recipeCode}
-                    </TableCell>
-                    <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                      {material.recipeBom.material.itemShortName}
-                    </TableCell>
-                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
-                      {material.recipeBom.qty}
-                    </TableCell>
-                    <TableCell align='center' sx={{ borderRight: '1px solid gray' , background: material.recipeBom.material.traceable ? '#FCFEA0' : '#A0F1FE' }} >
-                      {material.recipeBom.material.traceable ? 'Yes' : 'No'}
-                    </TableCell>
-                    <TableCell align='center' sx={{ borderRight: '1px solid gray',
-                      backgroundColor: material.recipeBom.reusable === Reusable.YES ? '#A8F285' : material.recipeBom.reusable === Reusable.IQC ? '#FFFFAB' : '#F2A8A8' }} >
-                      {material.recipeBom.reusable}
-                    </TableCell>
-                    <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                      {material.note}
-                    </TableCell>
-                    <TableCell align='center' >
-                      <Box justifyContent={'space-between'} >
-                        <Checkbox
-                          style={{ height: '16px', width: '16px' }}
-                          checked={material.mandatoryRemove}
-                          disabled={true}
-                        />
-                      </Box>
-                    </TableCell>
-                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
-                      {material.isSelected ?
-                        <TextField
-                          name='actualDismantledQty'
-                          sx={{ '& .MuiInputBase-input': { maxHeight: 'inherit', margin: 0, padding: '0px', textAlign: 'center' } , overflow: 'hidden' }}
-                          variant= 'filled'
-                          value={material.actualDismantledQty || material.dismantledQty}
-                          defaultValue={material.dismantledQty}
-                          onChange={(event) => handleActualDismantleQty(parseInt(event.target.value), material.recipeBom.id)}
-                          required /> :
-                        '' }
+            {extraAffectedMaterials.length > 0 ?
+              extraAffectedMaterials.map((eMaterial, index) => {
+                return(
+                  <TableRow>
+                    <TableCell>
+                      <IconButton
+                        title='remove'
+                        color='primary'
+                        style={{ height: '16px', width: '16px' }}
+                        onClick={() => handleExtraMatrialRemove(index)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
                     </TableCell>
                     <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
-                      {material.isSelected ?
-                        <TextField
-                          name='status'
-                          sx={{ '& .MuiInputBase-input': { maxHeight: 'inherit', margin: 0, padding: '0px', textAlign: 'center' ,width: '100px' },
-                            backgroundColor: material.materialStatus === MaterialStatus.OK ? '#A8F285' : material.materialStatus === MaterialStatus.CLAIMABLE ? '#FFFFAB' : '#F2A8A8'
-                            , overflow: 'hidden' }}
-                          select
-                          value={material.materialStatus}
-                          defaultValue={MaterialStatus.SCRAPPED}
-                          onChange={(event) => handleStatus(event.target.value as MaterialStatus,material.recipeBom.id)}
-                        >
-                          { (material.recipeBom.reusable === 'NO') ?
-                            Object.values(MaterialStatus).filter(status => status !=='OK').map((option) => (
-                              <MenuItem key={option} value={option}>{option}</MenuItem>
-                            )) :
-                            Object.values(MaterialStatus).map((option) => (
-                              <MenuItem key={option} value={option}>{option}</MenuItem>
-                            )) }
-                        </TextField>
-                        : material.materialStatus
-                      }
+                      Extra
+                    </TableCell>
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
+                      <Autocomplete
+                        id='materilas'
+                        sx={{
+                          '& .MuiInputBase-input': { maxHeight: '15px', padding: '0px', width: '100px' },
+                          overflow: 'hidden',
+                          marginLeft: '-8px'
+                        }}
+                        size='small'
+                        aria-required
+                        disableClearable={true}
+                        options={materialList}
+                        isOptionEqualToValue={(option: Material, value: Material) => option.id === value.id}
+                        value={eMaterial.material}
+                        onChange={(_event, newValue) => newValue && handleAddMaterial(newValue, index)}
+                        getOptionLabel={(option: { itemShortName: string; }) => option.itemShortName}
+                        renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
+                          <TextField
+                            {...params}
+                            placeholder='Add Material'
+                            size='small'
+                            sx={{ width: '98%', margin: '2' }}
+                            required />
+                        )} />
+                    </TableCell>
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
+                      -
+                    </TableCell>
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray',  background: eMaterial.material ? eMaterial.material.traceable ? '#FCFEA0' : '#A0F1FE' : null  }}>
+                      {eMaterial.material ? (eMaterial.material.traceable ? 'Yes' : 'No') : ''}
+                    </TableCell>
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
+                      -
+                    </TableCell>
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
+                      -
+                    </TableCell>
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
+                      -
+                    </TableCell>
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
+                      <TextField
+                        name='actualDismantledQty'
+                        sx={{ '& .MuiInputBase-input': { maxHeight: '10px', padding: '8px', textAlign: 'center' }, overflow: 'hidden' }}
+                        variant='filled'
+                        value={eMaterial.actualDismantledQty}
+                        defaultValue={1}
+                        onChange={(event) => handleExtraMatrialQty(parseInt(event.target.value), index)}
+                        required />
+                    </TableCell>
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
+                      <TextField
+                        name='status'
+                        sx={{
+                          '& .MuiInputBase-input': { maxHeight: '15px', padding: '5px', textAlign: 'center', width: '100px' },
+                          backgroundColor: eMaterial.status === MaterialStatus.OK ? '#A8F285' : eMaterial.status === MaterialStatus.CLAIMABLE ? '#FFFFAB' : '#F2A8A8',
+                          overflow: 'hidden',
+                          marginLeft: '-10px'
+                        }}
+                        select
+                        value={eMaterial.status}
+                        defaultValue={MaterialStatus.SCRAPPED}
+                        onChange={(event) => handleExtraMatrialStatus(event.target.value as MaterialStatus, index)}
+                      >
+                        {Object.values(MaterialStatus).map((option) => (
+                          <MenuItem key={option} value={option}>{option}</MenuItem>
+                        ))}
+                      </TextField>
                     </TableCell>
                   </TableRow>
-                </React.Fragment>
+                ); })
+              : null }
+            {sortedMaterials.map((material, index) => {
+              const isItemSelected = isSelected(material.recipeBomId);
+              const labelId = `enhanced-table-checkbox-${index}`;
+              return (
+                <TableRow
+                  role="checkbox"
+                  aria-checked={isItemSelected}
+                  tabIndex={-1}
+                  key={material.recipeBomId}
+                  selected={isItemSelected}
+                  sx={{ cursor: 'pointer' }}
+                >
+                  <TableCell
+                    padding="checkbox"
+                    onClick={(event) => handleSelect(event, material.recipeBomId)}
+                  >
+                    <Checkbox
+                      color="primary"
+                      checked={isItemSelected}
+                      inputProps={{
+                        'aria-labelledby': labelId,
+                      }} />
+                  </TableCell>
+                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
+                    {material.recipeCode}
+                  </TableCell>
+                  <TableCell align='left' sx={{ borderRight: '1px solid gray' }}>
+                    {material.material.itemShortName}
+                  </TableCell>
+                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
+                    {material.qty}
+                  </TableCell>
+                  <TableCell align='center' sx={{ borderRight: '1px solid gray', background: material.material.traceable ? '#FCFEA0' : '#A0F1FE' }}>
+                    {material.material.traceable ? 'Yes' : 'No'}
+                  </TableCell>
+                  <TableCell align='center' sx={{
+                    borderRight: '1px solid gray',
+                    backgroundColor: material.reusable === Reusable.YES ? '#A8F285' : material.reusable === Reusable.IQC ? '#FFFFAB' : '#F2A8A8'
+                  }}>
+                    {material.reusable}
+                  </TableCell>
+                  <TableCell align='left' sx={{ borderRight: '1px solid gray' }}>
+                    {material.note}
+                  </TableCell>
+                  <TableCell align='center'>
+                    <Box justifyContent={'space-between'}>
+                      <Checkbox
+                        style={{ height: '16px', width: '16px' }}
+                        checked={material.mandatoryRemove}
+                        disabled={true} />
+                    </Box>
+                  </TableCell>
+                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
+                    {material.isSelected ?
+                      <TextField
+                        name='actualDismantledQty'
+                        sx={{ '& .MuiInputBase-input': { maxHeight: '15px', padding: '5px', textAlign: 'center' }, overflow: 'hidden' }}
+                        variant='filled'
+                        value={material.actualDismantledQty || material.suggestedDismantledQty}
+                        defaultValue={material.suggestedDismantledQty}
+                        onChange={(event) => handleActualDismantleQty(parseInt(event.target.value), material.recipeBomId)}
+                        required /> :
+                      ''}
+                  </TableCell>
+                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
+                    {material.isSelected ?
+                      <TextField
+                        name='status'
+                        sx={{
+                          '& .MuiInputBase-input': { maxHeight: '15px', padding: '5px', textAlign: 'center', width: '100px' },
+                          backgroundColor: material.materialStatus === MaterialStatus.OK ? '#A8F285' : material.materialStatus === MaterialStatus.CLAIMABLE ? '#FFFFAB' : '#F2A8A8',
+                          overflow: 'hidden',
+                          marginLeft: '-10px'
+                        }}
+                        select
+                        value={material.materialStatus}
+                        defaultValue={MaterialStatus.SCRAPPED}
+                        onChange={(event) => handleStatus(event.target.value as MaterialStatus, material.recipeBomId)}
+                      >
+                        {(material.reusable === 'NO') ?
+                          Object.values(MaterialStatus).filter(status => status !== 'OK').map((option) => (
+                            <MenuItem key={option} value={option}>{option}</MenuItem>
+                          )) :
+                          Object.values(MaterialStatus).map((option) => (
+                            <MenuItem key={option} value={option}>{option}</MenuItem>
+                          ))}
+                      </TextField>
+                      : material.materialStatus}
+                  </TableCell>
+                </TableRow>
               );
             })}
           </TableBody>
         </Table>
-      </TableContainer>
-      <Dialog
+      </TableContainer><Dialog
         open={openDialog}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
@@ -401,7 +591,7 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-                  The amount removed is greater than the amount consumed in the BOM,
+            The amount removed is greater than the amount consumed in the BOM,
           </DialogContentText>
         </DialogContent>
         <DialogActions>
