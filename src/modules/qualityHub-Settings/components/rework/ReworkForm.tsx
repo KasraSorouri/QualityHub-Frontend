@@ -14,14 +14,14 @@ import {
   TextFieldVariants,
 } from '@mui/material';
 
-import { NokCode, Station, WorkShift, Product, Recipe, NewRework, Rework, DismantledMaterial, AffectedMaterial } from '../../../../types/QualityHubTypes';
+import { NokCode, Station, WorkShift, Product, Recipe, NewRework, Rework, RwDismantledMaterial, AffectedMaterial } from '../../../../types/QualityHubTypes';
 import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import stationServices from '../../services/stationServices';
 import nokCodeServices from '../../services/nokCodeServices';
 import ReworkRecipeList from './ReworkRecipeList';
 import recipeServices from '../../services/recipeServices';
-import ReworkDismantledMaterial from './ReworkDismantleMaterial';
+import ReworkRwDismantledMaterial from './ReworkDismantleMaterial';
 import reworkServices from '../../services/reworkServices';
 
 type ReworkFromProps = {
@@ -44,7 +44,7 @@ type FormData = {
   deprecated: boolean;
   reworkRecipes: number[];
   affectedRecipes: number[];
-  dismantledMaterials?: DismantledMaterial[];
+  dismantledMaterials?: RwDismantledMaterial[];
 }
 
 const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRequest }: ReworkFromProps) => {
@@ -174,7 +174,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
   };
 
   // Dismantled Materials
-  const selectDismantledMaterials = (dismantledMaterial: DismantledMaterial[]) => {
+  const selectRwDismantledMaterials = (dismantledMaterial: RwDismantledMaterial[]) => {
     const dismantledMaterials = dismantledMaterial;
     setFormValues({ ...formValues,dismantledMaterials: dismantledMaterials });
   };
@@ -401,7 +401,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
           <Divider sx={{ margin:1 }}/>
           <ReworkRecipeList recipes={productionRecipes} selectedRecipes={reworkData?.affectedRecipes ? reworkData.affectedRecipes : []} confirmSelection={selectAffectedRecipes} confirmChange={(value) => handleConfirmChange('affectedRecipes', value)} title='Affected Recipes (Recipes affected by rework)' editable={formType === 'ADD' ? true : false } />
           <Divider sx={{ margin:1 }}/>
-          <ReworkDismantledMaterial affectedMaterials={affectedMaterial} rwDismantledMaterial={reworkData?.RwDismantledMaterials} confirmSelection={selectDismantledMaterials} confirmChange={(value) => handleConfirmChange('dismantledMaterials', value)} editable={formType === 'ADD' ? true : false }  />
+          <ReworkRwDismantledMaterial affectedMaterials={affectedMaterial} rwRwDismantledMaterial={reworkData?.RwRwDismantledMaterials} confirmSelection={selectRwDismantledMaterials} confirmChange={(value) => handleConfirmChange('dismantledMaterials', value)} editable={formType === 'ADD' ? true : false }  />
         </form>
       </Box>
     </Grid>

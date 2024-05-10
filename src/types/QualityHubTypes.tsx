@@ -308,7 +308,7 @@ interface RecipeBOM {
   reusable: Reusable;
 }
 
-export interface DismantledMaterial {
+export interface RwDismantledMaterial {
   id: number;
   recipeBom: RecipeBOM;
   dismantledQty : number;
@@ -316,6 +316,11 @@ export interface DismantledMaterial {
   mandatoryRemove?: boolean;
 }
 
-export interface AffectedMaterial extends Omit<DismantledMaterial, 'id' | 'dismantledQty'> {
+export interface AffectedMaterial extends Omit<RwDismantledMaterial, 'id' | 'dismantledQty'> {
   dismantledQty? : number;
+}
+
+export interface DismantledMaterial extends RwDismantledMaterial {
+  actualDismantledQty: number;
+  materialStatus? : MaterialStatus;
 }

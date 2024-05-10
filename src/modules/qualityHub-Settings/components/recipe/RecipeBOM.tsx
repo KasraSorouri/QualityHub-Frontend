@@ -64,12 +64,14 @@ const RecipeBOM = ({ bom, updateBOM, readonly } : RecipeBomProps) => {
     reusable: Reusable.NO,
     material: undefined,
     itemEditable: true,
+    id: 0
   };
 
   const [ bomData, setBomData ] = useState<BomData[]>([blankItem]);
 
   useEffect(() => {
-    setBomData(bom.map((item, index) => ({
+    return setBomData(bom.map((item, index) => ({
+      id: item.id,
       bomIndex: index,
       material: item.material,
       qty: item.qty,
@@ -194,6 +196,7 @@ const RecipeBOM = ({ bom, updateBOM, readonly } : RecipeBomProps) => {
           material: item.material,
           qty: item.qty,
           reusable: item.reusable,
+          id: item.id
         };
         return bomItem;
       }
@@ -247,6 +250,7 @@ const RecipeBOM = ({ bom, updateBOM, readonly } : RecipeBomProps) => {
         return undefined;
       } else {
         const bomItem: ConsumingMaterial = {
+          id: item.id,
           material: item.material,
           qty: item.qty,
           reusable: item.reusable,

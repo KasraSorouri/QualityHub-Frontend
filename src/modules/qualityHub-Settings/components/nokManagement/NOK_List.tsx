@@ -28,7 +28,7 @@ interface EnhancedTableHeadProps {
 
 type NokListProps = {
   listType: string;
-  selectNok : (nok: NokData) => void;
+  selectNok? : (nok: NokData) => void;
 }
 
 const NokList = ({ listType , selectNok } : NokListProps) => {

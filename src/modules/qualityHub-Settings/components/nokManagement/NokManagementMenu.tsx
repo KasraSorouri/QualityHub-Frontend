@@ -12,19 +12,15 @@ import {
   Stack,
 } from '@mui/material';
 
-import HomePage from './HomePage-Data';
-import NokForm from '../../qualityHub-Settings/components/nokManagement/NOK_Reg_Form';
-import NokList from '../../qualityHub-Settings/components/nokManagement/NOK_List';
-import { NokData } from '../../../types/QualityHubTypes';
-import NOK_Analyse_Form from '../../qualityHub-Settings/components/nokManagement/NOK_Analyse_Form';
-import NokReworkForm from '../../qualityHub-Settings/components/nokManagement/NOK_Rework_Form';
+import HomePage from '../../../public/components/HomePage-Data';
+import NokForm from './NOK_Reg_Form';
+import NokList from './NOK_List';
+import NokAnalysis from './NOK_Analysis';
+import Nokreworks from './NOK_Rework';
 
 const HomePageSubMenu = () => {
 
   const navigate = useNavigate();
-
-  const [ selectedNok, setSelectedNok ] = useState<NokData | null>(null);
-
 
   type ShowListForm = 'NEW-NOK' | 'NOK-LIST' | 'ANALYSE' | 'REWORK' | '' | 'NONE'
 
@@ -72,9 +68,9 @@ const HomePageSubMenu = () => {
         <Grid width={'90%'}>
           <Box>
             {showListForm === 'NEW-NOK' && <NokForm formType={'ADD'} /> }
-            {showListForm === 'NOK-LIST' && <NokList listType='' selectNok={setSelectedNok}/> }
-            {showListForm === 'ANALYSE' && (selectedNok ? <NOK_Analyse_Form nokId={selectedNok.id} formType='ADD'  removeNok={setSelectedNok} /> : <NokList listType='ANALYSE' selectNok={setSelectedNok}/> ) }
-            {showListForm === 'REWORK' &&  (selectedNok ? <NokReworkForm nokId={selectedNok.id} formType='ADD' removeNok={setSelectedNok} /> : <NokList listType='ANALYSE' selectNok={setSelectedNok}/> )}
+            {showListForm === 'NOK-LIST' && <NokList listType='' /> }
+            {showListForm === 'ANALYSE' && <NokAnalysis />}
+            {showListForm === 'REWORK' &&  <Nokreworks />}
             {showListForm === '' && <HomePage /> }
           </Box>
         </Grid>

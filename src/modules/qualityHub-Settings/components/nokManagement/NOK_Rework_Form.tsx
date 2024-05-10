@@ -1,26 +1,14 @@
 import {
-  Autocomplete,
-  Box,
-  Button,
   Divider,
-  FilledTextFieldProps,
   Grid,
-  OutlinedTextFieldProps,
-  StandardTextFieldProps,
-  TextField,
-  TextFieldVariants,
-  Typography
 } from '@mui/material';
 
-import { NokCode, Station, WorkShift, Product, NokAnalyseData, NewNokAnalyseData, NokData, RCA } from '../../../../types/QualityHubTypes';
+import { NokCode, Station, WorkShift, NokAnalyseData, NewNokAnalyseData, NokData, DismantledMaterial, Rework } from '../../../../types/QualityHubTypes';
 import { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
-import stationServices from '../../services/stationServices';
-import nokCodeServices from '../../services/nokCodeServices';
-import workShiftServices from '../../services/workShiftServices';
 import nokDetectServices from '../../services/nokDetectServices';
-import NOK_Reg_Form from './NOK_Reg_Form';
-import RCAs_Form from './RCAs_Form';
+import NOK_Info from './NOK_Info';
+import ReworkChooseList from './ReworkChooseList';
+import NokDismantledMaterial from './NOK_DismantleMaterial';
 
 type NokFromProps = {
   nokId: number,
@@ -37,17 +25,13 @@ type FormData = {
   timeWaste?: number;
   materialWaste?: number;
   closed: boolean;
+  NokRework?: number[];
 }
 
-const NokReworkForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromProps) => {
-  console.log('nok ID ->', nokId);
+const NokReworkForm = ({ nokId, nokAnalyseData, formType }: NokFromProps) => {
+  console.log('NOK Rework * nok ID ->', nokId);
 
-  const fakeRCA : RCA[] = [
-    { id: 1, nokId: 1, rcaCode: { id: 1, rcaCode: 'RCA1', rcaDesc: 'RCA1', active: true }, description: 'RCA1', improvSuggestion: 'RCA1' },
-    { id: 1, nokId: 1, rcaCode: { id: 1, rcaCode: 'RCA1', rcaDesc: 'RCA1', active: true }, description: 'RCA1', improvSuggestion: 'RCA1' },
-  ];
-
-  const submitTitle = formType === 'ADD' ? 'Add' : 'Update';
+  //const submitTitle = formType === 'ADD' ? 'Add' : 'Update';
 
   const initFormValues: FormData = {
     nokCode: nokAnalyseData?.nokCode ? nokAnalyseData.nokCode : null,
@@ -55,12 +39,17 @@ const NokReworkForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromPr
     causeShift: nokAnalyseData?.causeShift ? nokAnalyseData.causeShift : null,
     description: nokAnalyseData ? nokAnalyseData.description : '',
     closed: nokAnalyseData ? nokAnalyseData.closed : false,
+    NokRework: [],
   };
 
   const [ formValues, setFormValues ] = useState<FormData>(initFormValues);
   const [ nok, setNok ] = useState<NokData | null>(null);
+  const [ dismantledMaterials, setDismantledMaterial ] = useState<DismantledMaterial[] | never[]>([]);
 
-  console.log('NOK Analyse * NOK Data ->', nok);
+  console.log('NOK Rework * NOK Data ->', nok);
+  console.log('NOK Rework * formValues ->', formValues);
+  console.log('NOK Rework * dismantledMaterials ->', dismantledMaterials);
+
 
   useEffect(() => {
     setFormValues(initFormValues);
@@ -71,20 +60,20 @@ const NokReworkForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromPr
     getNokData();
   },[formType]);
 
-  // get Station List
-  const stationResults = useQuery('stations',stationServices.getStation, { refetchOnWindowFocus: false });
-  const stationList: Station[] = stationResults.data || [];
-
-  // Get NOK Code List
-  const nokCodeResults = useQuery('nokCodes', nokCodeServices.getNokCode, { refetchOnWindowFocus: false });
-  const nokCodeList: NokCode[] = nokCodeResults.data || [];
-
-  // Get Work Shift List
-  const workShiftResults = useQuery('workShifts', workShiftServices.getShift, { refetchOnWindowFocus: false });
-  const workShiftList: WorkShift[] = workShiftResults.data || [];
-
+  // Handle Select Rework
+  const handleSelectRework = (reworks: Rework[]) => {
+    let dismantledMaterials : DismantledMaterial[] = [];
+    const newNokReworks = reworks.map(rework => {
+      rework.RwDismantledMaterials ? dismantledMaterials = dismantledMaterials.concat(rework.RwDismantledMaterials) : null;
+      return (rework.id);
+    });
+    setFormValues({ ...formValues, NokRework: newNokReworks });
+    setDismantledMaterial(dismantledMaterials);
+  };
 
 
+
+  /*
   // handle Changes
   const handleChange = (event: {target: { name: string, value: unknown, checked: boolean}}) => {
     const { name, value, checked } = event.target;
@@ -104,21 +93,7 @@ const NokReworkForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromPr
     }));
   };
 
-  const handleUpdateRCA = (rcas: RCA[]) => {
-    console.log(' *** NOK registeration * Update RCA * rcas -> ', rcas);
-  };
 
-
-  /*
-  const timeHandler = (value: Dayjs | null) => {
-    if (value) {
-      setFormValues((prevValues: FormData) => ({
-        ...prevValues,
-        detectedTime: value,
-      }));
-    }
-  };
-  */
 
   const handleSubmit = async (event: {preventDefault: () => void}) => {
     event.preventDefault();
@@ -132,114 +107,28 @@ const NokReworkForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromPr
     }
   };
 
-
+*/
+  if (!nok) {
+    return(
+      <div>
+        loading ....
+      </div>
+    );
+  }
   return (
     <Grid container direction={'column'}>
-      <Typography variant='h5' marginLeft={2}>
-        Detect Information
-      </Typography>
-      <NOK_Reg_Form formType={'VIEW'} nokData={nok} />
+      <Grid container direction={'row'}>
+        <Grid item xs={8}>
+          <NOK_Info nokId={nokId} />
+        </Grid>
+        <Grid item xs={4}>
+        test Button
+        </Grid>
+      </Grid>
       <Divider sx={{ margin:1 }}/>
-      <Typography variant='h5' marginLeft={2}>
-        Origin of NOK
-      </Typography>
-      <Box>
-        <form onSubmit={handleSubmit} >
-          <Grid container direction={'column'} sx={{ background: '#FEC0D4' }}>
-            <Grid container width={'100%'} flexDirection={'row'} >
-              <Autocomplete
-                id='causeStation'
-                sx={{ marginLeft: 2, marginTop: 1, width: '20%', minWidth: '200px' }}
-                size='small'
-                aria-required
-                options={stationList}
-                isOptionEqualToValue={
-                  (option: Station, value: Station) => option.stationName === value.stationName
-                }
-                value={formValues.causeStation ? formValues.causeStation : null}
-                onChange={(_event, newValue) => newValue && handleAutoCompeletChange('causeStation', newValue)}
-                getOptionLabel={(option: { stationName: string; }) => option.stationName}
-                renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
-                  <TextField
-                    {...params}
-                    label='Station'
-                    placeholder='Add Station'
-                    size='small'
-                    required
-                  />
-                )}
-              />
-              <Autocomplete
-                id='nokCode'
-                sx={{ marginLeft: 2, marginTop: 1, width: '15%', minWidth: '150px' }}
-                size='small'
-                aria-required
-                options={nokCodeList}
-                isOptionEqualToValue={
-                  (option: NokCode, value: NokCode) => option.nokCode === value.nokCode
-                }
-                value={formValues.nokCode ? formValues.nokCode : null}
-                onChange={(_event, newValue) => newValue && handleAutoCompeletChange('nokCode', newValue)}
-                getOptionLabel={(option: { nokCode: string; }) => option.nokCode}
-                renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
-                  <TextField
-                    {...params}
-                    label='NOK Code'
-                    placeholder='NOK Code'
-                    size='small'
-                    required
-                  />
-                )}
-              />
-              <Autocomplete
-                id='causeShift'
-                sx={{ marginLeft: 2, marginTop: 1, width: '15%', minWidth:'140px' }}
-                size='small'
-                aria-required
-                options={workShiftList}
-                isOptionEqualToValue={
-                  (option: WorkShift, value: WorkShift) => option.shiftName === value.shiftName
-                }
-                value={formValues.causeShift ? formValues.causeShift : null}
-                onChange={(_event, newValue) => newValue && handleAutoCompeletChange('causeShift', newValue)}
-                getOptionLabel={(option: { shiftName: string; }) => option.shiftName}
-                renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
-                  <TextField
-                    {...params}
-                    label='Shift'
-                    placeholder='Shift'
-                    size='small'
-                    required
-                  />
-                )}
-              />
-            </Grid>
-            <Grid display={'flex'}>
-              <TextField
-                id="description"
-                name="description"
-                label="Description"
-                sx={{ marginLeft: 2, marginTop: 1 , width:'85%' }}
-                value={formValues.description}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-                fullWidth
-                size='small'
-              />
-              <Button type='submit' variant='contained' color='primary' size='small' sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}>
-                {submitTitle}
-              </Button>
-              <Button onClick={() => removeNok(null)} variant='contained' color='primary' size='small' sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}>
-              Back
-              </Button>
-            </Grid>
-          </Grid>
-        </form>
-      </Box>
+      <ReworkChooseList productId={nok.product.id} selectedReworks={[]} confirmSelection={handleSelectRework} confirmChange={() => { console.log('confirm change');} } editable={true} />
       <Divider sx={{ margin:1 }}/>
-      <Typography variant='h5' marginLeft={2} >
-        Root Cause Analysis
-      </Typography>
-      <RCAs_Form formType={'ADD'} rcas={fakeRCA} updateRCA={handleUpdateRCA} />
+      <NokDismantledMaterial affectedMaterials={dismantledMaterials} confirmSelection={() => { console.log('confirmSelection'); } } confirmChange={() => { console.log('confirm change');} } editable={true} />
     </Grid>
   );
 };
