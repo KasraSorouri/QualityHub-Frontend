@@ -18,6 +18,11 @@ import {
   Stack,
   TextField,
   MenuItem,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from '@mui/material';
 
 import { visuallyHidden } from '@mui/utils';
@@ -36,7 +41,7 @@ type DismantleMaterialListProps = {
   affectedMaterials: RwDismantledMaterial[];
   rwDismantledMaterial? : DismantledMaterial[];
   confirmSelection: (dismantledMaterial: DismantledMaterial[]) => void;
-  confirmChange: (value: boolean ) => void;
+  confirmChange: (value: boolean) => void;
   editable: boolean;
 }
 
@@ -50,6 +55,7 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
   const [ selectedMaterials, setSelectedMaterials ] = useState<number[]>([]);
   const [ formValues, setFormValues ] = useState<FormData[]>([]);
   const [ confirmActive, setConfirmActive ] = useState<boolean>(false);
+  const [ openDialog , setOpenDialog ] = useState<boolean>(false);
 
   const setNotification = useNotificationSet();
 
@@ -102,7 +108,7 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
     return 0;
   });
 
-
+  // Table Header
   const columnHeader = [
     { id: 'recipeCode', lable: 'Recipe', width: '7%', minWidth: 10, borderRight: true },
     { id: 'material', lable: 'Material', width: '25%', minWidth: 10, borderRight: true },
@@ -131,7 +137,8 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
             key={'select'}
             align='right'
             sx={{ backgroundColor: '#1976d2', color: 'white', maxWidth: '10px',  borderRight: '1px solid white' }}
-          />
+          >
+          </TableCell>
           {columnHeader.map((column) => (
             <TableCell
               key={column.id}
@@ -165,6 +172,7 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
   };
 
 
+  // Handle Select
   const handleSelect = (_event: React.MouseEvent<unknown>, id: number) => {
     const selectedIndex = id;
     if (selectedMaterials.includes(selectedIndex)){
@@ -174,7 +182,7 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
       const updateValue = formValues.find((item) => item.recipeBom.id === selectedIndex);
       if (updateValue) {
         updateValue.isSelected = false;
-        updateValue.dismantledQty = 0;
+        updateValue.actualDismantledQty = 0;
         updateValue.materialStatus = undefined;
       }
       setConfirmActive(true);
@@ -189,6 +197,20 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
     confirmChange(false);
   };
 
+  // select all material
+  const selectAll = () => {
+    const selectedItem: number[] = [];
+    formValues.forEach(item => {
+      selectedItem.push(item.recipeBom.id);
+    });
+
+    console.log('* selected material *** elect all * new select ->' , selectedItem);
+
+    formValues.forEach(item => item.isSelected = true);
+    setSelectedMaterials(selectedItem);
+
+  };
+
   const isSelected = (id: number) => selectedMaterials.indexOf(id) !== -1;
 
   // Set Dismantle Qty
@@ -198,16 +220,15 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
     if (value <= 0) {
       setNotification({ message: 'Dismantled Qty must be greater than 0', type: 'error', time: 5 });
     }
-    if (updateValue && value > updateValue.recipeBom.qty) {
-      setNotification({ message: 'Dismantled Qty must be less than or equal to the Qty', type: 'error', time: 5 });
-    } else {
-      if (updateValue && value > 0) {
-        updateValue.actualDismantledQty = value;
-      }
+    if (updateValue && value > 0) {
+      updateValue.actualDismantledQty = value;
+      setFormValues([...formValues]);
+      setConfirmActive(true);
+      confirmChange(false);
     }
-    setFormValues([...formValues]);
-    setConfirmActive(true);
-    confirmChange(false);
+    if (updateValue && value > updateValue.recipeBom.qty) {
+      setOpenDialog(true);
+    }
   };
 
   const handleStatus = (newValue: MaterialStatus, index: number) => {
@@ -226,15 +247,20 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
     confirmChange(false);
   };
 
+  const handleClose = () => {
+    setOpenDialog(false);
+  };
+
   const handleConfirmSelection = () => {
     const dismantledmaterials : DismantledMaterial[] = formValues.filter(material => material.isSelected);
-    const isDataCorrect = dismantledmaterials.every(item => item.dismantledQty > 0);
-    if (isDataCorrect) {
-      confirmChange(true);
-      setConfirmActive(false);
-      confirmSelection(dismantledmaterials);
-    }
-
+    dismantledmaterials.forEach(material => {
+      if (material.actualDismantledQty === 0) {
+        material.actualDismantledQty = material.dismantledQty;
+      }
+    });
+    confirmChange(true);
+    setConfirmActive(false);
+    confirmSelection(dismantledmaterials);
   };
 
   return(
@@ -245,6 +271,9 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
         <Stack direction={'row'} spacing={1} margin={.5} >
           <Button variant='contained' color='primary' sx={{ height: '30px' }} onClick={handleResetSelection} >
             Clear Selection
+          </Button>
+          <Button variant='contained' color='primary' sx={{ height: '30px' }} onClick={selectAll} disabled={formValues.length === selectedMaterials.length}>
+            Select All
           </Button>
           <Button
             variant='contained'
@@ -322,13 +351,12 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
                     <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
                       {material.isSelected ?
                         <TextField
-                          name='qty'
+                          name='actualDismantledQty'
                           sx={{ '& .MuiInputBase-input': { maxHeight: 'inherit', margin: 0, padding: '0px', textAlign: 'center' } , overflow: 'hidden' }}
                           variant= 'filled'
                           value={material.actualDismantledQty || material.dismantledQty}
                           defaultValue={material.dismantledQty}
                           onChange={(event) => handleActualDismantleQty(parseInt(event.target.value), material.recipeBom.id)}
-                          InputProps={{ inputProps: { min: 1, max: material.recipeBom.qty, step: 1 } } }
                           required /> :
                         '' }
                     </TableCell>
@@ -344,9 +372,13 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
                           defaultValue={MaterialStatus.SCRAPPED}
                           onChange={(event) => handleStatus(event.target.value as MaterialStatus,material.recipeBom.id)}
                         >
-                          {Object.values(MaterialStatus).map((option) => (
-                            <MenuItem key={option} value={option}>{option}</MenuItem>
-                          ))}
+                          { (material.recipeBom.reusable === 'NO') ?
+                            Object.values(MaterialStatus).filter(status => status !=='OK').map((option) => (
+                              <MenuItem key={option} value={option}>{option}</MenuItem>
+                            )) :
+                            Object.values(MaterialStatus).map((option) => (
+                              <MenuItem key={option} value={option}>{option}</MenuItem>
+                            )) }
                         </TextField>
                         : material.materialStatus
                       }
@@ -358,6 +390,24 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
           </TableBody>
         </Table>
       </TableContainer>
+      <Dialog
+        open={openDialog}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {'Removed Qty is greater than BOM Qty?'}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+                  The amount removed is greater than the amount consumed in the BOM,
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>OK</Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 };

@@ -23,9 +23,10 @@ type FormData = {
   causeShift: WorkShift | null;
   description: string;
   timeWaste?: number;
-  materialWaste?: number;
+  materialCost?: number;
   closed: boolean;
   NokRework?: number[];
+  DismantledMaterials?: DismantledMaterial[];
 }
 
 const NokReworkForm = ({ nokId, nokAnalyseData, formType }: NokFromProps) => {
@@ -72,6 +73,15 @@ const NokReworkForm = ({ nokId, nokAnalyseData, formType }: NokFromProps) => {
   };
 
 
+  const handleDismantledMaterial = (dismantledMaterials : DismantledMaterial[]) => {
+    // Calculate Material Cost
+    const materialCost = dismantledMaterials.reduce((totalCost, item) => {
+      const cost = item.recipeBom.material.price ? item.actualDismantledQty * item.recipeBom.material.price : 0;
+      return totalCost + cost;
+    }, 0);
+    console.log(' material cost ->', materialCost);
+    setFormValues({ ...formValues, DismantledMaterials: dismantledMaterials, materialCost: materialCost });
+  };
 
   /*
   // handle Changes
@@ -128,7 +138,7 @@ const NokReworkForm = ({ nokId, nokAnalyseData, formType }: NokFromProps) => {
       <Divider sx={{ margin:1 }}/>
       <ReworkChooseList productId={nok.product.id} selectedReworks={[]} confirmSelection={handleSelectRework} confirmChange={() => { console.log('confirm change');} } editable={true} />
       <Divider sx={{ margin:1 }}/>
-      <NokDismantledMaterial affectedMaterials={dismantledMaterials} confirmSelection={() => { console.log('confirmSelection'); } } confirmChange={() => { console.log('confirm change');} } editable={true} />
+      <NokDismantledMaterial affectedMaterials={dismantledMaterials} confirmSelection={handleDismantledMaterial} confirmChange={() => { console.log('confirm change');} } editable={true} />
     </Grid>
   );
 };
