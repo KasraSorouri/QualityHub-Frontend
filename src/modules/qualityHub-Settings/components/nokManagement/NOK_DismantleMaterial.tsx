@@ -217,7 +217,6 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
         updateValue.actualDismantledQty = 0;
         updateValue.materialStatus = undefined;
       }
-      setConfirmActive(true);
     } else {
       const newSelected = selectedMaterials.concat(selectedIndex);
       const updateValue = formValues.find((item) => item.recipeBomId === selectedIndex);
@@ -226,6 +225,7 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
       }
       setSelectedMaterials(newSelected);
     }
+    setConfirmActive(true);
     confirmChange(false);
   };
 
@@ -236,11 +236,10 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
       selectedItem.push(item.recipeBomId);
     });
 
-    console.log('* selected material *** elect all * new select ->' , selectedItem);
-
     formValues.forEach(item => item.isSelected = true);
     setSelectedMaterials(selectedItem);
-
+    setConfirmActive(true);
+    confirmChange(false);
   };
 
   const isSelected = (id: number) => selectedMaterials.indexOf(id) !== -1;
@@ -284,7 +283,6 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
   };
 
   const handleAddExtra = () => {
-    console.log('extraAffectedMaterial');
     const newExtraMaterial : ExtraMaterial = { isSelected: true, id:'extra', actualDismantledQty: 1 };
     setExteraAffectedMaterials(extraAffectedMaterials.concat(newExtraMaterial));
   };
@@ -390,8 +388,8 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
           </Button>
         </Stack>
       </Grid>
-      <TableContainer sx={{ maxHeight: '550Px' }}>
-        <Table stickyHeader aria-label='sticky table' size='small'>
+      <TableContainer  sx={{ maxHeight: '225px', overflow: 'auto' }}>
+        <Table stickyHeader aria-label='sticky table' size='small' >
           <EnhancedTableHead
             order={order}
             orderBy={orderBy}
@@ -580,7 +578,8 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
             })}
           </TableBody>
         </Table>
-      </TableContainer><Dialog
+      </TableContainer>
+      <Dialog
         open={openDialog}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"

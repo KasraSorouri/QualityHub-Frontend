@@ -299,7 +299,7 @@ export interface NewRework extends Omit<Rework, 'id' | 'product' | 'nokCode' | '
   stationId: number;
   reworkRecipes: number[];
   affectedRecipes: number[];
-  dismantledMaterials: DismantledMaterial[];
+  //dismantledMaterials: DismantledMaterial[];
 }
 
 interface RecipeBOM {

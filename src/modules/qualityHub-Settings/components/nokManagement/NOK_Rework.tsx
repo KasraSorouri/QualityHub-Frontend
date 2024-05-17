@@ -16,7 +16,7 @@ const Nokreworks = () => {
   return (
     <Paper>
       <h1>Nok Reworks</h1>
-      { selectedNok ? <NokReworkForm nokId={selectedNok.id} formType='ADD'  removeNok={setSelectedNok} /> :
+      { selectedNok ? <NokReworkForm nokId={selectedNok.id} formType='ADD' removeNok={setSelectedNok} /> :
         <NokList listType='ANALYSE' selectNok={setSelectedNok} />
       }
     </Paper>

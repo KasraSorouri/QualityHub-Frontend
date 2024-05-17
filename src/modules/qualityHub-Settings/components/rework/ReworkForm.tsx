@@ -44,7 +44,7 @@ type FormData = {
   deprecated: boolean;
   reworkRecipes: number[];
   affectedRecipes: number[];
-  dismantledMaterials?: RwDismantledMaterial[];
+  rwDismantledMaterials?: RwDismantledMaterial[];
 }
 
 const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRequest }: ReworkFromProps) => {
@@ -52,7 +52,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
   const submitTitle = formType === 'ADD' ? 'Add' : 'Update';
 
   // convert rwDismanled Material
-  const dismantledMaterials = reworkData?.RwDismantledMaterials?.map(material => {
+  const dismantledMaterials = reworkData?.rwDismantledMaterials?.map(material => {
     return {
       ...material,
       dismantledQty: material.dismantledQty,
@@ -71,7 +71,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
     deprecated: reworkData ? reworkData.deprecated :false,
     reworkRecipes:reworkData?.reworkRecipes ? reworkData.reworkRecipes :[],
     affectedRecipes: reworkData?.affectedRecipes ? reworkData.affectedRecipes : [],
-    dismantledMaterials: reworkData?.RwDismantledMaterials ? dismantledMaterials : [],
+    rwDismantledMaterials: reworkData?.rwDismantledMaterials ? dismantledMaterials : [],
   };
 
   const [ formValues, setFormValues ] = useState<FormData>(initFormValues);
@@ -176,7 +176,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
   // Dismantled Materials
   const selectRwDismantledMaterials = (dismantledMaterial: RwDismantledMaterial[]) => {
     const dismantledMaterials = dismantledMaterial;
-    setFormValues({ ...formValues,dismantledMaterials: dismantledMaterials });
+    setFormValues({ ...formValues,rwDismantledMaterials: dismantledMaterials });
   };
 
   // set confirmation
@@ -212,7 +212,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
           deprecated: formValues.deprecated,
           reworkRecipes: formValues.reworkRecipes,
           affectedRecipes: formValues.affectedRecipes,
-          dismantledMaterials: formValues.dismantledMaterials ? formValues.dismantledMaterials : [],
+          rwDismantledMaterials: formValues.rwDismantledMaterials ? formValues.rwDismantledMaterials : [],
         };
         const result = await reworkServices.createRework(newReworkData);
         console.log(' *** NOK registeration * Submit form * result -> ', result);
@@ -237,7 +237,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
           deprecated: formValues.deprecated,
           reworkRecipes: formValues.reworkRecipes,
           affectedRecipes: formValues.affectedRecipes,
-          dismantledMaterials: formValues.dismantledMaterials ? formValues.dismantledMaterials : [],
+          rwDismantledMaterials: formValues.rwDismantledMaterials ? formValues.rwDismantledMaterials : [],
         };
         const result = await reworkServices.editRework(newReworkData);
         console.log(' *** NOK registeration * Submit form * result -> ', result);
@@ -401,7 +401,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
           <Divider sx={{ margin:1 }}/>
           <ReworkRecipeList recipes={productionRecipes} selectedRecipes={reworkData?.affectedRecipes ? reworkData.affectedRecipes : []} confirmSelection={selectAffectedRecipes} confirmChange={(value) => handleConfirmChange('affectedRecipes', value)} title='Affected Recipes (Recipes affected by rework)' editable={formType === 'ADD' ? true : false } />
           <Divider sx={{ margin:1 }}/>
-          <ReworkRwDismantledMaterial affectedMaterials={affectedMaterial} rwRwDismantledMaterial={reworkData?.RwRwDismantledMaterials} confirmSelection={selectRwDismantledMaterials} confirmChange={(value) => handleConfirmChange('dismantledMaterials', value)} editable={formType === 'ADD' ? true : false }  />
+          <ReworkRwDismantledMaterial affectedMaterials={affectedMaterial} rwRwDismantledMaterial={reworkData?.rwDismantledMaterials} confirmSelection={selectRwDismantledMaterials} confirmChange={(value) => handleConfirmChange('dismantledMaterials', value)} editable={formType === 'ADD' ? true : false }  />
         </form>
       </Box>
     </Grid>

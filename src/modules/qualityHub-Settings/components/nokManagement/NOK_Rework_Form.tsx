@@ -1,6 +1,8 @@
 import {
+  Button,
   Divider,
   Grid,
+  Stack,
 } from '@mui/material';
 
 import { NokCode, Station, WorkShift, NokAnalyseData, NewNokAnalyseData, NokData, DismantledMaterial, Rework, RwDismantledMaterial } from '../../../../types/QualityHubTypes';
@@ -29,10 +31,7 @@ type FormData = {
   dismantledMaterials?: DismantledMaterial[];
 }
 
-const NokReworkForm = ({ nokId, nokAnalyseData, formType }: NokFromProps) => {
-  console.log('NOK Rework * nok ID ->', nokId);
-
-  //const submitTitle = formType === 'ADD' ? 'Add' : 'Update';
+const NokReworkForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromProps) => {
 
   const initFormValues: FormData = {
     nokCode: nokAnalyseData?.nokCode ? nokAnalyseData.nokCode : null,
@@ -46,11 +45,7 @@ const NokReworkForm = ({ nokId, nokAnalyseData, formType }: NokFromProps) => {
   const [ formValues, setFormValues ] = useState<FormData>(initFormValues);
   const [ nok, setNok ] = useState<NokData | null>(null);
   const [ dismantledMaterials, setDismantledMaterial ] = useState<RwDismantledMaterial[] | never[]>([]);
-
-  console.log('NOK Rework * NOK Data ->', nok);
-  console.log('NOK Rework * formValues ->', formValues);
-  console.log('NOK Rework * dismantledMaterials ->', dismantledMaterials);
-
+  const [ confirmation, setConfirmation ] = useState<{chooseReworks: boolean, dismantledMaterials: boolean}>({ chooseReworks: false, dismantledMaterials: false });
 
   useEffect(() => {
     setFormValues(initFormValues);
@@ -59,6 +54,7 @@ const NokReworkForm = ({ nokId, nokAnalyseData, formType }: NokFromProps) => {
       setNok(result);
     };
     getNokData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[formType]);
 
   // Handle Select Rework
@@ -70,6 +66,7 @@ const NokReworkForm = ({ nokId, nokAnalyseData, formType }: NokFromProps) => {
     });
     setFormValues({ ...formValues, nokRework: newNokReworks });
     setDismantledMaterial(dismantledMaterials);
+    setConfirmation({ ...confirmation, chooseReworks: true });
   };
 
 
@@ -79,8 +76,27 @@ const NokReworkForm = ({ nokId, nokAnalyseData, formType }: NokFromProps) => {
       const cost = item.material.price ? item.actualDismantledQty * item.material.price : 0;
       return totalCost + cost;
     }, 0);
-    console.log(' material cost ->', materialCost);
     setFormValues({ ...formValues, dismantledMaterials: dismantledMaterials, materialCost: materialCost });
+    setConfirmation({ ...confirmation, dismantledMaterials: true });
+  };
+
+  // set confirmation
+  const handleConfirmChange = (form: string, value: boolean) => {
+    const newConfirmation = { ...confirmation, [form]: value };
+    setConfirmation(newConfirmation);
+  };
+
+  // enable Submit Button
+  let disableSubmmit : boolean = true;
+  if (formType === 'ADD') {
+    disableSubmmit = (!confirmation.chooseReworks || !confirmation.dismantledMaterials );
+  }
+  else {
+    if (formType === 'EDIT') {
+      disableSubmmit = false;
+    }
+  }
+  const handleSaveRework = () => {
   };
 
 
@@ -98,13 +114,29 @@ const NokReworkForm = ({ nokId, nokAnalyseData, formType }: NokFromProps) => {
           <NOK_Info nokId={nokId} />
         </Grid>
         <Grid item xs={4}>
-        test Button
+          <Stack marginLeft={2} spacing={2}>
+            <Button
+              variant='contained'
+              color='primary'
+              sx={{ height: '30px', width: '60px' }}
+              onClick={() => removeNok(null)}
+            > Back
+            </Button>
+            <Button
+              variant='contained'
+              disabled={disableSubmmit}
+              color='primary'
+              sx={{ height: '30px', width: '60px' }}
+              onClick={handleSaveRework}
+            > Save
+            </Button>
+          </Stack>
         </Grid>
       </Grid>
       <Divider sx={{ margin:1 }}/>
-      <ReworkChooseList productId={nok.product.id} selectedReworks={[]} confirmSelection={handleSelectRework} confirmChange={() => { console.log('confirm change');} } editable={true} />
+      <ReworkChooseList productId={nok.product.id} selectedReworks={[]} confirmSelection={handleSelectRework} confirmChange={(value) => handleConfirmChange('chooseReworks', value)} editable={true} />
       <Divider sx={{ margin:1 }}/>
-      <NokDismantledMaterial affectedMaterials={dismantledMaterials} confirmSelection={handleDismantledMaterial} confirmChange={() => { console.log('confirm change');} } editable={true} />
+      <NokDismantledMaterial affectedMaterials={dismantledMaterials} confirmSelection={handleDismantledMaterial} confirmChange={(value) => handleConfirmChange('dismantledMaterials', value)} editable={true} />
     </Grid>
   );
 };

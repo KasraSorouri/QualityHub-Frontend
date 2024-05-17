@@ -42,8 +42,6 @@ type RecipeListProps = {
 
 const ReworkChooseList = ({ productId, selectedReworks, confirmSelection, confirmChange, editable } : RecipeListProps) => {
 
-  console.log('selectedReworks ->', selectedReworks);
-
   const [ selectedRw, setSelectedRw ] = useState<number[]>(selectedReworks);
   const [ confirmActive, setConfirmActive ] = useState<boolean>(false);
 
@@ -51,20 +49,12 @@ const ReworkChooseList = ({ productId, selectedReworks, confirmSelection, confir
     productId: productId,
   };
 
-  console.log('selectedReworks * confirmActive  ->', confirmActive);
-
   const reworkResults = useQuery(['reworks',filterParameters], async() => {
     const response = await reworkServices.getFilteredRework(filterParameters);
     return response;
   },{ refetchOnWindowFocus: false, enabled: true });
 
   const reworks: Rework[] = reworkResults.data || [];
-
-  console.log('rework List * reworkResults ->', reworkResults);
-  console.log('rework List * selectedRw ->', selectedRw);
-
-
-  console.log('rework List * reworks ->', reworks);
 
   // Sort Items
   const [ sort, setSort ] = useState<{ sortItem: keyof Rework; sortOrder: number }>({ sortItem: 'reworkShortDesc' , sortOrder: 1 });
@@ -182,12 +172,12 @@ const ReworkChooseList = ({ productId, selectedReworks, confirmSelection, confir
           <Button variant='contained' color='primary' sx={{ height: '30px' }} onClick={handleResetSelection} >
             Clear Selection
           </Button>
-          <Button variant='contained' color='primary' /*disabled={!confirmActive}*/ sx={{ height: '30px' }} onClick={handleConfirmSelection} >
+          <Button variant='contained' color='primary' disabled={!confirmActive} sx={{ height: '30px' }} onClick={handleConfirmSelection} >
             Confirm
           </Button>
         </Stack>
       </Grid>
-      <TableContainer sx={{ maxHeight: '200Px' }}  >
+      <TableContainer sx={{ maxHeight: '135Px' }}  >
         <Table stickyHeader aria-label='sticky table' size='small' >
           <EnhancedTableHead
             order={order}
