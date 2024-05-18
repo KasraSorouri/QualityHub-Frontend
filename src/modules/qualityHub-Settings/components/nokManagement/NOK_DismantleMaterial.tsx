@@ -78,13 +78,6 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
 
   const setNotification = useNotificationSet();
 
-  console.log(' rework Dismantled materail in NOK * affectedMaterials ', affectedMaterials);
-  console.log(' rework Dismantled materail in NOK * rwDismantledMaterial ', rwDismantledMaterial);
-  console.log(' rework Dismantled materail in NOK * extraAffectedMaterials ', extraAffectedMaterials);
-
-  console.log('******* rework Dismantled materail in NOK * formValues ', formValues);
-
-
   useEffect(() => {
     const initialFormValues = affectedMaterials.map(material => {
 

@@ -47,6 +47,9 @@ const NokReworkForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromPr
   const [ dismantledMaterials, setDismantledMaterial ] = useState<RwDismantledMaterial[] | never[]>([]);
   const [ confirmation, setConfirmation ] = useState<{chooseReworks: boolean, dismantledMaterials: boolean}>({ chooseReworks: false, dismantledMaterials: false });
 
+  console.log('Nok Rework fprm ** dismantledMaterials -> ',dismantledMaterials);
+  console.log('Nok Rework fprm ** formValues -> ',formValues);
+
   useEffect(() => {
     setFormValues(initFormValues);
     const getNokData = async () => {
