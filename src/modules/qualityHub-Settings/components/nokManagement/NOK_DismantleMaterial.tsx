@@ -169,13 +169,23 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
               key={column.id}
               align='center'
               style={{ width: column.width ? column.width : undefined, minWidth: column.minWidth }}
-              sx={{ backgroundColor: '#1976d2', color: 'white' , borderRight: column.borderRight ? '1px solid white' : undefined }}
+              sx={{
+                width: column.width ? column.width : undefined,
+                minWidth: column.minWidth,
+                //maxWidth: column.maxWidth ? column.maxWidth : undefined,
+                padding: '1px',
+                backgroundColor: '#1976d2',
+                color: 'white',
+                borderRight: column.borderRight ? '1px solid white' : undefined,
+                whiteSpace: 'none'
+              }}
               sortDirection={orderBy === column.id ? order : false }
             >
               <TableSortLabel
                 active={orderBy === column.id}
                 direction={orderBy === column.id ? order : 'asc' }
                 onClick={createSortHandler(column.id)}
+                sx={{ padding: 0, margin: 0, display: 'contents', alignItems: 'center' }}
               >
                 {column.lable}
                 {orderBy === column.id ? (
@@ -381,8 +391,8 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
           </Button>
         </Stack>
       </Grid>
-      <TableContainer  sx={{ maxHeight: '225px', overflow: 'auto' }}>
-        <Table stickyHeader aria-label='sticky table' size='small' >
+      <TableContainer  sx={{ maxHeight: '300px', overflow: 'auto' }}>
+        <Table stickyHeader aria-label='sticky table' size='small' sx={{ tableLayout:'auto' }} >
           <EnhancedTableHead
             order={order}
             orderBy={orderBy}
@@ -392,11 +402,11 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
               extraAffectedMaterials.map((eMaterial, index) => {
                 return(
                   <TableRow>
-                    <TableCell>
+                    <TableCell padding="none" sx={{ width:'22px', padding: '7px' }}>
                       <IconButton
                         title='remove'
                         color='primary'
-                        style={{ height: '16px', width: '16px' }}
+                        sx={{  width: '20px', height: '20px', padding: '0px', margin: '0px' }}
                         onClick={() => handleExtraMatrialRemove(index)}
                       >
                         <DeleteIcon />
@@ -489,13 +499,13 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
                   selected={isItemSelected}
                   sx={{ cursor: 'pointer' }}
                 >
-                  <TableCell
-                    padding="checkbox"
+                  <TableCell padding="none" sx={{ width:'22px', padding: '7px' }}
                     onClick={(event) => handleSelect(event, material.recipeBomId)}
                   >
                     <Checkbox
                       color="primary"
                       checked={isItemSelected}
+                      sx={{  width: '20px', height: '20px', padding: '0px', margin: '0px' }}
                       inputProps={{
                         'aria-labelledby': labelId,
                       }} />

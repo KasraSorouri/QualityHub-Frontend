@@ -333,3 +333,34 @@ export interface DismantledMaterial extends Omit<RwDismantledMaterial, 'id' | 'r
   actualDismantledQty: number;
   materialStatus? : MaterialStatus;
 }
+
+export enum ReworkStatus {
+  PENDING = 'PENDING',
+  IN_PROGRESS = 'IN_PROGRESS',
+  POSTPONED = 'POSTPONED',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+}
+
+export interface NokRework {
+  id?: number;
+  nokId: number;
+  operator: string;
+  reworkDuration?: number | string;
+  reworkManPower?: number | string;
+  reworkShift?: WorkShift | undefined;
+  reworkStation: Station | undefined;
+  reworkActions?: number[];
+  affectedRecipes: Recipe[];
+  dismantledMaterials?: DismantledMaterial[];
+  note?: string;
+  materialCost?: number;
+  reworkStatus: ReworkStatus;
+}
+
+export interface NewNokReworkData extends Omit<NokRework, 'operator' | 'reworkShift' | 'reworkStation' | 'affectedRecipes'> {
+  reworkOperator: string;
+  reworkShift: number;
+  reworkStation: number | undefined;
+  affectedRecipes: number[];
+}

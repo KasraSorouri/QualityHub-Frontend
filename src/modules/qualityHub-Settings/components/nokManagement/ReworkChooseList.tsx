@@ -78,12 +78,12 @@ const ReworkChooseList = ({ productId, selectedReworks, confirmSelection, confir
 
 
   const columnHeader = [
-    { id: 'reworkShortDesc', lable: 'Description', witdh: '40%', minWidth: 10, borderRight: true },
-    { id: 'nokCode', lable: 'NOK Code', width: '10%', minWidth: 20, borderRight: true },
-    { id: 'station', lable: 'Station', width: '10%', minWidth: 10, borderRight: true },
-    { id: 'order', lable: 'order', width: '7%', minWidth: 10, borderRight: true },
-    { id: 'creationDate', lable: 'Creation Date', width: '20%', minWidth: 10, borderRight: true },
-    { id: 'active', lable: 'Active', width: 2 },
+    { id: 'reworkShortDesc', lable: 'Description', witdh: '27%', minWidth: '17px', maxWidth: '25px', borderRight: true },
+    { id: 'nokCode', lable: 'NOK Code', width: '12%', minWidth: '13px', maxWidth: '40px', borderRight: true },
+    { id: 'station', lable: 'Station', width: '20%', minWidth: '15px', maxWidth: '30px', borderRight: true },
+    { id: 'order', lable: 'order', width: '7%', minWidth: '20px', maxWidth: '30px', borderRight: true },
+    { id: 'creationDate', lable: 'Creation Date', width: '10%', minWidth: '10px', maxWidth: '30px', borderRight: true },
+    { id: 'active', lable: 'Active', width:'20px', maxWidth: '35px' },
   ];
 
   const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
@@ -101,27 +101,36 @@ const ReworkChooseList = ({ productId, selectedReworks, confirmSelection, confir
           <TableCell
             key={'select'}
             align='right'
-            sx={{ backgroundColor: '#1976d2', color: 'white', maxWidth: '10px',  borderRight: '1px solid white' }}
+            sx={{ backgroundColor: '#1976d2', color: 'white', width: '40px', padding:'0px', borderRight: '1px solid white' }}
           />
           {columnHeader.map((column) => (
             <TableCell
               key={column.id}
               align='center'
-              style={{ width: column.width ? column.width : undefined, minWidth: column.minWidth }}
-              sx={{ backgroundColor: '#1976d2', color: 'white' , borderRight: column.borderRight ? '1px solid white' : undefined }}
+              sx={{
+                width: column.width ? column.width : undefined,
+                minWidth: column.minWidth,
+                maxWidth: column.maxWidth ? column.maxWidth : undefined,
+                padding: '5px',
+                backgroundColor: '#1976d2',
+                color: 'white',
+                borderRight: column.borderRight ? '1px solid white' : undefined,
+                whiteSpace: 'wrap'
+              }}
               sortDirection={orderBy === column.id ? order : false }
             >
               <TableSortLabel
                 active={orderBy === column.id}
                 direction={orderBy === column.id ? order : 'asc' }
                 onClick={createSortHandler(column.id)}
+                sx={{ padding: 0, margin: 0, display: 'contents', alignItems: 'center' }}
               >
-                {column.lable}
                 {orderBy === column.id ? (
                   <Box  sx={visuallyHidden}>
                     {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                   </Box>
                 ) : null}
+                {column.lable}
               </TableSortLabel>
             </TableCell>
           ))}
@@ -177,8 +186,8 @@ const ReworkChooseList = ({ productId, selectedReworks, confirmSelection, confir
           </Button>
         </Stack>
       </Grid>
-      <TableContainer sx={{ maxHeight: '135Px' }}  >
-        <Table stickyHeader aria-label='sticky table' size='small' >
+      <TableContainer sx={{ maxHeight: '300px', width: '100%', overflow:'auto' }}  >
+        <Table stickyHeader aria-label='sticky table' size='small' sx={{ tableLayout:'auto' }} >
           <EnhancedTableHead
             order={order}
             orderBy={orderBy}
@@ -201,10 +210,11 @@ const ReworkChooseList = ({ productId, selectedReworks, confirmSelection, confir
                     selected={isItemSelected}
                     sx={{ cursor: 'pointer' }}
                   >
-                    <TableCell padding="checkbox">
+                    <TableCell padding="none" sx={{ width:'22px', padding: '7px' }}>
                       <Checkbox
                         color="primary"
                         checked={isItemSelected}
+                        sx={{  width: '20px', height: '20px', padding: '0px', margin: '0px' }}
                         inputProps={{
                           'aria-labelledby': labelId,
                         }}
@@ -223,11 +233,11 @@ const ReworkChooseList = ({ productId, selectedReworks, confirmSelection, confir
                       {rework.order}
                     </TableCell>
                     <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
-                      {dayjs(rework.creationDate).format('YYYY.MM.DD  hh:mm')}
+                      {dayjs(rework.creationDate).format('YYYY.MM.DD')}
                     </TableCell>
-                    <TableCell align='center' >
+                    <TableCell align='center' padding='none' sx={{ padding: '5px' }} >
                       <Box justifyContent={'space-between'} >
-                        <Checkbox checked={rework.active} style={{ height: '16px', width: '16px' }}/>
+                        <Checkbox checked={rework.active} sx={{ height: '20px', width: '20px' }}/>
                       </Box>
                     </TableCell>
                   </TableRow>
