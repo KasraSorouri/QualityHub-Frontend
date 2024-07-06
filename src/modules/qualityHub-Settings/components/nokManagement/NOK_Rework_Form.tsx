@@ -153,6 +153,7 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
       reworkOperator: formValues.operator,
       reworkDuration: formValues.duration,
       reworkManPower: formValues.manPower,
+      reworkNote: formValues.note,
       reworkStatus: ReworkStatus.COMPLETED
     };
 

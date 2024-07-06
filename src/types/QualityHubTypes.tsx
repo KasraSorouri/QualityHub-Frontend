@@ -228,6 +228,7 @@ export enum ProductStatus {
 export enum MaterialStatus {
   OK = 'OK',
   SCRAPPED = 'SCRAPPED',
+  IQC =  'IQC',
   CLAIMABLE = 'CLAIMABLE',
 }
 
@@ -353,7 +354,7 @@ export interface NokRework {
   reworkActions?: number[];
   affectedRecipes: Recipe[];
   dismantledMaterials?: DismantledMaterial[];
-  note?: string;
+  reworkNote?: string;
   materialCost?: number;
   reworkStatus: ReworkStatus;
 }

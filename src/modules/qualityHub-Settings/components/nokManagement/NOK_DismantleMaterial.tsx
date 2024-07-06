@@ -342,6 +342,9 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
       if (material.actualDismantledQty === 0) {
         material.actualDismantledQty = material.suggestedDismantledQty ? material.suggestedDismantledQty : material.qty;
       }
+      if (material.materialStatus === undefined) {
+        material.materialStatus = MaterialStatus.SCRAPPED;
+      }
     });
 
     if (extraAffectedMaterials.length > 0) {
