@@ -92,6 +92,7 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
         qty: material.recipeBom.qty,
         suggestedDismantledQty: material.dismantledQty,
         note: material.note,
+        mandatoryRemove: material.mandatoryRemove,
         reusable: material.recipeBom.reusable,
         actualDismantledQty: rwDismantled ? rwDismantled?.actualDismantledQty : 0
       };
