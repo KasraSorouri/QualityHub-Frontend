@@ -11,7 +11,7 @@ import UserManagement from './modules/usersAndAuthentications/components/UserMan
 import ConfigurationPage from './modules/qualityHub-Settings/components/ConfigurationPage';
 import ProductsManagement from './modules/qualityHub-Settings/components/ProductsManagement';
 import SystemSetting from './modules/qualityHub-Settings/components/SystemSetting';
-import HomePageSubMenu from './modules/public/components/HomePageSubMenu';
+import NokManagementMenu from './modules/qualityHub-Settings/components/nokManagement/NokManagementMenu';
 
 function App() {
 
@@ -31,7 +31,7 @@ function App() {
         <Navigation signedUser={user} />
         <Notification  />
         <Routes>
-          <Route path='/' element={<HomePageSubMenu />} />
+          <Route path='/' element={<NokManagementMenu />} />
           <Route path='/signin' element={<SignIn />} />
           <Route path='/user_management' element={<UserManagement />} />
           <Route path='/quality-setting/' element={<ConfigurationPage signedUser={user} />} />

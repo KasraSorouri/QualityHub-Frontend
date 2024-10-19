@@ -4,16 +4,31 @@ import { api_url } from '../../../configs/config';
 import setToken from '../../usersAndAuthentications/services/authentication';
 import { Rework, NewRework } from '../../../types/QualityHubTypes';
 
+type FilterParameter = {
+  productId: number;
+  filterParameter? : {
+    nokCode?: number,
+    station?: number
+  }
+}
+
 // Get all Rework
 const getRework = async() : Promise<Rework[]> => {
   const res = await axios.get(`${api_url}/quality/reworks`);
   return res.data;
 };
 
-// Get Rework by Product
+// Get Reworks by Product
 const getReworkByProduct = async( productId : number) : Promise<Rework[]> => {
 
   const res = await axios.get(`${api_url}/quality/reworks/product/${productId}`);
+  return res.data;
+};
+
+// Get Reworks * Filtered
+const getFilteredRework = async(filterParameter: FilterParameter) : Promise<Rework[]> => {
+  console.log('fileter parameter ->', filterParameter);
+  const res = await axios.get(`${api_url}/quality/reworks/product/${filterParameter.productId}`);
   return res.data;
 };
 
@@ -61,6 +76,7 @@ const editRework = async(reworkData : NewRework) : Promise<Rework | unknown> => 
 export default {
   getRework,
   getReworkByProduct,
+  getFilteredRework,
   createRework,
   editRework,
 };

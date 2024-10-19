@@ -14,48 +14,54 @@ import {
   Typography,
   Grid,
   Button,
-  Collapse,
   Stack
 } from '@mui/material';
 
 import { visuallyHidden } from '@mui/utils';
 
-import { Recipe } from '../../../../types/QualityHubTypes';
-import RecipeBOM from '../recipe/RecipeBOM';
+import { Rework } from '../../../../types/QualityHubTypes';
 import React from 'react';
+import { useQuery } from 'react-query';
+import reworkServices from '../../services/reworkServices';
+import dayjs from 'dayjs';
 
 interface EnhancedTableHeadProps {
   order: 'asc' | 'desc';
-  orderBy: keyof Recipe;
+  orderBy: keyof Rework;
   onRequestSort: (_event: React.MouseEvent<unknown>, property: string) => void;
 }
 
 type RecipeListProps = {
-  recipes: Recipe[];
-  selectedRecipes: number[];
-  confirmSelection: (recipes : number[]) => void;
+  productId: number;
+  selectedReworks: number[];
+  confirmSelection: (reworks : Rework[]) => void;
   confirmChange: (value: boolean ) => void;
-  title: string;
   editable: boolean;
 }
 
-type ShowDetails = {
-  show: boolean;
-  index: number | undefined;
-}
 
-const ReworkRecipeList = ({ recipes, selectedRecipes, confirmSelection, confirmChange, title, editable } : RecipeListProps) => {
+const ReworkChooseList = ({ productId, selectedReworks, confirmSelection, confirmChange, editable } : RecipeListProps) => {
 
-  const [ selectedRwRecipes, setSelectedRwRecipes ] = useState<number[]>(selectedRecipes);
-  const [ showMatrials, setShowMaterials ] = useState<ShowDetails>({ index: undefined, show: false });
-  const [ confirmActive, setConfirmActive ] = useState<boolean>(recipes.length > 0 ? false : true);
+  const [ selectedRw, setSelectedRw ] = useState<number[]>(selectedReworks);
+  const [ confirmActive, setConfirmActive ] = useState<boolean>(false);
+
+  const filterParameters = {
+    productId: productId,
+  };
+
+  const reworkResults = useQuery(['reworks',filterParameters], async() => {
+    const response = await reworkServices.getFilteredRework(filterParameters);
+    return response;
+  },{ refetchOnWindowFocus: false, enabled: true });
+
+  const reworks: Rework[] = reworkResults.data || [];
 
   // Sort Items
-  const [ sort, setSort ] = useState<{ sortItem: keyof Recipe; sortOrder: number }>({ sortItem: 'recipeCode' , sortOrder: 1 });
+  const [ sort, setSort ] = useState<{ sortItem: keyof Rework; sortOrder: number }>({ sortItem: 'reworkShortDesc' , sortOrder: 1 });
   const order : 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
-  const orderBy : keyof Recipe = sort.sortItem;
+  const orderBy : keyof Rework = sort.sortItem;
 
-  const sortedRecipes: Recipe[]  = recipes.sort((a, b) => {
+  const sortedReworks: Rework[]  = reworks.sort((a, b) => {
     const aValue = a[orderBy];
     const bValue = b[orderBy];
 
@@ -72,14 +78,12 @@ const ReworkRecipeList = ({ recipes, selectedRecipes, confirmSelection, confirmC
 
 
   const columnHeader = [
-    { id: 'recipeCode', lable: 'Code', witdh: '7%', minWidth: 10, borderRight: true },
-    { id: 'description', lable: 'Description', width: '35%', minWidth: 20, borderRight: true },
-    { id: 'station', lable: 'Station', width: '10%', minWidth: 10, borderRight: true },
-    { id: 'order', lable: 'order', width: '7%', minWidth: 10, borderRight: true },
-    { id: 'timeDuration', lable: 'Duration', width: '7%', minWidth: 10, borderRight: true },
-    { id: 'manpower', lable: 'Manpower', width: '7%', minWidth: 10, borderRight: true },
-    { id: 'materials', lable: 'Materials', width: '10%', minWidth: 164, borderRight: true },
-    { id: 'active', lable: 'Active', width: 2 },
+    { id: 'reworkShortDesc', lable: 'Description', witdh: '27%', minWidth: '17px', maxWidth: '25px', borderRight: true },
+    { id: 'nokCode', lable: 'NOK Code', width: '12%', minWidth: '13px', maxWidth: '40px', borderRight: true },
+    { id: 'station', lable: 'Station', width: '20%', minWidth: '15px', maxWidth: '30px', borderRight: true },
+    { id: 'order', lable: 'order', width: '7%', minWidth: '20px', maxWidth: '30px', borderRight: true },
+    { id: 'creationDate', lable: 'Creation Date', width: '10%', minWidth: '10px', maxWidth: '30px', borderRight: true },
+    { id: 'active', lable: 'Active', width:'20px', maxWidth: '35px' },
   ];
 
   const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
@@ -97,27 +101,36 @@ const ReworkRecipeList = ({ recipes, selectedRecipes, confirmSelection, confirmC
           <TableCell
             key={'select'}
             align='right'
-            sx={{ backgroundColor: '#1976d2', color: 'white', maxWidth: '10px',  borderRight: '1px solid white' }}
+            sx={{ backgroundColor: '#1976d2', color: 'white', width: '40px', padding:'0px', borderRight: '1px solid white' }}
           />
           {columnHeader.map((column) => (
             <TableCell
               key={column.id}
               align='center'
-              style={{ width: column.width ? column.width : undefined, minWidth: column.minWidth }}
-              sx={{ backgroundColor: '#1976d2', color: 'white' , borderRight: column.borderRight ? '1px solid white' : undefined }}
+              sx={{
+                width: column.width ? column.width : undefined,
+                minWidth: column.minWidth,
+                maxWidth: column.maxWidth ? column.maxWidth : undefined,
+                padding: '5px',
+                backgroundColor: '#1976d2',
+                color: 'white',
+                borderRight: column.borderRight ? '1px solid white' : undefined,
+                whiteSpace: 'wrap'
+              }}
               sortDirection={orderBy === column.id ? order : false }
             >
               <TableSortLabel
                 active={orderBy === column.id}
                 direction={orderBy === column.id ? order : 'asc' }
                 onClick={createSortHandler(column.id)}
+                sx={{ padding: 0, margin: 0, display: 'contents', alignItems: 'center' }}
               >
-                {column.lable}
                 {orderBy === column.id ? (
                   <Box  sx={visuallyHidden}>
                     {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                   </Box>
                 ) : null}
+                {column.lable}
               </TableSortLabel>
             </TableCell>
           ))}
@@ -126,7 +139,7 @@ const ReworkRecipeList = ({ recipes, selectedRecipes, confirmSelection, confirmC
     );
   };
 
-  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Recipe) => {
+  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Rework) => {
     const isAsc = orderBy === property && order ==='asc';
     setSort({ sortItem: property, sortOrder:isAsc ? -1 : 1 });
   };
@@ -135,20 +148,20 @@ const ReworkRecipeList = ({ recipes, selectedRecipes, confirmSelection, confirmC
   const handleSelect = (_event: React.MouseEvent<unknown>, id: number) => {
     const selectedIndex = id;
     setConfirmActive(true);
-    if (selectedRwRecipes.includes(selectedIndex)){
-      const newSelected = selectedRwRecipes.filter((id) => id !== selectedIndex);
-      setSelectedRwRecipes(newSelected);
+    if (selectedRw.includes(selectedIndex)){
+      const newSelected = selectedRw.filter((id) => id !== selectedIndex);
+      setSelectedRw(newSelected);
     } else {
-      const newSelected = selectedRwRecipes.concat(selectedIndex);
-      setSelectedRwRecipes(newSelected);
+      const newSelected = selectedRw.concat(selectedIndex);
+      setSelectedRw(newSelected);
     }
     confirmChange(false);
   };
 
-  const isSelected = (id: number) => selectedRwRecipes.indexOf(id) !== -1;
+  const isSelected = (id: number) => selectedRw.indexOf(id) !== -1;
 
   const handleResetSelection = () => {
-    setSelectedRwRecipes([]);
+    setSelectedRw([]);
     setConfirmActive(true);
     confirmChange(false);
   };
@@ -156,14 +169,14 @@ const ReworkRecipeList = ({ recipes, selectedRecipes, confirmSelection, confirmC
   const handleConfirmSelection = () => {
     confirmChange(true);
     setConfirmActive(false);
-    confirmSelection(selectedRwRecipes);
+    const selectedReworks = reworks.filter(rework => selectedRw.includes(rework.id));
+    confirmSelection(selectedReworks);
   };
 
   return(
     <Paper sx={{ pointerEvents: editable ? 'all' : 'none' }}>
       <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'} >
-        <Typography margin={1} >{title}</Typography>
-        <Typography margin={1} >{selectedRwRecipes.length} Recipes is Selected</Typography>
+        <Typography margin={1} >{selectedRw.length} Rework is Selected</Typography>
         <Stack direction={'row'} spacing={1} margin={.5} >
           <Button variant='contained' color='primary' sx={{ height: '30px' }} onClick={handleResetSelection} >
             Clear Selection
@@ -173,75 +186,59 @@ const ReworkRecipeList = ({ recipes, selectedRecipes, confirmSelection, confirmC
           </Button>
         </Stack>
       </Grid>
-      <TableContainer sx={{ maxHeight: '550Px' }}  >
-        <Table stickyHeader aria-label='sticky table' size='small' >
+      <TableContainer sx={{ maxHeight: '300px', width: '100%', overflow:'auto' }}  >
+        <Table stickyHeader aria-label='sticky table' size='small' sx={{ tableLayout:'auto' }} >
           <EnhancedTableHead
             order={order}
             orderBy={orderBy}
-            onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof Recipe)}
+            onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof Rework)}
           />
           <TableBody>
-            { sortedRecipes.map((recipe, index) => {
-              const isItemSelected = isSelected(recipe.id);
+            { sortedReworks.map((rework, index) => {
+              const isItemSelected = isSelected(rework.id);
               const labelId = `enhanced-table-checkbox-${index}`;
 
               return(
-                <React.Fragment key={recipe.id}>
+                <React.Fragment key={rework.id}>
                   <TableRow
                     hover
-                    onClick={(event) => handleSelect(event, recipe.id)}
+                    onClick={(event) => handleSelect(event, rework.id)}
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}
-                    key={recipe.id}
+                    key={rework.id}
                     selected={isItemSelected}
                     sx={{ cursor: 'pointer' }}
                   >
-                    <TableCell padding="checkbox">
+                    <TableCell padding="none" sx={{ width:'22px', padding: '7px' }}>
                       <Checkbox
                         color="primary"
                         checked={isItemSelected}
+                        sx={{  width: '20px', height: '20px', padding: '0px', margin: '0px' }}
                         inputProps={{
                           'aria-labelledby': labelId,
                         }}
                       />
                     </TableCell>
-                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
-                      {recipe.recipeCode}
-                    </TableCell>
                     <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                      {recipe.description}
+                      {rework.reworkShortDesc}
                     </TableCell>
                     <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
-                      {recipe.station.stationName}
+                      {rework.nokCode.nokCode}
                     </TableCell>
                     <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
-                      {recipe.order}
+                      {rework.station.stationName}
                     </TableCell>
                     <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
-                      {recipe.timeDuration}
+                      {rework.order}
                     </TableCell>
                     <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
-                      {recipe.manpower}
+                      {dayjs(rework.creationDate).format('YYYY.MM.DD')}
                     </TableCell>
-                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
-                      <Button onClick={() => setShowMaterials({ index, show:!showMatrials.show })} variant='contained' color='primary'>
-                        {showMatrials.show && showMatrials.index === index ? 'Hide' : 'Show'} Materials
-                      </Button>
-                    </TableCell>
-                    <TableCell align='center' >
+                    <TableCell align='center' padding='none' sx={{ padding: '5px' }} >
                       <Box justifyContent={'space-between'} >
-                        <Checkbox checked={recipe.active} style={{ height: '16px', width: '16px' }}/>
+                        <Checkbox checked={rework.active} sx={{ height: '20px', width: '20px' }}/>
                       </Box>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow key={index}>
-                    <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                      <Collapse in={showMatrials.show && showMatrials.index === index} timeout='auto' unmountOnExit>
-                        <Box margin={1}>
-                          <RecipeBOM bom={recipe.recipeMaterials ? recipe.recipeMaterials : []} updateBOM={() => null} readonly={true} />
-                        </Box>
-                      </Collapse>
                     </TableCell>
                   </TableRow>
                 </React.Fragment>
@@ -254,4 +251,4 @@ const ReworkRecipeList = ({ recipes, selectedRecipes, confirmSelection, confirmC
   );
 };
 
-export default ReworkRecipeList;
+export default ReworkChooseList;

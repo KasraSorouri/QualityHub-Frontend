@@ -1,26 +1,28 @@
+import { useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
 import {
   Autocomplete,
-  Box,
   Button,
-  Divider,
   FilledTextFieldProps,
+  FormControlLabel,
   Grid,
   OutlinedTextFieldProps,
+  Radio,
+  RadioGroup,
+  Stack,
   StandardTextFieldProps,
   TextField,
   TextFieldVariants,
-  Typography
 } from '@mui/material';
 
-import { NokCode, Station, WorkShift, Product, NokAnalyseData, NewNokAnalyseData, NokData, RCA } from '../../../../types/QualityHubTypes';
-import { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
-import stationServices from '../../services/stationServices';
-import nokCodeServices from '../../services/nokCodeServices';
-import workShiftServices from '../../services/workShiftServices';
+import { Station, WorkShift, NokAnalyseData, NewNokAnalyseData, NokData, DismantledMaterial, Rework, RwDismantledMaterial, NewNokReworkData, ReworkStatus } from '../../../../types/QualityHubTypes';
 import nokDetectServices from '../../services/nokDetectServices';
-import NOK_Reg_Form from './NOK_Reg_Form';
-import RCAs_Form from './RCAs_Form';
+import NOK_Info from './NOK_Info';
+import ReworkChooseList from './ReworkChooseList';
+import NokDismantledMaterial from './NOK_DismantleMaterial';
+import stationServices from '../../services/stationServices';
+import workShiftServices from '../../services/workShiftServices';
+import nokReworkServices from '../../services/nokReworkServices';
 
 type NokFromProps = {
   nokId: number,
@@ -30,37 +32,38 @@ type NokFromProps = {
 }
 
 type FormData = {
-  nokCode: NokCode | null;
-  causeStation: Station | null;
-  causeShift: WorkShift | null;
-  description: string;
-  timeWaste?: number;
-  materialWaste?: number;
-  closed: boolean;
+  materialCost?: number;
+  operator: string;
+  duration?: number | string;
+  manPower?: number | string;
+  reworkShift?: WorkShift | undefined;
+  reworkStation: Station | undefined;
+  reworkActions?: number[];
+  affectedRecipes?: number[],
+  dismantledMaterials?: DismantledMaterial[];
+  note?: string;
+  reworkStatus?: ReworkStatus;
 }
 
-const NokReworkForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromProps) => {
-  console.log('nok ID ->', nokId);
-
-  const fakeRCA : RCA[] = [
-    { id: 1, nokId: 1, rcaCode: { id: 1, rcaCode: 'RCA1', rcaDesc: 'RCA1', active: true }, description: 'RCA1', improvSuggestion: 'RCA1' },
-    { id: 1, nokId: 1, rcaCode: { id: 1, rcaCode: 'RCA1', rcaDesc: 'RCA1', active: true }, description: 'RCA1', improvSuggestion: 'RCA1' },
-  ];
-
-  const submitTitle = formType === 'ADD' ? 'Add' : 'Update';
+const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
 
   const initFormValues: FormData = {
-    nokCode: nokAnalyseData?.nokCode ? nokAnalyseData.nokCode : null,
-    causeStation: nokAnalyseData?.causeStation ? nokAnalyseData.causeStation : null,
-    causeShift: nokAnalyseData?.causeShift ? nokAnalyseData.causeShift : null,
-    description: nokAnalyseData ? nokAnalyseData.description : '',
-    closed: nokAnalyseData ? nokAnalyseData.closed : false,
+    operator: '',
+    duration: '',
+    manPower: '',
+    reworkShift: undefined,
+    reworkStation: undefined,
+    note: ''
+    //nokRework: [],
   };
 
   const [ formValues, setFormValues ] = useState<FormData>(initFormValues);
   const [ nok, setNok ] = useState<NokData | null>(null);
+  const [ dismantledMaterials, setDismantledMaterial ] = useState<RwDismantledMaterial[] | never[]>([]);
+  const [ confirmation, setConfirmation ] = useState<{chooseReworks: boolean, dismantledMaterials: boolean}>({ chooseReworks: false, dismantledMaterials: false });
 
-  console.log('NOK Analyse * NOK Data ->', nok);
+  console.log('Nok Rework fprm ** dismantledMaterials -> ',dismantledMaterials);
+  console.log('Nok Rework fprm ** formValues -> ',formValues);
 
   useEffect(() => {
     setFormValues(initFormValues);
@@ -69,26 +72,21 @@ const NokReworkForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromPr
       setNok(result);
     };
     getNokData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[formType]);
 
   // get Station List
   const stationResults = useQuery('stations',stationServices.getStation, { refetchOnWindowFocus: false });
   const stationList: Station[] = stationResults.data || [];
 
-  // Get NOK Code List
-  const nokCodeResults = useQuery('nokCodes', nokCodeServices.getNokCode, { refetchOnWindowFocus: false });
-  const nokCodeList: NokCode[] = nokCodeResults.data || [];
-
   // Get Work Shift List
   const workShiftResults = useQuery('workShifts', workShiftServices.getShift, { refetchOnWindowFocus: false });
   const workShiftList: WorkShift[] = workShiftResults.data || [];
 
-
-
   // handle Changes
   const handleChange = (event: {target: { name: string, value: unknown, checked: boolean}}) => {
     const { name, value, checked } = event.target;
-    const newValue = name === 'active' ? checked : value;
+    const newValue = name === 'active'  ? checked : value;
 
     setFormValues((prevValues: FormData) => ({
       ...prevValues,
@@ -96,7 +94,7 @@ const NokReworkForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromPr
     }));
   };
 
-  const handleAutoCompeletChange = (parameter: string, newValue: Product | Station | WorkShift | NokCode) => {
+  const handleAutoCompeletChange = (parameter: string, newValue: | Station | WorkShift) => {
 
     setFormValues((prevValues: FormData) => ({
       ...prevValues,
@@ -104,104 +102,138 @@ const NokReworkForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromPr
     }));
   };
 
-  const handleUpdateRCA = (rcas: RCA[]) => {
-    console.log(' *** NOK registeration * Update RCA * rcas -> ', rcas);
+  //  Handle Status Change
+  const handleStatusChange = (status: ReworkStatus) => {
+
+    setFormValues({ ...formValues, reworkStatus: status });
+  };
+
+  // Handle Select Rework
+  const handleSelectRework = (reworks: Rework[]) => {
+    let dismantledMaterials : RwDismantledMaterial[] = [];
+    const newNokReworks = reworks.map(rework => {
+      rework.rwDismantledMaterials ? dismantledMaterials = dismantledMaterials.concat(rework.rwDismantledMaterials) : null;
+      return (rework.id);
+    });
+    setFormValues({ ...formValues, reworkActions: newNokReworks });
+    setDismantledMaterial(dismantledMaterials);
+    setConfirmation({ ...confirmation, chooseReworks: true });
   };
 
 
-  /*
-  const timeHandler = (value: Dayjs | null) => {
-    if (value) {
-      setFormValues((prevValues: FormData) => ({
-        ...prevValues,
-        detectedTime: value,
-      }));
+  const handleDismantledMaterial = (dismantledMaterials : DismantledMaterial[]) => {
+    // Calculate Material Cost
+    const materialCost = dismantledMaterials.reduce((totalCost, item) => {
+      const cost = item.material.price ? item.actualDismantledQty * item.material.price : 0;
+      return totalCost + cost;
+    }, 0);
+    setFormValues({ ...formValues, dismantledMaterials: dismantledMaterials, materialCost: materialCost });
+    setConfirmation({ ...confirmation, dismantledMaterials: true });
+  };
+
+  // set confirmation
+  const handleConfirmChange = (form: string, value: boolean) => {
+    const newConfirmation = { ...confirmation, [form]: value };
+    setConfirmation(newConfirmation);
+  };
+
+  // enable Submit Button
+  let disableSubmmit : boolean = true;
+  if (formType === 'ADD') {
+    disableSubmmit = (!confirmation.chooseReworks || !confirmation.dismantledMaterials );
+  }
+  else {
+    if (formType === 'EDIT') {
+      disableSubmmit = false;
     }
-  };
-  */
-
-  const handleSubmit = async (event: {preventDefault: () => void}) => {
-    event.preventDefault();
-    if (formType === 'ADD') {
-
-      console.log(' *** NOK registeration * Submit form * newNokData -> ',formValues);
-      //console.log(' *** NOK registeration * Submit form * result -> ', result);
-
-    } else {
-      console.log(' *** NOK registeration * Submit form * Error -> ', 'Missing data');
+  }
+  const handleSaveRework = () => {
+    //
+    if (!formValues.reworkShift) {
+      alert('Please select Shift');
+      return;
     }
+    if (!formValues.reworkStatus) {
+      alert('Please select Rework Status' + '\n' +'Does it need more rework or rework is complete?');
+      return;
+    }
+    const newNokReworks : NewNokReworkData = {
+      nokId: nokId,
+      reworkActions: formValues.reworkActions,
+      dismantledMaterials: formValues.dismantledMaterials,
+      affectedRecipes: formValues.affectedRecipes ? formValues.affectedRecipes : [],
+      reworkShift: formValues.reworkShift.id,
+      reworkStation: formValues.reworkStation?.id,
+      reworkOperator: formValues.operator,
+      reworkDuration: formValues.duration,
+      reworkManPower: formValues.manPower,
+      reworkNote: formValues.note,
+      reworkStatus: formValues.reworkStatus
+    };
+
+    nokReworkServices.createNokRework(newNokReworks);
+    removeNok(null);
   };
 
+
+  if (!nok) {
+    return(
+      <div>
+        loading ....
+      </div>
+    );
+  }
 
   return (
     <Grid container direction={'column'}>
-      <Typography variant='h5' marginLeft={2}>
-        Detect Information
-      </Typography>
-      <NOK_Reg_Form formType={'VIEW'} nokData={nok} />
-      <Divider sx={{ margin:1 }}/>
-      <Typography variant='h5' marginLeft={2}>
-        Origin of NOK
-      </Typography>
-      <Box>
-        <form onSubmit={handleSubmit} >
-          <Grid container direction={'column'} sx={{ background: '#FEC0D4' }}>
-            <Grid container width={'100%'} flexDirection={'row'} >
+      <Grid container direction={'row'}>
+        <Grid item xs={8} sx={{ background: '#9FEAF7' }}>
+          <NOK_Info nokId={nokId} />
+        </Grid>
+        <Stack direction={'row'}>
+          <Stack direction={'column'} width={'60%'} >
+            <Stack direction={'row'}>
+              <TextField
+                id='operator'
+                name='operator'
+                label='Operator'
+                disabled={formType === 'VIEW'}
+                sx={{ marginLeft: 1, marginTop: 1, width: '15%', minWidth: '150px' }}
+                value={formValues.operator}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
+                size='small'
+                required />
+              <TextField
+                id='duration'
+                name='duration'
+                label='Duration'
+                disabled={formType === 'VIEW'}
+                sx={{ marginLeft: 1, marginTop: 1, width: '10%', minWidth: '100px' }}
+                value={formValues.duration}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
+                fullWidth
+                size='small' />
+              <TextField
+                id='manPower'
+                name='manPower'
+                label='Man Power'
+                disabled={formType === 'VIEW'}
+                sx={{ marginLeft: 1, marginTop: 1, width: '10%', minWidth: '120px' }}
+                value={formValues.manPower}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
+                fullWidth
+                size='small' />
               <Autocomplete
-                id='causeStation'
-                sx={{ marginLeft: 2, marginTop: 1, width: '20%', minWidth: '200px' }}
+                id='reworkShift'
+                sx={{ marginLeft: 1, marginTop: 1, width: '12%', minWidth: '140px' }}
                 size='small'
                 aria-required
-                options={stationList}
-                isOptionEqualToValue={
-                  (option: Station, value: Station) => option.stationName === value.stationName
-                }
-                value={formValues.causeStation ? formValues.causeStation : null}
-                onChange={(_event, newValue) => newValue && handleAutoCompeletChange('causeStation', newValue)}
-                getOptionLabel={(option: { stationName: string; }) => option.stationName}
-                renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
-                  <TextField
-                    {...params}
-                    label='Station'
-                    placeholder='Add Station'
-                    size='small'
-                    required
-                  />
-                )}
-              />
-              <Autocomplete
-                id='nokCode'
-                sx={{ marginLeft: 2, marginTop: 1, width: '15%', minWidth: '150px' }}
-                size='small'
-                aria-required
-                options={nokCodeList}
-                isOptionEqualToValue={
-                  (option: NokCode, value: NokCode) => option.nokCode === value.nokCode
-                }
-                value={formValues.nokCode ? formValues.nokCode : null}
-                onChange={(_event, newValue) => newValue && handleAutoCompeletChange('nokCode', newValue)}
-                getOptionLabel={(option: { nokCode: string; }) => option.nokCode}
-                renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
-                  <TextField
-                    {...params}
-                    label='NOK Code'
-                    placeholder='NOK Code'
-                    size='small'
-                    required
-                  />
-                )}
-              />
-              <Autocomplete
-                id='causeShift'
-                sx={{ marginLeft: 2, marginTop: 1, width: '15%', minWidth:'140px' }}
-                size='small'
-                aria-required
+                disabled={formType === 'VIEW'}
+                clearIcon={false}
                 options={workShiftList}
-                isOptionEqualToValue={
-                  (option: WorkShift, value: WorkShift) => option.shiftName === value.shiftName
-                }
-                value={formValues.causeShift ? formValues.causeShift : null}
-                onChange={(_event, newValue) => newValue && handleAutoCompeletChange('causeShift', newValue)}
+                isOptionEqualToValue={(option: WorkShift, value: WorkShift) => option.shiftName === value.shiftName}
+                value={formValues.reworkShift ? formValues.reworkShift : null}
+                onChange={(_event, newValue) => newValue && handleAutoCompeletChange('reworkShift', newValue)}
                 getOptionLabel={(option: { shiftName: string; }) => option.shiftName}
                 renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
                   <TextField
@@ -209,37 +241,82 @@ const NokReworkForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromPr
                     label='Shift'
                     placeholder='Shift'
                     size='small'
-                    required
-                  />
-                )}
-              />
-            </Grid>
-            <Grid display={'flex'}>
-              <TextField
-                id="description"
-                name="description"
-                label="Description"
-                sx={{ marginLeft: 2, marginTop: 1 , width:'85%' }}
-                value={formValues.description}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-                fullWidth
+                    required />
+                )} />
+              <Autocomplete
+                id='reworkStation'
+                sx={{ marginLeft: 1, marginTop: 1, width: '15%', minWidth: '190px' }}
                 size='small'
-              />
-              <Button type='submit' variant='contained' color='primary' size='small' sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}>
-                {submitTitle}
-              </Button>
-              <Button onClick={() => removeNok(null)} variant='contained' color='primary' size='small' sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}>
-              Back
-              </Button>
+                aria-required
+                disabled={!(formType === 'ADD')}
+                clearIcon={false}
+                options={stationList}
+                isOptionEqualToValue={(option: Station, value: Station) => option.stationName === value.stationName}
+                value={formValues.reworkStation ? formValues.reworkStation : null}
+                onChange={(_event, newValue) => newValue && handleAutoCompeletChange('reworkStation', newValue)}
+                getOptionLabel={(option: { stationName: string; }) => option.stationName}
+                renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
+                  <TextField
+                    {...params}
+                    label='Station'
+                    placeholder='Add Station'
+                    size='small'
+                  />
+                )} />
+            </Stack>
+            <Grid >
+              <TextField
+                id='note'
+                name='note'
+                label='Note'
+                disabled={formType === 'VIEW'}
+                sx={{ marginLeft: 1, marginTop: 1, width: '98%' }}
+                value={formValues.note}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
+                multiline
+                size='small' />
             </Grid>
+          </Stack>
+          <Grid item marginLeft={2}  >
+            <RadioGroup
+              value={formValues.reworkStatus}
+              onChange={(_event, value) => handleStatusChange(value as ReworkStatus)}
+              aria-required
+            >
+              <FormControlLabel value={ReworkStatus.IN_PROGRESS} control={<Radio />} label='More Reworks is needed' />
+              <FormControlLabel value={ReworkStatus.COMPLETED} control={<Radio />} label='Reworks are completed' />
+            </RadioGroup>
           </Grid>
-        </form>
-      </Box>
-      <Divider sx={{ margin:1 }}/>
-      <Typography variant='h5' marginLeft={2} >
-        Root Cause Analysis
-      </Typography>
-      <RCAs_Form formType={'ADD'} rcas={fakeRCA} updateRCA={handleUpdateRCA} />
+          <Grid item >
+            <Stack marginLeft={0} marginTop={1} spacing={2}>
+              <Button
+                variant='contained'
+                color='primary'
+                sx={{ height: '30px', width: '60px' }}
+                onClick={() => removeNok(null)}
+              > Back
+              </Button>
+              <Button
+                variant='contained'
+                disabled={disableSubmmit}
+                color='primary'
+                sx={{ height: '30px', width: '60px' }}
+                onClick={handleSaveRework}
+              > Save
+              </Button>
+            </Stack>
+          </Grid>
+        </Stack>
+
+      </Grid>
+      <Grid container direction={'row'} spacing={1} marginTop={1}>
+        <Grid item xs={5}>
+          <ReworkChooseList productId={nok.product.id} selectedReworks={[]} confirmSelection={handleSelectRework} confirmChange={(value) => handleConfirmChange('chooseReworks', value)} editable={true} />
+        </Grid>
+        <Grid item xs={7}>
+          <NokDismantledMaterial affectedMaterials={dismantledMaterials} confirmSelection={handleDismantledMaterial} confirmChange={(value) => handleConfirmChange('dismantledMaterials', value)} editable={true} />
+        </Grid>
+      </Grid>
     </Grid>
   );
 };

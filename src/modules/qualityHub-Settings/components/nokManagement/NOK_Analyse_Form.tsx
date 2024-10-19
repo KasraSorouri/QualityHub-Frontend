@@ -39,7 +39,7 @@ type FormData = {
   closed: boolean;
 }
 
-const NokForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromProps) => {
+const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromProps) => {
   console.log('nok ID ->', nokId);
 
   const fakeRCA : RCA[] = [
@@ -69,6 +69,7 @@ const NokForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromProps) =
       setNok(result);
     };
     getNokData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[formType]);
 
   // get Station List
@@ -244,4 +245,4 @@ const NokForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromProps) =
   );
 };
 
-export default NokForm;
+export default NokAnalyseForm;

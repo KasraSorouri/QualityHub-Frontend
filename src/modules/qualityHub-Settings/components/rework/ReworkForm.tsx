@@ -1,3 +1,6 @@
+import { useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
+
 import {
   Autocomplete,
   Box,
@@ -14,14 +17,12 @@ import {
   TextFieldVariants,
 } from '@mui/material';
 
-import { NokCode, Station, WorkShift, Product, Recipe, NewRework, Rework, DismantledMaterial, AffectedMaterial } from '../../../../types/QualityHubTypes';
-import { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
+import { NokCode, Station, WorkShift, Product, Recipe, NewRework, Rework, RwDismantledMaterial, AffectedMaterial } from '../../../../types/QualityHubTypes';
 import stationServices from '../../services/stationServices';
 import nokCodeServices from '../../services/nokCodeServices';
 import ReworkRecipeList from './ReworkRecipeList';
 import recipeServices from '../../services/recipeServices';
-import ReworkDismantledMaterial from './ReworkDismantleMaterial';
+import ReworkRwDismantledMaterial from './ReworkDismantleMaterial';
 import reworkServices from '../../services/reworkServices';
 
 type ReworkFromProps = {
@@ -29,6 +30,7 @@ type ReworkFromProps = {
   product: Product;
   formType: 'ADD' | 'EDIT' | 'VIEW';
   displayReworkForm: ({ show, formType } : { show: boolean, formType: 'ADD' | 'EDIT' | 'VIEW' }) => void;
+  updateRequest : () => void;
 }
 
 type FormData = {
@@ -43,15 +45,15 @@ type FormData = {
   deprecated: boolean;
   reworkRecipes: number[];
   affectedRecipes: number[];
-  dismantledMaterials?: DismantledMaterial[];
+  rwDismantledMaterials?: RwDismantledMaterial[];
 }
 
-const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: ReworkFromProps) => {
+const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRequest }: ReworkFromProps) => {
 
   const submitTitle = formType === 'ADD' ? 'Add' : 'Update';
 
   // convert rwDismanled Material
-  const dismantledMaterials = reworkData?.RwDismantledMaterials?.map(material => {
+  const dismantledMaterials = reworkData?.rwDismantledMaterials?.map(material => {
     return {
       ...material,
       dismantledQty: material.dismantledQty,
@@ -70,13 +72,15 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
     deprecated: reworkData ? reworkData.deprecated :false,
     reworkRecipes:reworkData?.reworkRecipes ? reworkData.reworkRecipes :[],
     affectedRecipes: reworkData?.affectedRecipes ? reworkData.affectedRecipes : [],
-    dismantledMaterials: reworkData?.RwDismantledMaterials ? dismantledMaterials : [],
+    rwDismantledMaterials: reworkData?.rwDismantledMaterials ? dismantledMaterials : [],
   };
 
   const [ formValues, setFormValues ] = useState<FormData>(initFormValues);
   const [ affectedMaterial, setAffectedMaterial ] = useState<AffectedMaterial[]>([]);
   const [ recipeList, setRecipeList ] = useState<Recipe[]>([]);
   const [ confirmation, setConfirmation ] = useState<{reworkRecipes: boolean, affectedRecipes: boolean, dismantledMaterials: boolean}>({ reworkRecipes: false, affectedRecipes: false, dismantledMaterials: false });
+
+  console.log('formValues ->', formValues);
 
   // get Station List
   const stationResults = useQuery('stations',stationServices.getStation, { refetchOnWindowFocus: false });
@@ -132,11 +136,22 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
   // handle Changes
   const handleChange = (event: {target: { name: string, value: unknown, checked: boolean}}) => {
     const { name, value, checked } = event.target;
-    const newValue = name === 'active' ? checked : value;
+    const newValue = name === 'active'  ? checked : value;
 
     setFormValues((prevValues: FormData) => ({
       ...prevValues,
       [name]: newValue,
+    }));
+  };
+
+  const handleDeprecated = (event: {target: { checked: boolean }}) => {
+    const { checked } = event.target;
+    const newValue = checked;
+
+    setFormValues((prevValues: FormData) => ({
+      ...prevValues,
+      'deprecated': newValue,
+      'active': checked && false,
     }));
   };
 
@@ -147,20 +162,6 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
       [`${parameter}`]: newValue,
     }));
   };
-
-
-
-
-  /*
-  const timeHandler = (value: Dayjs | null) => {
-    if (value) {
-      setFormValues((prevValues: FormData) => ({
-        ...prevValues,
-        detectedTime: value,
-      }));
-    }
-  };
-  */
 
   const selectReworkRecipes = (recipeIds: number[]) => {
     const rwRecipes = recipeIds;
@@ -174,9 +175,9 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
   };
 
   // Dismantled Materials
-  const selectDismantledMaterials = (dismantledMaterial: DismantledMaterial[]) => {
+  const selectRwDismantledMaterials = (dismantledMaterial: RwDismantledMaterial[]) => {
     const dismantledMaterials = dismantledMaterial;
-    setFormValues({ ...formValues,dismantledMaterials: dismantledMaterials });
+    setFormValues({ ...formValues,rwDismantledMaterials: dismantledMaterials });
   };
 
   // set confirmation
@@ -185,11 +186,22 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
     setConfirmation(newConfirmation);
   };
 
+  // enable Submit Button
+  let disableSubmmit : boolean = true;
+  if (formType === 'ADD') {
+    disableSubmmit = (!formValues.reworkShortDesc || !formValues.nokCode || !formValues.station || !confirmation.affectedRecipes || !confirmation.reworkRecipes || !confirmation.dismantledMaterials );
+  }
+  else {
+    if (formType === 'EDIT') {
+      disableSubmmit = false;
+    }
+  }
+
   const handleSubmit = async (event: {preventDefault: () => void}) => {
     event.preventDefault();
     if (formType === 'ADD') {
       if (formValues.station && formValues.nokCode) {
-        const reworkData : NewRework = {
+        const newReworkData : NewRework = {
           productId: formValues.product.id,
           stationId: formValues.station.id,
           nokCodeId: formValues.nokCode.id,
@@ -201,15 +213,41 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
           deprecated: formValues.deprecated,
           reworkRecipes: formValues.reworkRecipes,
           affectedRecipes: formValues.affectedRecipes,
-          dismantledMaterials: formValues.dismantledMaterials ? formValues.dismantledMaterials : [],
+          rwDismantledMaterials: formValues.rwDismantledMaterials ? formValues.rwDismantledMaterials : [],
         };
-        const result = await reworkServices.createRework(reworkData);
+        const result = await reworkServices.createRework(newReworkData);
         console.log(' *** NOK registeration * Submit form * result -> ', result);
 
       } else {
         console.log(' *** Rework * Submit form * Error -> ', 'Missing data');
       }
     }
+
+    if (formType === 'EDIT') {
+      if (formValues.station && formValues.nokCode && reworkData) {
+        const newReworkData : NewRework = {
+          id: reworkData.id,
+          productId: formValues.product.id,
+          stationId: formValues.station.id,
+          nokCodeId: formValues.nokCode.id,
+          reworkShortDesc: formValues.reworkShortDesc,
+          description: formValues.description,
+          order: formValues.order,
+          timeDuration: Number(formValues.timeDuration),
+          active: formValues.active,
+          deprecated: formValues.deprecated,
+          reworkRecipes: formValues.reworkRecipes,
+          affectedRecipes: formValues.affectedRecipes,
+          rwDismantledMaterials: formValues.rwDismantledMaterials ? formValues.rwDismantledMaterials : [],
+        };
+        const result = await reworkServices.editRework(newReworkData);
+        console.log(' *** NOK registeration * Submit form * result -> ', result);
+
+      } else {
+        console.log(' *** Rework * Submit form * Error -> ', 'Missing data');
+      }
+    }
+    updateRequest();
   };
 
   return (
@@ -235,6 +273,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
                   sx={{ marginLeft: 2, marginTop: 1, width: '18%', minWidth: '200px' }}
                   size='small'
                   aria-required
+                  disabled={!(formType === 'ADD')}
                   options={stationList}
                   isOptionEqualToValue={
                     (option: Station, value: Station) => option.stationName === value.stationName
@@ -257,6 +296,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
                   sx={{ marginLeft: 2, marginTop: 1, width: '12%', minWidth: '130px' }}
                   size='small'
                   aria-required
+                  disabled={!(formType === 'ADD')}
                   options={nokCodeList}
                   isOptionEqualToValue={
                     (option: NokCode, value: NokCode) => option.nokCode === value.nokCode
@@ -314,6 +354,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
                       onChange={handleChange}
                       name='active'
                       color='primary'
+                      disabled={formValues.deprecated}
                     />
                   }
                   label='Active'
@@ -323,7 +364,8 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
                   control={
                     <Checkbox
                       checked={formValues.deprecated}
-                      onChange={handleChange}
+                      onChange={handleDeprecated}
+                      disabled={reworkData?.deprecated}
                       name='deprecated'
                       color='primary'
                     />
@@ -336,7 +378,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
               <Stack direction={'column'} >
                 <Button
                   type='submit'
-                  disabled={!formValues.nokCode || !formValues.station || !formValues.reworkShortDesc || !confirmation.reworkRecipes || !confirmation.affectedRecipes || !confirmation.dismantledMaterials}
+                  disabled={disableSubmmit}
                   variant='contained'
                   color='primary'
                   sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}
@@ -356,11 +398,11 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm }: Rework
             </Grid>
           </Grid>
           <Divider sx={{ margin:1 }}/>
-          <ReworkRecipeList recipes={reworkRecipes} selectedRecipes={reworkData?.reworkRecipes ? reworkData.reworkRecipes : []} confirmSelection={selectReworkRecipes} confirmChange={(value) => handleConfirmChange('reworkRecipes', value)} title='Rework Recipes (Recipes used for rework)'  />
+          <ReworkRecipeList recipes={reworkRecipes} selectedRecipes={reworkData?.reworkRecipes ? reworkData.reworkRecipes : []} confirmSelection={selectReworkRecipes} confirmChange={(value) => handleConfirmChange('reworkRecipes', value)} title='Rework Recipes (Recipes used for rework)' editable={formType === 'ADD' ? true : false } />
           <Divider sx={{ margin:1 }}/>
-          <ReworkRecipeList recipes={productionRecipes} selectedRecipes={reworkData?.affectedRecipes ? reworkData.affectedRecipes : []} confirmSelection={selectAffectedRecipes} confirmChange={(value) => handleConfirmChange('affectedRecipes', value)} title='Affected Recipes (Recipes affected by rework)' />
+          <ReworkRecipeList recipes={productionRecipes} selectedRecipes={reworkData?.affectedRecipes ? reworkData.affectedRecipes : []} confirmSelection={selectAffectedRecipes} confirmChange={(value) => handleConfirmChange('affectedRecipes', value)} title='Affected Recipes (Recipes affected by rework)' editable={formType === 'ADD' ? true : false } />
           <Divider sx={{ margin:1 }}/>
-          <ReworkDismantledMaterial affectedMaterials={affectedMaterial} rwDismantledMaterial={reworkData?.RwDismantledMaterials} confirmSelection={selectDismantledMaterials} confirmChange={(value) => handleConfirmChange('dismantledMaterials', value)}  />
+          <ReworkRwDismantledMaterial affectedMaterials={affectedMaterial} rwRwDismantledMaterial={reworkData?.rwDismantledMaterials} confirmSelection={selectRwDismantledMaterials} confirmChange={(value) => handleConfirmChange('dismantledMaterials', value)} editable={formType === 'ADD' ? true : false }  />
         </form>
       </Box>
     </Grid>

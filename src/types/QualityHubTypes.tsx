@@ -1,3 +1,5 @@
+import { ReactNode } from 'react';
+
 export interface Product {
   id: number;
   productName: string;
@@ -47,8 +49,8 @@ export interface NewStation extends Omit<Station,'id'> {
   id?: number;
 }
 
-
 export interface Material {
+  [x: string]: ReactNode;
   id: number;
   itemShortName: string;
   itemLongName: string;
@@ -226,6 +228,7 @@ export enum ProductStatus {
 export enum MaterialStatus {
   OK = 'OK',
   SCRAPPED = 'SCRAPPED',
+  IQC =  'IQC',
   CLAIMABLE = 'CLAIMABLE',
 }
 
@@ -287,7 +290,7 @@ export interface Rework {
   deprecated: boolean;
   creationDate: Date;
   deprecatedDate?: Date;
-  RwDismantledMaterials?: DismantledMaterial[];
+  rwDismantledMaterials?: RwDismantledMaterial[];
 }
 
 export interface NewRework extends Omit<Rework, 'id' | 'product' | 'nokCode' | 'station' | 'useRecipe' | 'reworkRecipes' | 'affectedRecipes' | 'creationDate'> {
@@ -297,7 +300,7 @@ export interface NewRework extends Omit<Rework, 'id' | 'product' | 'nokCode' | '
   stationId: number;
   reworkRecipes: number[];
   affectedRecipes: number[];
-  dismantledMaterials: DismantledMaterial[];
+  //dismantledMaterials: DismantledMaterial[];
 }
 
 interface RecipeBOM {
@@ -308,7 +311,7 @@ interface RecipeBOM {
   reusable: Reusable;
 }
 
-export interface DismantledMaterial {
+export interface RwDismantledMaterial {
   id: number;
   recipeBom: RecipeBOM;
   dismantledQty : number;
@@ -316,6 +319,49 @@ export interface DismantledMaterial {
   mandatoryRemove?: boolean;
 }
 
-export interface AffectedMaterial extends Omit<DismantledMaterial, 'id' | 'dismantledQty'> {
+export interface AffectedMaterial extends Omit<RwDismantledMaterial, 'id' | 'dismantledQty'> {
   dismantledQty? : number;
+}
+
+export interface DismantledMaterial extends Omit<RwDismantledMaterial, 'id' | 'recipeBom' | 'dismantledQty'> {
+  recipeCode?: string;
+  recipeDescription?: string;
+  material: Material;
+  recipeBomId: number;
+  qty: number;
+  suggestedDismantledQty?: number;
+  reusable?: Reusable;
+  actualDismantledQty: number;
+  materialStatus? : MaterialStatus;
+}
+
+export enum ReworkStatus {
+  PENDING = 'PENDING',
+  IN_PROGRESS = 'IN_PROGRESS',
+  POSTPONED = 'POSTPONED',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+}
+
+export interface NokRework {
+  id?: number;
+  nokId: number;
+  operator: string;
+  reworkDuration?: number | string;
+  reworkManPower?: number | string;
+  reworkShift?: WorkShift | undefined;
+  reworkStation: Station | undefined;
+  reworkActions?: number[];
+  affectedRecipes: Recipe[];
+  dismantledMaterials?: DismantledMaterial[];
+  reworkNote?: string;
+  materialCost?: number;
+  reworkStatus: ReworkStatus;
+}
+
+export interface NewNokReworkData extends Omit<NokRework, 'operator' | 'reworkShift' | 'reworkStation' | 'affectedRecipes'> {
+  reworkOperator: string;
+  reworkShift: number;
+  reworkStation: number | undefined;
+  affectedRecipes: number[];
 }

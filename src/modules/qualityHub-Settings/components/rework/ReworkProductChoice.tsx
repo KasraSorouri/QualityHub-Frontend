@@ -9,23 +9,26 @@ import {
   StandardTextFieldProps,
   TextField,
   TextFieldVariants,
-  Typography,
 } from '@mui/material';
 
 import { Product } from '../../../../types/QualityHubTypes';
 import productServices from '../../services/productServices';
-import Reworks from './Rework';
 
-const ReworkProductChoice = () => {
+type ProductChoiceProps = {
+  selectProduct: (product: Product) => void;
+}
 
-  const [ selectedProduct, setSelectedProduct ] = useState<Product | null>(null);
+const ReworkProductChoice = ({ selectProduct } : ProductChoiceProps ) => {
+
+  const [ product, setProduct ] = useState<Product | null>(null);
 
   // Get Product List
   const productResults = useQuery('products', productServices.getProduct, { refetchOnWindowFocus: false });
   const products: Product[] = productResults.data || [];
 
   const handleSelectedProduct = async(product : Product) => {
-    setSelectedProduct(product);
+    selectProduct(product);
+    setProduct(product);
   };
 
   return(
@@ -40,7 +43,7 @@ const ReworkProductChoice = () => {
           isOptionEqualToValue={
             (option: Product, value: Product) => option.productName === value.productName
           }
-          value={selectedProduct}
+          value={product}
           onChange={(_event, newValue) => newValue && handleSelectedProduct(newValue)}
           getOptionLabel={(option: { productName: string; }) => option.productName}
           renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
@@ -54,21 +57,6 @@ const ReworkProductChoice = () => {
             />
           )}
         />
-      </Grid>
-      <Grid item>
-        { selectedProduct ?
-          <Reworks product={selectedProduct} />
-          :
-          <Grid>
-            <Typography variant='h6' marginLeft={2}>
-        Please select a product to view reworks.
-              <br/>
-        If you do not see any products, please add a new product.
-              <br/>
-              <br/>
-            </Typography>
-          </Grid>
-        }
       </Grid>
     </Grid>
   );

@@ -23,7 +23,7 @@ import { visuallyHidden } from '@mui/utils';
 
 import { useNotificationSet } from '../../../../contexts/NotificationContext';
 
-import { AffectedMaterial, DismantledMaterial, Reusable } from '../../../../types/QualityHubTypes';
+import { AffectedMaterial, RwDismantledMaterial, Reusable } from '../../../../types/QualityHubTypes';
 
 interface EnhancedTableHeadProps {
   order: 'asc' | 'desc';
@@ -33,31 +33,32 @@ interface EnhancedTableHeadProps {
 
 type DismantleMaterialListProps = {
   affectedMaterials: AffectedMaterial[];
-  rwDismantledMaterial? : DismantledMaterial[];
-  confirmSelection: (dismantledMaterial: DismantledMaterial[]) => void;
+  rwRwDismantledMaterial? : RwDismantledMaterial[];
+  confirmSelection: (dismantledMaterial: RwDismantledMaterial[]) => void;
   confirmChange: (value: boolean ) => void;
+  editable: boolean;
 }
 
-interface FormData extends DismantledMaterial {
+interface FormData extends RwDismantledMaterial {
   isSelected: boolean;
 }
 
-const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confirmSelection, confirmChange } : DismantleMaterialListProps) => {
+const ReworkRwDismantledMaterial = ({ affectedMaterials, rwRwDismantledMaterial, confirmSelection, confirmChange, editable } : DismantleMaterialListProps) => {
 
   const [ selectedMaterials, setSelectedMaterials ] = useState<number[]>([]);
-
   const [ formValues, setFormValues ] = useState<FormData[]>([]);
-  const setNotification = useNotificationSet();
+  const [ confirmActive, setConfirmActive ] = useState<boolean>(false);
 
+  const setNotification = useNotificationSet();
 
   useEffect(() => {
     const initialFormValues = affectedMaterials.map(material => {
 
       // find the rwDismantled Material where id is equal to material id
-      const rwDismantled = rwDismantledMaterial?.find(rwm => rwm.recipeBom.id === material.recipeBom.id);
+      const rwDismantled = rwRwDismantledMaterial?.find(rwm => rwm.recipeBom.id === material.recipeBom.id);
       return {
         id: material.recipeBom.id,
-        isSelected: rwDismantledMaterial?.map(dm => (dm.recipeBom.id)).includes(material.recipeBom.id) || false,
+        isSelected: rwRwDismantledMaterial?.map(dm => (dm.recipeBom.id)).includes(material.recipeBom.id) || false,
         ...material,
         dismantledQty: rwDismantled ? rwDismantled.dismantledQty : 0,
         note: rwDismantled ? rwDismantled.note : '',
@@ -104,8 +105,8 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
     { id: 'traceable', lable: 'Traceable', width: '5%', minWidth: 10, borderRight: true },
     { id: 'reusable', lable: 'Reusable', width: '5%', minWidth: 10, borderRight: true },
     { id: 'dismantleQty', lable: 'Dismantle Qty', width: '10%', minWidth: 10, borderRight: true },
-    { id: 'note', lable: 'Note', width: '35%', minWidth: 10, borderRight: true },
-    { id: 'mandatoryRemove', lable: 'Mandatory Remove', width: '3%', minWidth: 5, borderRight: true },
+    { id: 'note', lable: 'Note', width: '45%', minWidth: 12, borderRight: true },
+    { id: 'mandatoryRemove', lable: 'Mandatory Remove', width: '3%', minWidth: 5, borderRight: false },
   ];
 
   const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
@@ -164,17 +165,19 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
       const newSelected = selectedMaterials.filter((id) => id !== selectedIndex);
       setSelectedMaterials(newSelected);
       // remove dismantled data
-      const updateValue = formValues.filter((item) => item.id === selectedIndex);
-      if (updateValue.length > 0) {
-        updateValue[0].dismantledQty = 0;
-        updateValue[0].note = '';
-        updateValue[0].mandatoryRemove = false;
+      const updateValue = formValues.find((item) => item.id === selectedIndex);
+      if (updateValue) {
+        updateValue.isSelected = false;
+        updateValue.dismantledQty = 0;
+        updateValue.note = '';
+        updateValue.mandatoryRemove = false;
       }
+      setConfirmActive(true);
     } else {
       const newSelected = selectedMaterials.concat(selectedIndex);
-      const updateValue = formValues.filter((item) => item.id === selectedIndex);
-      if (updateValue.length > 0) {
-        updateValue[0].isSelected = true;
+      const updateValue = formValues.find((item) => item.id === selectedIndex);
+      if (updateValue) {
+        updateValue.isSelected = true;
       }
       setSelectedMaterials(newSelected);
     }
@@ -197,6 +200,7 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
         updateValue[0].dismantledQty = value;
       }
     }
+    setConfirmActive(true);
     confirmChange(false);
   };
 
@@ -206,6 +210,7 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
     if (updateValue.length > 0) {
       updateValue[0].note = value;
     }
+    setConfirmActive(true);
     confirmChange(false);
   };
 
@@ -215,26 +220,29 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
     if (updateValue.length > 0) {
       updateValue[0].mandatoryRemove = value;
     }
+    setConfirmActive(true);
     confirmChange(false);
   };
 
   const handleResetSelection = () => {
     setSelectedMaterials([]);
+    setConfirmActive(true);
     confirmChange(false);
   };
 
   const handleConfirmSelection = () => {
-    const dismantledmaterials : DismantledMaterial[] = formValues.filter(material => material.isSelected);
+    const dismantledmaterials : RwDismantledMaterial[] = formValues.filter(material => material.isSelected);
     const isDataCorrect = dismantledmaterials.every(item => item.dismantledQty > 0);
     if (isDataCorrect) {
       confirmChange(true);
+      setConfirmActive(false);
       confirmSelection(dismantledmaterials);
     }
 
   };
 
   return(
-    <Paper>
+    <Paper sx={{ pointerEvents: editable ? 'all' : 'none' }}>
       <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'} >
         <Typography margin={1} >Material Dismantle (Material will be removed)</Typography>
         <Typography margin={1} >{selectedMaterials.length} Items is Selected</Typography>
@@ -247,7 +255,7 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
             color='primary'
             sx={{ height: '30px' }}
             onClick={handleConfirmSelection}
-            disabled={false}
+            disabled={!confirmActive}
           >
             Confirm
           </Button>
@@ -307,7 +315,7 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
                       {material.isSelected ?
                         <TextField
                           name='qty'
-                          sx={{ '& .MuiInputBase-input': { maxHeight: 'inhirent', margin: 0, padding: '0px', textAlign: 'center' } , overflow: 'hidden' }}
+                          sx={{ '& .MuiInputBase-input': { maxHeight: 'inherit', margin: 0, padding: '0px', textAlign: 'center' } , overflow: 'hidden' }}
                           variant= 'filled'
                           value={material.dismantledQty || ''}
                           onChange={(event) => handleDismantleQty(parseInt(event.target.value), material.id)}
@@ -319,7 +327,7 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
                       {material.isSelected ?
                         <TextField
                           name='note'
-                          sx={{ '& .MuiInputBase-input': { maxHeight: 'inhirent', margin: 0, padding: '0px' } , overflow: 'hidden' }}
+                          sx={{ '& .MuiInputBase-input': { maxHeight: 'inherit', margin: 0, padding: '0px' } , overflow: 'hidden' }}
                           variant= 'filled'
                           value={material.note || ''}
                           onChange={(event) => handleDismantleNote((event.target.value), material.id)}
@@ -330,7 +338,6 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
                       <Box justifyContent={'space-between'} >
                         <Checkbox
                           style={{ height: '16px', width: '16px' }}
-                          //value={material.isSelected ? material.mandatoryRemove : false}
                           checked={material.isSelected ? material.mandatoryRemove : false}
                           disabled={!material.isSelected}
                           onChange={(event) => handleMandatoryRemove(event.target.checked, material.id)}
@@ -348,4 +355,4 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
   );
 };
 
-export default ReworkDismantledMaterial;
+export default ReworkRwDismantledMaterial;

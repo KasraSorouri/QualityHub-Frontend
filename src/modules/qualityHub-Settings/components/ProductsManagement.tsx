@@ -18,7 +18,7 @@ import ProductGrp from './productGroup/ProductGrps';
 import Station from './station/Stations';
 import Material from './material/Materials';
 import RecipeProductChoice from './recipe/RecipeProductChoice';
-import ReworkProductChoice from './rework/ReworkProductChoice';
+import Reworks from './rework/Rework';
 
 const ProductsManagement = () => {
 
@@ -80,7 +80,7 @@ const ProductsManagement = () => {
             {showListForm === 'STATION' && <Station /> }
             {showListForm === 'MATERIAL' && <Material /> }
             {showListForm === 'RECIPE' && <RecipeProductChoice /> }
-            {showListForm === 'REWORK' && <ReworkProductChoice /> }
+            {showListForm === 'REWORK' && <Reworks /> }
           </Box>
         </Grid>
       </Grid>
