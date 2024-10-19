@@ -4,8 +4,11 @@ import {
   Autocomplete,
   Button,
   FilledTextFieldProps,
+  FormControlLabel,
   Grid,
   OutlinedTextFieldProps,
+  Radio,
+  RadioGroup,
   Stack,
   StandardTextFieldProps,
   TextField,
@@ -39,6 +42,7 @@ type FormData = {
   affectedRecipes?: number[],
   dismantledMaterials?: DismantledMaterial[];
   note?: string;
+  reworkStatus?: ReworkStatus;
 }
 
 const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
@@ -98,6 +102,12 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
     }));
   };
 
+  //  Handle Status Change
+  const handleStatusChange = (status: ReworkStatus) => {
+
+    setFormValues({ ...formValues, reworkStatus: status });
+  };
+
   // Handle Select Rework
   const handleSelectRework = (reworks: Rework[]) => {
     let dismantledMaterials : RwDismantledMaterial[] = [];
@@ -139,8 +149,12 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
   }
   const handleSaveRework = () => {
     //
-    if (!formValues.reworkShift || 0>1 ) {
+    if (!formValues.reworkShift) {
       alert('Please select Shift');
+      return;
+    }
+    if (!formValues.reworkStatus) {
+      alert('Please select Rework Status' + '\n' +'Does it need more rework or rework is complete?');
       return;
     }
     const newNokReworks : NewNokReworkData = {
@@ -154,7 +168,7 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
       reworkDuration: formValues.duration,
       reworkManPower: formValues.manPower,
       reworkNote: formValues.note,
-      reworkStatus: ReworkStatus.COMPLETED
+      reworkStatus: formValues.reworkStatus
     };
 
     nokReworkServices.createNokRework(newNokReworks);
@@ -173,124 +187,133 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
   return (
     <Grid container direction={'column'}>
       <Grid container direction={'row'}>
-        <Grid item xs={8}>
+        <Grid item xs={8} sx={{ background: '#9FEAF7' }}>
           <NOK_Info nokId={nokId} />
         </Grid>
-        <Grid item xs={4}>
-          <Stack marginLeft={2} spacing={2}>
-            <Button
-              variant='contained'
-              color='primary'
-              sx={{ height: '30px', width: '60px' }}
-              onClick={() => removeNok(null)}
-            > Back
-            </Button>
-            <Button
-              variant='contained'
-              disabled={disableSubmmit}
-              color='primary'
-              sx={{ height: '30px', width: '60px' }}
-              onClick={handleSaveRework}
-            > Save
-            </Button>
+        <Stack direction={'row'}>
+          <Stack direction={'column'} width={'60%'} >
+            <Stack direction={'row'}>
+              <TextField
+                id='operator'
+                name='operator'
+                label='Operator'
+                disabled={formType === 'VIEW'}
+                sx={{ marginLeft: 1, marginTop: 1, width: '15%', minWidth: '150px' }}
+                value={formValues.operator}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
+                size='small'
+                required />
+              <TextField
+                id='duration'
+                name='duration'
+                label='Duration'
+                disabled={formType === 'VIEW'}
+                sx={{ marginLeft: 1, marginTop: 1, width: '10%', minWidth: '100px' }}
+                value={formValues.duration}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
+                fullWidth
+                size='small' />
+              <TextField
+                id='manPower'
+                name='manPower'
+                label='Man Power'
+                disabled={formType === 'VIEW'}
+                sx={{ marginLeft: 1, marginTop: 1, width: '10%', minWidth: '120px' }}
+                value={formValues.manPower}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
+                fullWidth
+                size='small' />
+              <Autocomplete
+                id='reworkShift'
+                sx={{ marginLeft: 1, marginTop: 1, width: '12%', minWidth: '140px' }}
+                size='small'
+                aria-required
+                disabled={formType === 'VIEW'}
+                clearIcon={false}
+                options={workShiftList}
+                isOptionEqualToValue={(option: WorkShift, value: WorkShift) => option.shiftName === value.shiftName}
+                value={formValues.reworkShift ? formValues.reworkShift : null}
+                onChange={(_event, newValue) => newValue && handleAutoCompeletChange('reworkShift', newValue)}
+                getOptionLabel={(option: { shiftName: string; }) => option.shiftName}
+                renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
+                  <TextField
+                    {...params}
+                    label='Shift'
+                    placeholder='Shift'
+                    size='small'
+                    required />
+                )} />
+              <Autocomplete
+                id='reworkStation'
+                sx={{ marginLeft: 1, marginTop: 1, width: '15%', minWidth: '190px' }}
+                size='small'
+                aria-required
+                disabled={!(formType === 'ADD')}
+                clearIcon={false}
+                options={stationList}
+                isOptionEqualToValue={(option: Station, value: Station) => option.stationName === value.stationName}
+                value={formValues.reworkStation ? formValues.reworkStation : null}
+                onChange={(_event, newValue) => newValue && handleAutoCompeletChange('reworkStation', newValue)}
+                getOptionLabel={(option: { stationName: string; }) => option.stationName}
+                renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
+                  <TextField
+                    {...params}
+                    label='Station'
+                    placeholder='Add Station'
+                    size='small'
+                  />
+                )} />
+            </Stack>
+            <Grid >
+              <TextField
+                id='note'
+                name='note'
+                label='Note'
+                disabled={formType === 'VIEW'}
+                sx={{ marginLeft: 1, marginTop: 1, width: '98%' }}
+                value={formValues.note}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
+                multiline
+                size='small' />
+            </Grid>
           </Stack>
-        </Grid>
-        <Grid container>
-          <TextField
-            id='operator'
-            name='operator'
-            label='Operator'
-            disabled={formType === 'VIEW'}
-            sx={{ marginLeft: 2, marginTop: 1, width: '20%', minWidth: '180px' }}
-            value={formValues.operator}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-            size='small'
-            required
-          />
-          <TextField
-            id='duration'
-            name='duration'
-            label='Duration'
-            sx={{ marginLeft: 2, marginTop: 1 , width:'7%', minWidth: '40px' }}
-            value={formValues.duration}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-            fullWidth
-            size='small'
-          />
-          <TextField
-            id='manPower'
-            name='manPower'
-            label='Man Power'
-            sx={{ marginLeft: 2, marginTop: 1 , width:'7%', minWidth: '40px' }}
-            value={formValues.manPower}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-            fullWidth
-            size='small'
-          />
-          <Autocomplete
-            id='reworkShift'
-            sx={{ marginLeft: 2, marginTop: 1, width: '15%', minWidth:'140px' }}
-            size='small'
-            aria-required
-            disabled={formType === 'VIEW'}
-            options={workShiftList}
-            isOptionEqualToValue={
-              (option: WorkShift, value: WorkShift) => option.shiftName === value.shiftName
-            }
-            value={formValues.reworkShift ? formValues.reworkShift : null}
-            onChange={(_event, newValue) => newValue && handleAutoCompeletChange('reworkShift', newValue)}
-            getOptionLabel={(option: { shiftName: string; }) => option.shiftName}
-            renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
-              <TextField
-                {...params}
-                label='Shift'
-                placeholder='Shift'
-                size='small'
-                required
-              />
-            )}
-          />
-          <Autocomplete
-            id='reworkStation'
-            sx={{ marginLeft: 2, marginTop: 1, width: '18%', minWidth: '200px' }}
-            size='small'
-            aria-required
-            disabled={!(formType === 'ADD')}
-            options={stationList}
-            isOptionEqualToValue={
-              (option: Station, value: Station) => option.stationName === value.stationName
-            }
-            value={formValues.reworkStation ? formValues.reworkStation : null}
-            onChange={(_event, newValue) => newValue && handleAutoCompeletChange('reworkStation', newValue)}
-            getOptionLabel={(option: { stationName: string; }) => option.stationName}
-            renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
-              <TextField
-                {...params}
-                label='Station'
-                placeholder='Add Station'
-                size='small'
-                required
-              />
-            )}
-          />
-          <TextField
-            id='note'
-            name='note'
-            label='Note'
-            disabled={formType === 'VIEW'}
-            sx={{ marginLeft: 2, marginTop: 1 , width:'85%' }}
-            value={formValues.note}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-            fullWidth
-            size='small'
-          />
-        </Grid>
+          <Grid item marginLeft={2}  >
+            <RadioGroup
+              value={formValues.reworkStatus}
+              onChange={(_event, value) => handleStatusChange(value as ReworkStatus)}
+              aria-required
+            >
+              <FormControlLabel value={ReworkStatus.IN_PROGRESS} control={<Radio />} label='More Reworks is needed' />
+              <FormControlLabel value={ReworkStatus.COMPLETED} control={<Radio />} label='Reworks are completed' />
+            </RadioGroup>
+          </Grid>
+          <Grid item >
+            <Stack marginLeft={0} marginTop={1} spacing={2}>
+              <Button
+                variant='contained'
+                color='primary'
+                sx={{ height: '30px', width: '60px' }}
+                onClick={() => removeNok(null)}
+              > Back
+              </Button>
+              <Button
+                variant='contained'
+                disabled={disableSubmmit}
+                color='primary'
+                sx={{ height: '30px', width: '60px' }}
+                onClick={handleSaveRework}
+              > Save
+              </Button>
+            </Stack>
+          </Grid>
+        </Stack>
+
       </Grid>
       <Grid container direction={'row'} spacing={1} marginTop={1}>
         <Grid item xs={5}>
           <ReworkChooseList productId={nok.product.id} selectedReworks={[]} confirmSelection={handleSelectRework} confirmChange={(value) => handleConfirmChange('chooseReworks', value)} editable={true} />
         </Grid>
-        <Grid item xs={7} >
+        <Grid item xs={7}>
           <NokDismantledMaterial affectedMaterials={dismantledMaterials} confirmSelection={handleDismantledMaterial} confirmChange={(value) => handleConfirmChange('dismantledMaterials', value)} editable={true} />
         </Grid>
       </Grid>

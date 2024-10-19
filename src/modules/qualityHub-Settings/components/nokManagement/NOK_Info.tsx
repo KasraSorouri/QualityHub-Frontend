@@ -40,7 +40,7 @@ const NokInfo = ({ nokId }: NokFromProps) => {
 
   return (
     <Box>
-      <Grid container direction={'column'} sx={{ background: '#9FEAF7' }} marginBottom={1} >
+      <Grid container direction={'column'} marginBottom={1} >
         <Typography variant='h6' marginLeft={2}>
           NOK information
         </Typography>
