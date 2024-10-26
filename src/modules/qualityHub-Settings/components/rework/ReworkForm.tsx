@@ -52,8 +52,11 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
 
   const submitTitle = formType === 'ADD' ? 'Add' : 'Update';
 
+  console.log(' **-** rework Data ->', reworkData);
+  
+
   // convert rwDismanled Material
-  const dismantledMaterials = reworkData?.rwDismantledMaterials?.map(material => {
+  const rwDismantledMaterials = reworkData?.rwDismantledMaterials?.map(material => {
     return {
       ...material,
       dismantledQty: material.dismantledQty,
@@ -72,7 +75,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
     deprecated: reworkData ? reworkData.deprecated :false,
     reworkRecipes:reworkData?.reworkRecipes ? reworkData.reworkRecipes :[],
     affectedRecipes: reworkData?.affectedRecipes ? reworkData.affectedRecipes : [],
-    rwDismantledMaterials: reworkData?.rwDismantledMaterials ? dismantledMaterials : [],
+    rwDismantledMaterials: reworkData?.rwDismantledMaterials ? rwDismantledMaterials : [],
   };
 
   const [ formValues, setFormValues ] = useState<FormData>(initFormValues);

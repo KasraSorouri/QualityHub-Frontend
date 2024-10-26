@@ -41,11 +41,9 @@ type FormData = {
 
 const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromProps) => {
   console.log('nok ID ->', nokId);
+  console.log('** nok anaylzie DATA->', nokAnalyseData);
 
-  const fakeRCA : RCA[] = [
-    { id: 1, nokId: 1, rcaCode: { id: 1, rcaCode: 'RCA1', rcaDesc: 'RCA1', active: true }, description: 'RCA1', improvSuggestion: 'RCA1' },
-    { id: 1, nokId: 1, rcaCode: { id: 1, rcaCode: 'RCA1', rcaDesc: 'RCA1', active: true }, description: 'RCA1', improvSuggestion: 'RCA1' },
-  ];
+  const fakeRCA : RCA[] | undefined = nokAnalyseData?.rcas
 
   const submitTitle = formType === 'ADD' ? 'Add' : 'Update';
 

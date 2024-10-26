@@ -35,7 +35,7 @@ const ProductsManagement = () => {
       >
         <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'}>
           <Typography margin={1}>PRODUCT SETTINGS</Typography>
-          <Button onClick={() => navigate('/config')} variant='contained' sx={{ height: '39px' }}>
+          <Button onClick={() => navigate('/quality-setting')} variant='contained' sx={{ height: '39px' }}>
             close
           </Button>
         </Grid>
