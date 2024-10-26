@@ -193,7 +193,7 @@ export interface NokData {
   initNokCode: NokCode;
   detectedStation: Station;
   detectedShift: WorkShift;
-  detectTime: Date;
+  detectedTime: Date;
   description: string;
   nokStatus: NokStatus;
   productStatus: ProductStatus;
@@ -249,6 +249,7 @@ export interface NokAnalyseData {
   materialWaste?: number;
   closed: boolean;
   closeDate: Date;
+  rcas?: RCA[]
 }
 
 export interface NewNokAnalyseData extends Omit<NokAnalyseData, 'id' | 'causeStationId' | 'causeShiftId'> {
@@ -271,7 +272,7 @@ export interface RCA {
 
 export interface NewRca extends Omit<RCA, 'id' | 'rcaCode'> {
   id?: number;
-  rcaCodeId: number;
+  rcaCodeId?: number;
 }
 
 

@@ -41,8 +41,7 @@ interface EnhancedTableHeadProps {
 
 type RCAsProps = {
   formType: 'ADD' | 'EDIT' | 'VIEW';
-  //nokId: number;
-  rcas: RCA[];
+  rcas: RCA[] | undefined;
   updateRCA: (rca: RCA[]) => void;
 }
 
@@ -57,7 +56,7 @@ const RCAsForm = ({ rcas, updateRCA, formType } : RCAsProps) => {
   const setNotification = useNotificationSet();
 
   const blankItem : RCA_Data = {
-    rcaIndex: rcas.length,
+    rcaIndex: rcas ?  rcas.length : 0,
     rcaCode: undefined,
     whCauseId: '',
     whCauseName: '',
@@ -67,9 +66,13 @@ const RCAsForm = ({ rcas, updateRCA, formType } : RCAsProps) => {
   };
 
   const [ rcaData, setRcaData ] = useState<RCA_Data[]>([blankItem]);
+  const rcas_data :  RCA[] = rcas ? rcas : [
+    { id: 1, nokId: 1, rcaCode: { id: 1, rcaCode: 'RCA1', rcaDesc: 'RCA1', active: true }, description: 'RCA1', improvSuggestion: 'RCA1' }
+  ];
 
+  
   useEffect(() => {
-    setRcaData(rcas.map((item, index) => ({
+    setRcaData(rcas_data.map((item, index) => ({
       rcaIndex: index,
       rcaCode: item.rcaCode,
       whCauseId: item.whCauseId,
@@ -259,6 +262,10 @@ const RCAsForm = ({ rcas, updateRCA, formType } : RCAsProps) => {
     updateRCA(updatedRca);
     setRcaData(rcaData.map((item) => ({ ...item, itemEditable: false })));
   };
+ 
+  // Log RCA DATA
+  console.log(' *** RCA DATA * rcaData * sortedRCAs-> ', sortedRCAs);
+
 
   return(
     <Paper sx={{ marginLeft: 2 }}>
