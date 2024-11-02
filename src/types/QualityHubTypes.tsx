@@ -193,7 +193,7 @@ export interface NokData {
   initNokCode: NokCode;
   detectedStation: Station;
   detectedShift: WorkShift;
-  detectedTime: Date;
+  detectTime: Date;
   description: string;
   nokStatus: NokStatus;
   productStatus: ProductStatus;
@@ -221,6 +221,7 @@ export enum NokStatus {
 
 export enum ProductStatus {
   NOK = 'NOK',
+  REWORK_INPROGRESS = 'REWORK IN PROGRESS',
   REWORKED = 'REWORKED',
   SCRAPPED = 'SCRAPPED',
 }

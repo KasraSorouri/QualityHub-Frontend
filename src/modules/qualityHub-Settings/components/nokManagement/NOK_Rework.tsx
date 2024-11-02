@@ -17,7 +17,7 @@ const Nokreworks = () => {
     <Paper>
       <h1>Nok Reworks</h1>
       { selectedNok ? <NokReworkForm nokId={selectedNok.id} formType='ADD' removeNok={setSelectedNok} /> :
-        <NokList listType='ANALYSE' selectNok={setSelectedNok} />
+        <NokList listType='REWORK' selectNok={setSelectedNok} />
       }
     </Paper>
   );
