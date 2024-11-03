@@ -111,11 +111,13 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
   // Handle Select Rework
   const handleSelectRework = (reworks: Rework[]) => {
     let dismantledMaterials : RwDismantledMaterial[] = [];
+    let affectedReciepies : number[] = [];
     const newNokReworks = reworks.map(rework => {
       rework.rwDismantledMaterials ? dismantledMaterials = dismantledMaterials.concat(rework.rwDismantledMaterials) : null;
+      rework.affectedRecipes ? affectedReciepies = affectedReciepies.concat(rework.affectedRecipes) : null;
       return (rework.id);
     });
-    setFormValues({ ...formValues, reworkActions: newNokReworks });
+    setFormValues({ ...formValues, reworkActions: newNokReworks, affectedRecipes: [... new Set(affectedReciepies)] });
     setDismantledMaterial(dismantledMaterials);
     setConfirmation({ ...confirmation, chooseReworks: true });
   };
