@@ -2,9 +2,13 @@ import {
   Autocomplete,
   Box,
   Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   Divider,
   FilledTextFieldProps,
   Grid,
+  IconButton,
   OutlinedTextFieldProps,
   StandardTextFieldProps,
   TextField,
@@ -21,6 +25,10 @@ import workShiftServices from '../../services/workShiftServices';
 import nokDetectServices from '../../services/nokDetectServices';
 import NOK_Reg_Form from './NOK_Reg_Form';
 import RCAs_Form from './RCAs_Form';
+import NokReworkForm from './NOK_Rework_Form';
+
+import CloseIcon from "@mui/icons-material/Close";
+import NokCostForm from './NOK_Cost_Form';
 
 type NokFromProps = {
   nokId: number,
@@ -57,8 +65,13 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
 
   const [ formValues, setFormValues ] = useState<FormData>(initFormValues);
   const [ nok, setNok ] = useState<NokData | null>(null);
+  const [ showReworkForm, setShowReworkForm ] = useState<boolean>(false)
+  const [ showCostForm, setShowCostForm ] = useState<boolean>(false)
+
 
   console.log('NOK Analyse * NOK Data ->', nok);
+  console.log('NOK Analyse * showReworkForm Data ->', showReworkForm);
+
 
   useEffect(() => {
     setFormValues(initFormValues);
@@ -134,10 +147,23 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
 
   return (
     <Grid container direction={'column'}>
-      <Typography variant='h5' marginLeft={2}>
-        Detect Information
-      </Typography>
-      <NOK_Reg_Form formType={'VIEW'} nokData={nok} />
+      <Grid container direction={'row'} >
+        <Grid item xs ={7}>
+          <Typography variant='h5' marginLeft={2}>
+            Detect Information
+          </Typography>
+          <NOK_Reg_Form formType={'VIEW'} nokData={nok} />
+        </Grid>
+        <Grid item xs ={5}>
+            <Button variant='contained' sx={{ marginLeft: 2 }} onClick={() => setShowReworkForm(true)}>
+              Rework
+            </Button>
+            <Button variant='contained' sx={{ marginLeft: 2 }} onClick={() => setShowCostForm(true)}>
+              Calculate Cost
+            </Button>
+
+          </Grid>
+        </Grid>
       <Divider sx={{ margin:1 }}/>
       <Typography variant='h5' marginLeft={2}>
         Origin of NOK
@@ -239,6 +265,64 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
         Root Cause Analysis
       </Typography>
       <RCAs_Form formType={'ADD'} rcas={fakeRCA} updateRCA={handleUpdateRCA} />
+      <Dialog open={showReworkForm}
+              fullWidth
+              maxWidth="xl"
+              sx={{
+                '& .MuiDialog-paper': {
+                  minHeight: '400px', 
+                  maxHeight: '80vh', 
+                },
+              }}
+      >
+      <DialogTitle>
+          Rework Form
+          <IconButton
+            aria-label="close"
+            onClick={ () => setShowReworkForm(false)}
+            style={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+            }}
+            >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+        <NokReworkForm nokId={nokId} formType={'ADD'} removeNok={function (nok: null): void {
+          throw new Error('Function not implemented.');
+        } } />
+      </DialogContent>
+      </Dialog>
+      <Dialog open={showCostForm}
+              fullWidth
+              maxWidth="xl"
+              sx={{
+                '& .MuiDialog-paper': {
+                  minHeight: '400px', 
+                  maxHeight: '80vh', 
+                },
+              }}
+      >
+      <DialogTitle>
+          Cost Form
+          <IconButton
+            aria-label="close"
+            onClick={ () => setShowCostForm(false)}
+            style={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+            }}
+            >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+        <NokCostForm nokId={nokId} formType={'ADD'}  />
+      </DialogContent>
+      </Dialog>
     </Grid>
   );
 };

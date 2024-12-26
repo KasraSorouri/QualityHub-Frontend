@@ -367,3 +367,26 @@ export interface NewNokReworkData extends Omit<NokRework, 'operator' | 'reworkSh
   reworkStation: number | undefined;
   affectedRecipes: number[];
 }
+
+export interface DismanteledMaterialData {
+  nokId: number;
+  reworkId: number;
+  materialId: number;
+  material: Material;
+  qty: number;
+  materialStatus: MaterialStatus;
+}
+
+export interface CostMaterialData {
+  materialId: number;
+  materialName: string;
+  registeredPrice : number;
+  dismantledQty : number;
+  status: MaterialStatus;
+  unitPrice: number;
+}
+export interface NewNokCostData {
+  nokId: number;
+  reworkId: number;
+  dismantledMaterial: Omit<CostMaterialData, 'materialName'>[];
+}

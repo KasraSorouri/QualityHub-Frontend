@@ -105,7 +105,7 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
   //  Handle Status Change
   const handleStatusChange = (status: ReworkStatus) => {
 
-    setFormValues({ ...formValues, reworkStatus: status });
+    setFormValues({ ...formValues, reworkStatus: status });     
   };
 
   // Handle Select Rework
