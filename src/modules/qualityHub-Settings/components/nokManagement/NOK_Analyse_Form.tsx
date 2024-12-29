@@ -16,7 +16,7 @@ import {
   Typography
 } from '@mui/material';
 
-import { NokCode, Station, WorkShift, Product, NokAnalyseData, NewNokAnalyseData, NokData, RCA } from '../../../../types/QualityHubTypes';
+import { NokCode, Station, WorkShift, Product, NokAnalyseData, NewNokAnalyseData, NokData, RCA, NewRca } from '../../../../types/QualityHubTypes';
 import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import stationServices from '../../services/stationServices';
@@ -29,6 +29,9 @@ import NokReworkForm from './NOK_Rework_Form';
 
 import CloseIcon from "@mui/icons-material/Close";
 import NokCostForm from './NOK_Cost_Form';
+import nokrcaServices from '../../services/nokRcaServices';
+import nokRcaServices from '../../services/nokRcaServices';
+import Notification from '../../../public/components/Notification';
 
 type NokFromProps = {
   nokId: number,
@@ -51,7 +54,7 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
   console.log('nok ID ->', nokId);
   console.log('** nok anaylzie DATA->', nokAnalyseData);
 
-  const fakeRCA : RCA[] | undefined = nokAnalyseData?.rcas
+  //const fakeRCA : RCA[] | undefined = nokAnalyseData?.rcas
 
   const submitTitle = formType === 'ADD' ? 'Add' : 'Update';
 
@@ -83,7 +86,14 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[formType]);
 
+  // Get RCAs for NOK ID
+  const rcaResults = useQuery(['rcas', nokId], () => nokrcaServices.getNokRcaByNokId(nokId), { refetchOnWindowFocus: false });
+  let rcaList: RCA[] = rcaResults.data || [];
+
+  console.log('* Nok Analize Form * RCA List ->', rcaList);
+  
   // get Station List
+
   const stationResults = useQuery('stations',stationServices.getStation, { refetchOnWindowFocus: false });
   const stationList: Station[] = stationResults.data || [];
 
@@ -116,8 +126,17 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
     }));
   };
 
-  const handleUpdateRCA = (rcas: RCA[]) => {
-    console.log(' *** NOK registeration * Update RCA * rcas -> ', rcas);
+  const handleUpdateRCA = async(rca: NewRca) : Promise<boolean> => {
+    console.log(' *** NOK registeration * Update RCA * rcas -> ', rca);
+    try {
+      const result = await nokRcaServices.createNokRca(rca)
+      console.log(' * Nok Analyze form * Updated RCA ->', result);
+      rcaList = rcaList.concat(result) 
+      return true
+    } catch (error) {
+      console.log(' * Nok Analyze form * Updated RCA ->', error);
+      return false
+    }
   };
 
 
@@ -264,7 +283,7 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
       <Typography variant='h5' marginLeft={2} >
         Root Cause Analysis
       </Typography>
-      <RCAs_Form formType={'ADD'} rcas={fakeRCA} updateRCA={handleUpdateRCA} />
+      <RCAs_Form nokId={nokId} formType={'ADD'} rcas={rcaList} updateRCA={handleUpdateRCA} />
       <Dialog open={showReworkForm}
               fullWidth
               maxWidth="xl"
@@ -290,9 +309,7 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
           </IconButton>
         </DialogTitle>
         <DialogContent>
-        <NokReworkForm nokId={nokId} formType={'ADD'} removeNok={function (nok: null): void {
-          throw new Error('Function not implemented.');
-        } } />
+        <NokReworkForm nokId={nokId} formType={'ADD'} removeNok={() => console.log() } />
       </DialogContent>
       </Dialog>
       <Dialog open={showCostForm}
@@ -320,7 +337,7 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
           </IconButton>
         </DialogTitle>
         <DialogContent>
-        <NokCostForm nokId={nokId} formType={'ADD'}  />
+        <NokCostForm nokId={nokId} formType={'ADD'} readonly={false} />
       </DialogContent>
       </Dialog>
     </Grid>

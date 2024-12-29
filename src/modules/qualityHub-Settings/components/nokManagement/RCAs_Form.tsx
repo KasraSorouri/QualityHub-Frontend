@@ -30,8 +30,9 @@ import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
 import { useNotificationSet } from '../../../../contexts/NotificationContext';
 
-import { RCA, RcaCode } from '../../../../types/QualityHubTypes';
+import { NewRca, RCA, RcaCode } from '../../../../types/QualityHubTypes';
 import rcaCodeServices from '../../services/rcaCodeServices';
+import nokRcaServices from '../../services/nokRcaServices';
 
 interface EnhancedTableHeadProps {
   order: 'asc' | 'desc';
@@ -40,51 +41,58 @@ interface EnhancedTableHeadProps {
 }
 
 type RCAsProps = {
+  nokId: number;
   formType: 'ADD' | 'EDIT' | 'VIEW';
   rcas: RCA[] | undefined;
-  updateRCA: (rca: RCA[]) => void;
+  updateRCA: (rca: NewRca) => Promise<boolean>;
 }
 
 interface RCA_Data extends Omit<RCA, 'id' | 'nokId' | 'rcaCode'> {
+  id: number | undefined;
   rcaIndex: number;
   rcaCode?: RcaCode;
   itemEditable?: boolean;
 }
 
-const RCAsForm = ({ rcas, updateRCA, formType } : RCAsProps) => {
+const RCAsForm = ({ nokId, rcas, updateRCA, formType } : RCAsProps) => {
 
   const setNotification = useNotificationSet();
 
   const blankItem : RCA_Data = {
-    rcaIndex: rcas ?  rcas.length : 0,
+    id: undefined,
+    rcaIndex: rcas? rcas.length : 0,
     rcaCode: undefined,
     whCauseId: '',
     whCauseName: '',
     description: '',
-    improvSuggestion: '',
+    improveSuggestion: '',
     itemEditable: true,
   };
 
   const [ rcaData, setRcaData ] = useState<RCA_Data[]>([blankItem]);
-  const rcas_data :  RCA[] = rcas ? rcas : [
-    { id: 1, nokId: 1, rcaCode: { id: 1, rcaCode: 'RCA1', rcaDesc: 'RCA1', active: true }, description: 'RCA1', improvSuggestion: 'RCA1' }
-  ];
+  const rcas_data :  RCA[] = rcas ? rcas : [ ];
 
   
   useEffect(() => {
-    setRcaData(rcas_data.map((item, index) => ({
+      setRcaData(rcas_data.map((item, index) => ({
+      id: item.id,
       rcaIndex: index,
       rcaCode: item.rcaCode,
       whCauseId: item.whCauseId,
       whCauseName: item.whCauseName,
       description: item.description,
-      improvSuggestion: item.improvSuggestion,
+      improveSuggestion: item.improveSuggestion,
     })));
+    
   }, [rcas]);
+
+  console.log(' RCA form * RCA List -> ', rcas)
+  
 
   // Get RCA Code List
   const rcaCodeResults = useQuery('rcaCode', rcaCodeServices.getRcaCode, { refetchOnWindowFocus: false });
   const rcaCodeList: RcaCode[] = rcaCodeResults.data || [];
+  console.log(' RCA form * RCA Codes -> ', rcaCodeList)
 
 
   // Sort Items
@@ -192,24 +200,17 @@ const RCAsForm = ({ rcas, updateRCA, formType } : RCAsProps) => {
     setRcaData(newBom);
   };
 
-  const removeRcaItem = (index: number) => {
-    const newRca = rcaData.filter(rcaData => rcaData.rcaIndex !== index);
-    setRcaData(newRca);
-    /*
-    const updatedRca = rcaData.map((item) => {
-      if (!item.rcaIndex) {
-        return undefined;
+  const removeRcaItem = async (index: number) => {
+    if (rcaData[index].id) {
+      const result = await nokRcaServices.removeNokRca(rcaData[index].id)
+      if (result) {
+        const newRca = rcaData.filter(rcaData => rcaData.rcaIndex !== index);
+        setRcaData(newRca);
+        setNotification({ message: 'RCA removed successfully!', type: 'info', time: 5 });
       } else {
-        const rcaItem: RCA = {
-          material: item.material,
-          qty: item.qty,
-          reusable: item.reusable,
-        };
-        return bomItem;
+        setNotification({ message: 'Error removing RCA!', type: 'error', time: 8 });
       }
-    }).filter((item) => item !== undefined) as RCA[];
-    updateBOM(updatedBom);
-    */
+    }
   };
 
 
@@ -241,32 +242,29 @@ const RCAsForm = ({ rcas, updateRCA, formType } : RCAsProps) => {
     setRcaData(newRca);
   };
 
-  const handleUpdateRCA = () => {
-    const updatedRca = rcaData.map((item) => {
-      if (!item.rcaCode) {
+
+  const handleUpdateRCA = async(index: number) => {
+      if (!rcaData[index].rcaCode ) {
         setNotification({ message: 'Please choose a RCA Code!', type: 'error', time: 8 });
         return undefined;
       } else {
-        const rcaItem: RCA = {
-          rcaCode: item.rcaCode,
-          whCauseId: item.whCauseId,
-          whCauseName: item.whCauseName,
-          description: item.description,
-          improvSuggestion: item.improvSuggestion,
-          id: 0,
-          nokId: 0
-        };
-        return rcaItem;
-      }
-    }).filter((item) => item !== undefined) as RCA[];
-    updateRCA(updatedRca);
-    setRcaData(rcaData.map((item) => ({ ...item, itemEditable: false })));
-  };
- 
-  // Log RCA DATA
-  console.log(' *** RCA DATA * rcaData * sortedRCAs-> ', sortedRCAs);
-
-
+      const newNokRca : NewRca = {
+        rcaCodeId: rcaData[index].rcaCode.id,
+        whCauseId: rcaData[index].whCauseId,
+        whCauseName: rcaData[index].whCauseName,
+        description: rcaData[index].description,
+        improveSuggestion: rcaData[index].improveSuggestion,
+        id : rcaData[index].id  || undefined,
+        nokId: nokId
+    };
+    console.log('RCA form * Update RCA * index : ', index , ' -> ', newNokRca );
+    
+    const result = await updateRCA(newNokRca);
+    if (result) {
+      setRcaData(rcaData.map((item) => ({ ...item, itemEditable: false })));
+    }
+  };};
+  
   return(
     <Paper sx={{ marginLeft: 2 }}>
       <TableContainer sx={{ maxHeight: '550Px' }}>
@@ -352,16 +350,16 @@ const RCAsForm = ({ rcas, updateRCA, formType } : RCAsProps) => {
                   <TableCell align='left' sx={{ borderRight: '1px solid gray' }}>
                     {rca.itemEditable ?
                       <TextField
-                        id="improvSuggestion"
-                        name="improvSuggestion"
+                        id="improveSuggestion"
+                        name="improveSuggestion"
                         label="Suggestion"
                         disabled={formType === 'VIEW'}
-                        value={rca.improvSuggestion}
+                        value={rca.improveSuggestion}
                         onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event, index)}
                         fullWidth
                         size='small'
                       /> :
-                      rca.improvSuggestion}
+                      rca.improveSuggestion}
                   </TableCell>
                   { formType !== 'VIEW' ?
                     <TableCell align='justify'>
@@ -376,7 +374,7 @@ const RCAsForm = ({ rcas, updateRCA, formType } : RCAsProps) => {
                           style={{ height: '12px', width: '12px', margin: 5, color: '#1976d2d9' }}>
                           <RemoveCircleOutlineIcon />
                         </IconButton>
-                        <IconButton onClick={handleUpdateRCA}
+                        <IconButton onClick={() => handleUpdateRCA(rca.rcaIndex)}
                           title='Save'
                           style={{ height: '12px', width: '12px', margin: 5, color: '#1976d2d9' }}>
                           <CheckCircleOutlineIcon />

@@ -268,12 +268,12 @@ export interface RCA {
   whCauseId?: number | string;
   whCauseName?: string;
   description?: string;
-  improvSuggestion: string;
+  improveSuggestion: string;
 }
 
 export interface NewRca extends Omit<RCA, 'id' | 'rcaCode'> {
   id?: number;
-  rcaCodeId?: number;
+  rcaCodeId: number;
 }
 
 
