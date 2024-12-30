@@ -133,6 +133,9 @@ export interface NokCode {
   nokGrp: NokGroup;
   active: boolean;
 }
+
+export interface NokCodeS extends  Omit<NokCode, 'nokGrp' | 'active'>{}
+
 export interface NokCodeData extends Omit<NokCode, 'id'> {
   id?: number;
   nokGrpId: number;
@@ -190,7 +193,7 @@ export interface NokData {
   id: number;
   product: Product;
   productSN: string;
-  initNokCode: NokCode;
+  initNokCode: NokCodeS;
   detectedStation: Station;
   detectedShift: WorkShift;
   detectTime: Date;
@@ -206,7 +209,7 @@ export interface NewNokData extends Omit<NokData, 'id' | 'product' | 'initNokCod
   detectShiftId: number;
   initNokCodeId: number;
   product?: Product;
-  initNokCode?: NokCode;
+  initNokCode?: NokCodeS;
   detectedStation?: Station;
   detectedShift?: WorkShift;
   removeReport: boolean;
@@ -241,24 +244,26 @@ export enum ClaimStatus {
 
 export interface NokAnalyseData {
   id: number;
-  nok: NokData;
-  nokCode: NokCode;
+  nok?: NokData;
+  nokCode: NokCodeS;
   causeStation: Station;
   causeShift: WorkShift;
+  classCode: ClassCode;
   description: string;
   timeWaste?: number;
   materialWaste?: number;
   closed: boolean;
-  closeDate: Date;
+  closeDate?: Date;
   rcas?: RCA[]
 }
 
-export interface NewNokAnalyseData extends Omit<NokAnalyseData, 'id' | 'causeStationId' | 'causeShiftId'> {
+export interface NewNokAnalyseData extends Omit<NokAnalyseData, 'id' | 'nok' | 'nokCode' | 'causeStation' | 'causeShift' | 'classCode'> {
   id?: number;
   nokId: number;
   nokCodeId: number;
   causeStationId: number;
   causeShiftId: number;
+  classCodeId: number;
 }
 
 export interface RCA {
