@@ -11,6 +11,11 @@ import {
 	IconButton,
 	OutlinedTextFieldProps,
 	StandardTextFieldProps,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableRow,
 	TextField,
 	TextFieldVariants,
 	Typography
@@ -195,10 +200,10 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
 
 	const nokStatus  = {
 		rcaStatus: rcaList.length > 0 ? 'OK' : undefined,
-		costStatus: formValues.costData && (formValues.costData.issue ? 'SomeIssues' : formValues.costData.iqc > 0 ? 'IQC' : 'OK'),
+		costStatus: formValues.costData && (formValues.costData.issue == 1 ? 'SomeIssues' : formValues.costData.IQC > 0 ? 'IQC' : 'OK'),
 		reworkStatus: 'OK',
 		analyseSatus: formValues.nokCode ? 'OK' : undefined,
-		claimStatus: 'Pending'
+		claimStatus:  formValues.costData && (formValues.costData.approved > 0 ? 'Accepted' : formValues.costData.pendding > 0 ? 'Pending' : formValues.costData.rejected > 0 ? 'Rejected' : undefined )
 	} 
 	
 
@@ -347,17 +352,29 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
 							<NokStatus status={nokStatus} />
 						</Box>
 						<Box marginLeft={2}>
-							<Typography variant='h4' >
+							<Table size='small' sx={{ maxWidth: '250px', marginTop: 3 }}>
+								<TableHead sx={{ fontSize: 18,  fontWeight: 'bold'}}>
 								Dismantled Material Cost
-							</Typography>
-								{formValues.costData ? Object.entries(formValues.costData).map(([key, value], index) => (
-    							<span key={key}>
-      							<Typography variant='h6'>
-											{key}  : {value} 
-      							</Typography>
-								</span>
-									)) : ''}
-
+								</TableHead>
+								<TableBody>
+									<TableRow>
+										<TableCell sx={{ color: 'red'}}>SCRAPPED</TableCell>
+										<TableCell sx={{ color: 'red'}}>{formValues.costData?.SCRAPPED}</TableCell>
+									</TableRow>
+									<TableRow>
+										<TableCell sx={{ color: 'orange'}}>IQC</TableCell>
+										<TableCell sx={{ color: 'orange'}}>{formValues.costData?.IQC}</TableCell>
+									</TableRow>
+									<TableRow>
+										<TableCell sx={{ color: 'green'}}>OK</TableCell>
+										<TableCell sx={{ color: 'green'}}>{formValues.costData?.OK}</TableCell>
+									</TableRow>
+									<TableRow>
+										<TableCell sx={{ color: 'blue'}}>CLAIMED</TableCell>
+										<TableCell sx={{ color: 'blue'}}>{formValues.costData?.CLAIMED}</TableCell>
+									</TableRow>
+								</TableBody>
+							</Table>
 						</Box>
 					</Grid>
 					</Grid>
