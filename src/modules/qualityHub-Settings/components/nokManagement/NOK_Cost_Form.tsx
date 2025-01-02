@@ -187,7 +187,7 @@ const NokCostForm = ({ nokId, formType, readonly }: NokCostProps) => {
             name='totalPrice'
             label='Total Price'
             sx={{ width: '20%', margin: '10px' }}
-            value={materialData.reduce((total, material) => total + material.unitPrice, 0)}
+            value={materialData.reduce((total, material) => total + material.unitPrice * material.dismantledQty, 0)}
             InputProps={{ readOnly: true }}
           />
         </Box>
@@ -229,7 +229,7 @@ const NokCostForm = ({ nokId, formType, readonly }: NokCostProps) => {
                               if (i === index) {
                                 return {
                                   ...item,
-                                  price: parseInt(event.target.value) || 0,
+                                  unitPrice: parseInt(event.target.value) || 0,
                                 };
                               }
                               return item;

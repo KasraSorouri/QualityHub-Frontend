@@ -255,9 +255,10 @@ export interface NokAnalyseData {
   closed: boolean;
   closeDate?: Date;
   rcas?: RCA[]
+  costResult?: {[key: string]: number }
 }
 
-export interface NewNokAnalyseData extends Omit<NokAnalyseData, 'id' | 'nok' | 'nokCode' | 'causeStation' | 'causeShift' | 'classCode'> {
+export interface NewNokAnalyseData extends Omit<NokAnalyseData, 'id' | 'nok' | 'nokCode' | 'causeStation' | 'causeShift' | 'classCode'| 'costResult'> {
   id?: number;
   nokId: number;
   nokCodeId: number;

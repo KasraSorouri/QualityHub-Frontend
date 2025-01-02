@@ -16,7 +16,7 @@ import {
 	Typography
 } from '@mui/material';
 
-import { NokCode, Station, WorkShift, Product, NokAnalyseData, NewNokAnalyseData, NokData, RCA, NewRca, NokCodeS, ClassCode } from '../../../../types/QualityHubTypes';
+import { NokCode, Station, WorkShift, Product, NokAnalyseData, NewNokAnalyseData, NokData, RCA, NewRca, NokCodeS, ClassCode, ReworkStatus } from '../../../../types/QualityHubTypes';
 import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import stationServices from '../../services/stationServices';
@@ -33,6 +33,7 @@ import nokrcaServices from '../../services/nokRcaServices';
 import nokRcaServices from '../../services/nokRcaServices';
 import nokAnalyseServices from '../../services/nokAnalyseServices';
 import classCodeServices from '../../services/classCodeServices';
+import NokStatus from './NokStatus';
 
 type NokFromProps = {
 	nokId: number,
@@ -50,6 +51,7 @@ type FormData = {
 	timeWaste?: number;
 	materialWaste?: number;
 	closed: boolean;
+	costData?: {[key: string]: number }
 }
 
 const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromProps) => {
@@ -67,6 +69,7 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
 		classCode: nokAnalyseData?.classCode || null,
 		description: nokAnalyseData ? nokAnalyseData.description : '',
 		closed: nokAnalyseData ? nokAnalyseData.closed : false,
+		costData: nokAnalyseData?.costResult
 	};
 
 	const [ formValues, setFormValues ] = useState<FormData>(initFormValues);
@@ -78,7 +81,6 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
 	console.log('NOK Analyse * NOK Data ->', nok);
 	console.log('NOK Analyse * showReworkForm Data ->', showReworkForm);
 	console.log('NOK Analyse * show Form Value ->', formValues);
-
 
 
 	useEffect(() => {
@@ -94,6 +96,7 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
 					classCode: analyseResults.classCode,
 					description: analyseResults.description,
 					closed: analyseResults.closed,
+					costData: analyseResults.costResult
 				}
 				console.log('* Nok Analize Form * newFormValue ->', newFormValue);
 
@@ -174,7 +177,6 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
 		) {
 			console.log(' *** Analyse registeration * Submit form * Analyse Data -> ',formValues);
 			const newNokAnalyse: NewNokAnalyseData = {
-				//id: number;
 				id: nokAnalyseData?.id,
 				nokId: nokId,
 				nokCodeId: formValues.nokCode.id,
@@ -190,6 +192,15 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
 			console.log(' *** Analyse registeration * Submit form * Error -> ', 'Missing data');
 		}
 	};
+
+	const nokStatus  = {
+		rcaStatus: rcaList.length > 0 ? 'OK' : undefined,
+		costStatus: formValues.costData && (formValues.costData.issue ? 'SomeIssues' : formValues.costData.iqc > 0 ? 'IQC' : 'OK'),
+		reworkStatus: 'OK',
+		analyseSatus: formValues.nokCode ? 'OK' : undefined,
+		claimStatus: 'Pending'
+	} 
+	
 
 
 	return (
@@ -314,9 +325,6 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
 							<Button type='submit' variant='contained' color='primary' size='small' sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}>
 								{submitTitle}
 							</Button>
-							<Button onClick={() => removeNok(null)} variant='contained' color='primary' size='small' sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}>
-							Back
-							</Button>
 						</Grid>
 					</Grid>
 				</form>
@@ -332,6 +340,25 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
 						<Button variant='contained' sx={{ marginLeft: 2 }} onClick={() => setShowCostForm(true)}>
 							Calculate Cost
 						</Button>
+						<Button onClick={() => removeNok(null)} variant='contained' color='primary' size='small' sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}>
+							Back
+						</Button>
+						<Box>
+							<NokStatus status={nokStatus} />
+						</Box>
+						<Box marginLeft={2}>
+							<Typography variant='h4' >
+								Dismantled Material Cost
+							</Typography>
+								{formValues.costData ? Object.entries(formValues.costData).map(([key, value], index) => (
+    							<span key={key}>
+      							<Typography variant='h6'>
+											{key}  : {value} 
+      							</Typography>
+								</span>
+									)) : ''}
+
+						</Box>
 					</Grid>
 					</Grid>
 					</Grid>
