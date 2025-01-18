@@ -110,12 +110,7 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
 
 		}
 		getInitData();
-
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	},[nokId]);
-
-	// Get Analyse Data for Nok ID
-
 
 	// Get RCAs for NOK ID
 	const rcaResults = useQuery(['rcas', nokId], () => nokrcaServices.getNokRcaByNokId(nokId), { refetchOnWindowFocus: false });

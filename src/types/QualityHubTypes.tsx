@@ -354,14 +354,14 @@ export enum ReworkStatus {
 export interface NokRework {
   id?: number;
   nokId: number;
-  operator: string;
+  reworkOperator: string;
   reworkDuration?: number | string;
   reworkManPower?: number | string;
   reworkShift?: WorkShift | undefined;
   reworkStation: Station | undefined;
-  reworkActions?: number[];
+  reworkActionsId?: number[];
   affectedRecipes: Recipe[];
-  dismantledMaterials?: DismantledMaterial[];
+  nokDismantleMaterials?: DismantledMaterial[];
   reworkNote?: string;
   materialCost?: number;
   reworkStatus: ReworkStatus;

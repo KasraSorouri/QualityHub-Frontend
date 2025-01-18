@@ -70,6 +70,8 @@ type ExtraMaterial = {
 
 const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confirmSelection, confirmChange, editable } : DismantleMaterialListProps) => {
 
+  console.log('## Dismantled Matrail Form ** rwDismantledMaterial -> ', rwDismantledMaterial);
+   
   const [ selectedMaterials, setSelectedMaterials ] = useState<number[]>([]);
   const [ formValues, setFormValues ] = useState<FormData[]>([]);
   const [ confirmActive, setConfirmActive ] = useState<boolean>(false);

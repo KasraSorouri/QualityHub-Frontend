@@ -13,7 +13,7 @@ const getNokReworkById = async( nokReworkId : number) : Promise<NokRework> => {
 };
 
 // Get NokRework by NokId
-const getNokReworkByNokId = async( nokId : number) : Promise<NewNokReworkData[]> => {
+const getNokReworkByNokId = async( nokId : number) : Promise<NokRework> => {
 
   const res = await axios.get(`${api_url}/quality/nok_rework/nok/${nokId}`);
   return res.data;
