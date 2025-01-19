@@ -37,7 +37,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 import { useNotificationSet } from '../../../../contexts/NotificationContext';
 
-import { MaterialStatus, DismantledMaterial, Reusable, RwDismantledMaterial, Material } from '../../../../types/QualityHubTypes';
+import { MaterialStatus, NokDismantledMaterial, Reusable, Material, AffectedMaterial } from '../../../../types/QualityHubTypes';
 import { useQuery } from 'react-query';
 import materialServices from '../../services/materialServices';
 
@@ -48,16 +48,17 @@ interface EnhancedTableHeadProps {
 }
 
 type DismantleMaterialListProps = {
-  affectedMaterials: RwDismantledMaterial[];
-  rwDismantledMaterial? : DismantledMaterial[];
-  confirmSelection: (dismantledMaterial: DismantledMaterial[]) => void;
+  affectedMaterials: AffectedMaterial[];
+  nokDismantledMaterials? : NokDismantledMaterial[];
+  confirmSelection: (dismantledMaterial: NokDismantledMaterial[]) => void;
   confirmChange: (value: boolean) => void;
   editable: boolean;
 }
 
-interface FormData extends DismantledMaterial {
+interface FormData extends NokDismantledMaterial {
   isSelected: boolean;
-  materialStatus?: MaterialStatus;
+  rwNote?: string;
+  mandatoryRemove?: boolean;
 }
 
 type ExtraMaterial = {
@@ -68,9 +69,11 @@ type ExtraMaterial = {
     status?: MaterialStatus;
 }
 
-const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confirmSelection, confirmChange, editable } : DismantleMaterialListProps) => {
+const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, confirmSelection, confirmChange, editable } : DismantleMaterialListProps) => {
 
-  console.log('## Dismantled Matrail Form ** rwDismantledMaterial -> ', rwDismantledMaterial);
+  console.log('## Dismantled Matrail Form ** Nok DismantledMaterial -> ', nokDismantledMaterials);
+  console.log('** Dismantled Matrail Form **  Affected DismantledMaterial -> ', affectedMaterials);
+
    
   const [ selectedMaterials, setSelectedMaterials ] = useState<number[]>([]);
   const [ formValues, setFormValues ] = useState<FormData[]>([]);
@@ -81,22 +84,25 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
   const setNotification = useNotificationSet();
 
   useEffect(() => {
-    const initialFormValues = affectedMaterials.map(material => {
+    const initialFormValues = affectedMaterials.map(afMaterial => {
 
-      // find the rwDismantled Material where id is equal to material id
-      const rwDismantled = rwDismantledMaterial?.find(rwm => rwm.recipeBomId === material.recipeBom.id);
+      // find if the material is already dismantled
+      const dismantledItem = nokDismantledMaterials?.find(dm => dm.rwDismantledMaterialId === afMaterial.rwDismantledMaterialId);
       const data : FormData = {
-        isSelected: rwDismantledMaterial?.map(dm => (dm.recipeBomId)).includes(material.recipeBom.id) || false,
-        recipeCode: material.recipeBom.recipe.recipeCode,
-        recipeDescription: material.recipeBom.recipe.description,
-        material: material.recipeBom.material,
-        recipeBomId: material.recipeBom.id,
-        qty: material.recipeBom.qty,
-        suggestedDismantledQty: material.dismantledQty,
-        note: material.note,
-        mandatoryRemove: material.mandatoryRemove,
-        reusable: material.recipeBom.reusable,
-        actualDismantledQty: rwDismantled ? rwDismantled?.actualDismantledQty : 0
+        isSelected: dismantledItem ? true : false,
+        id: dismantledItem ? dismantledItem.id : undefined,
+        rwDismantledMaterialId: afMaterial.rwDismantledMaterialId,
+        recipeCode: afMaterial.recipeCode,
+        recipeDescription: afMaterial.recipeDescription,
+        material: afMaterial.material,
+        recipeBomId: afMaterial.recipeBomId,
+        recipeQty: afMaterial.recipeQty,
+        suggestedDismantledQty: afMaterial.suggestedDismantledQty,
+        mandatoryRemove: afMaterial.mandatoryRemove,
+        reusable: afMaterial.reusable,
+        actualDismantledQty: dismantledItem ? dismantledItem.actualDismantledQty : 0,
+        rwNote: afMaterial.rwNote,
+        materialStatus: dismantledItem ? dismantledItem.materialStatus : undefined,
       };
       return data;
     });
@@ -263,7 +269,7 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
       setConfirmActive(true);
       confirmChange(false);
     }
-    if (updateValue && value > updateValue.qty) {
+    if (updateValue && value > updateValue.recipeQty) {
       setOpenDialog(true);
     }
   };
@@ -340,10 +346,10 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
   };
 
   const handleConfirmSelection = () => {
-    const dismantledmaterials : DismantledMaterial[] = formValues.filter(material => material.isSelected);
+    const dismantledmaterials : NokDismantledMaterial[] = formValues.filter(material => material.isSelected);
     dismantledmaterials.forEach(material => {
       if (material.actualDismantledQty === 0) {
-        material.actualDismantledQty = material.suggestedDismantledQty ? material.suggestedDismantledQty : material.qty;
+        material.actualDismantledQty = material.suggestedDismantledQty ? material.suggestedDismantledQty : material.recipeQty;
       }
       if (material.materialStatus === undefined) {
         material.materialStatus = MaterialStatus.SCRAPPED;
@@ -353,13 +359,15 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
     if (extraAffectedMaterials.length > 0) {
       extraAffectedMaterials.forEach( em => {
         if (em.material && em.actualDismantledQty > 0) {
-          const newMaterial : DismantledMaterial = {
+          const newMaterial : NokDismantledMaterial = {
+            id: undefined,
+            rwDismantledMaterialId: undefined,
             recipeBomId: 0,
             recipeCode: 'extra',
             material: em.material,
             actualDismantledQty: em.actualDismantledQty,
             materialStatus: em.status ? em.status : MaterialStatus.SCRAPPED,
-            qty: 0
+            recipeQty: 0,
           };
           dismantledmaterials.push(newMaterial);
         }
@@ -523,7 +531,7 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
                     {material.material.itemShortName}
                   </TableCell>
                   <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
-                    {material.qty}
+                    {material.recipeQty}
                   </TableCell>
                   <TableCell align='center' sx={{ borderRight: '1px solid gray', background: material.material.traceable ? '#FCFEA0' : '#A0F1FE' }}>
                     {material.material.traceable ? 'Yes' : 'No'}
@@ -535,7 +543,7 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
                     {material.reusable}
                   </TableCell>
                   <TableCell align='left' sx={{ borderRight: '1px solid gray' }}>
-                    {material.note}
+                    {material.rwNote}
                   </TableCell>
                   <TableCell align='center'>
                     <Box justifyContent={'space-between'}>
@@ -610,4 +618,4 @@ const NokDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confir
   );
 };
 
-export default NokDismantledMaterial;
+export default NokDismantledMaterialForm;

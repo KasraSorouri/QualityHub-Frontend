@@ -320,27 +320,37 @@ interface RecipeBOM {
 }
 
 export interface RwDismantledMaterial {
+  rwDismantledMaterial: RwDismantledMaterial;
   id: number;
   recipeBom: RecipeBOM;
   dismantledQty : number;
   note?: string;
   mandatoryRemove?: boolean;
+  reusable?: Reusable;
 }
-
+/*
 export interface AffectedMaterial extends Omit<RwDismantledMaterial, 'id' | 'dismantledQty'> {
   dismantledQty? : number;
 }
-
-export interface DismantledMaterial extends Omit<RwDismantledMaterial, 'id' | 'recipeBom' | 'dismantledQty'> {
+*/
+export interface NokDismantledMaterial {
+  id: number | undefined;
+  rwDismantledMaterialId: number | undefined;
   recipeCode?: string;
   recipeDescription?: string;
   material: Material;
   recipeBomId: number;
-  qty: number;
+  recipeQty: number;
   suggestedDismantledQty?: number;
-  reusable?: Reusable;
   actualDismantledQty: number;
+  reusable?: Reusable;
   materialStatus? : MaterialStatus;
+}
+
+export interface AffectedMaterial extends Omit<NokDismantledMaterial, 'id' | 'actualDismantledQty' | 'reusable' | 'materialStatus'> {
+  mandatoryRemove?: boolean;
+  reusable?: Reusable;
+  rwNote?: string;
 }
 
 export enum ReworkStatus {
@@ -361,7 +371,7 @@ export interface NokRework {
   reworkStation: Station | undefined;
   reworkActionsId?: number[];
   affectedRecipes: Recipe[];
-  nokDismantleMaterials?: DismantledMaterial[];
+  nokDismantleMaterials?: NokDismantledMaterial[];
   reworkNote?: string;
   materialCost?: number;
   reworkStatus: ReworkStatus;
