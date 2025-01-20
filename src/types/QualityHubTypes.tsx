@@ -335,7 +335,7 @@ export interface AffectedMaterial extends Omit<RwDismantledMaterial, 'id' | 'dis
 */
 export interface NokDismantledMaterial {
   id: number | undefined;
-  rwDismantledMaterialId: number | undefined;
+  rwDismantledMaterialId: number ;
   recipeCode?: string;
   recipeDescription?: string;
   material: Material;
@@ -345,6 +345,9 @@ export interface NokDismantledMaterial {
   actualDismantledQty: number;
   reusable?: Reusable;
   materialStatus? : MaterialStatus;
+  rwDismantledMaterial?: RwDismantledMaterial;
+  recipeBom?: RecipeBOM;
+  qty?: number;
 }
 
 export interface AffectedMaterial extends Omit<NokDismantledMaterial, 'id' | 'actualDismantledQty' | 'reusable' | 'materialStatus'> {
