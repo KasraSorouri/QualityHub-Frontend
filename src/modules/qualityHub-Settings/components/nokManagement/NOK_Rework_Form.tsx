@@ -31,6 +31,13 @@ type NokFromProps = {
   removeNok: (nok: null) => void;
 }
 
+interface DismantledMaterialData extends NokDismantledMaterial {
+  isSelected: boolean;
+  rwNote?: string;
+  mandatoryRemove?: boolean;
+}
+
+
 type FormData = {
   id : number | undefined;
   materialCost?: number;
@@ -41,7 +48,7 @@ type FormData = {
   reworkStation: Station | undefined;
   reworkActions: number[];
   affectedRecipes?: number[],
-  dismantledMaterials?: NokDismantledMaterial[];
+  dismantledMaterials?: DismantledMaterialData[];
   note?: string;
   reworkStatus?: ReworkStatus;
 }
@@ -57,18 +64,39 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
     reworkStation: undefined,
     note: '',
     reworkActions: [],
-    //nokRework: [],
+    reworkStatus: ReworkStatus.IN_PROGRESS,
   };
 
   const [ formValues, setFormValues ] = useState<FormData>(initFormValues);
   const [ nok, setNok ] = useState<NokData | null>(null);
-  //const [ dismantledMaterials, setDismantledMaterial ] = useState<NokDismantledMaterial[] | never[]>([]);
   const [ affectedMaterials, setAffectedMaterial ] = useState<AffectedMaterial[] | never[]>([]);
 
   const [ confirmation, setConfirmation ] = useState<{chooseReworks: boolean, dismantledMaterials: boolean}>({ chooseReworks: false, dismantledMaterials: false });
 
-  //console.log('Nok Rework fprm ** dismantledMaterials -> ',dismantledMaterials);
   console.log('Nok Rework fprm ** formValues -> ',formValues);
+
+  const convertDismanltedMaterial = (dismantledMaterials: NokDismantledMaterial[]) => {
+    const dismantledMaterialsData = dismantledMaterials?.map(dmMaterial => {
+      const data : DismantledMaterialData = {
+        isSelected: true,
+        id: dmMaterial.id,
+        rwDismantledMaterialId: dmMaterial.rwDismantledMaterialId,
+        recipeCode: dmMaterial.recipeBom?.recipe.recipeCode,
+        recipeDescription: dmMaterial.recipeDescription,
+        material: dmMaterial.material,
+        recipeBomId: dmMaterial.recipeBomId,
+        recipeQty: dmMaterial.recipeBom?.qty || 0,
+        suggestedDismantledQty: dmMaterial.rwDismantledMaterial?.dismantledQty,
+        mandatoryRemove: dmMaterial.rwDismantledMaterial?.mandatoryRemove,
+        reusable: dmMaterial.recipeBom?.reusable,
+        actualDismantledQty: dmMaterial.actualDismantledQty? dmMaterial.actualDismantledQty : 0,
+        rwNote: dmMaterial.rwDismantledMaterial?.note,
+        materialStatus: dmMaterial.materialStatus,
+      };
+      return data;
+    });
+    return dismantledMaterialsData;
+  };
 
   useEffect(() => {
         const getInitData = async () => {
@@ -86,15 +114,13 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
             note: reworkResults.reworkNote,
             reworkStatus: reworkResults.reworkStatus === 'COMPLETED' ? ReworkStatus.COMPLETED : ReworkStatus.IN_PROGRESS,
             reworkActions: reworkResults.reworkActionsId|| [],
-            //affectedRecipes: reworkResults.affectedRecipes || [],
-            dismantledMaterials: reworkResults.nokDismantleMaterials || []
+            dismantledMaterials: reworkResults.nokDismantleMaterials ? convertDismanltedMaterial(reworkResults.nokDismantleMaterials) : [],
             }
             console.log('* Nok Rework Form * newFormValue ->', newFormValue);
     
             setFormValues(newFormValue);
-            //setDismantledMaterial(reworkResults.nokDismantleMaterials || [])
             console.log('$$$$ Nok Rework Form * form value * effect ->', formValues);
-    
+            setConfirmation({ chooseReworks: (reworkResults.reworkActionsId && reworkResults.reworkActionsId.length > 0 || false), dismantledMaterials: true });
         }
         getInitData();
       },[nokId]);
@@ -141,7 +167,6 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
     let affectedReciepies : number[] = [];
     const newNokReworks = reworks.map(rework => {
       rework.affectedRecipes ? affectedReciepies = affectedReciepies.concat(rework.affectedRecipes) : null;
-      //rework.rwDismantledMaterials ? affectedMaterials = affectedMaterials.concat(rework.affectedMaterials) : null;
       if (rework.rwDismantledMaterials) {
         rework.rwDismantledMaterials.map(rwDisMaterial => {
           const newMaterial : AffectedMaterial = {
@@ -167,14 +192,12 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
   };
 
 
-  const handleDismantledMaterial = (dismantledMaterials : NokDismantledMaterial[]) => {
-    /*
-    // Calculate Material Cost
-    const materialCost = dismantledMaterials.reduce((totalCost, item) => {
-      const cost = item.material.price ? item.actualDismantledQty * item.material.price : 0;
-      return totalCost + cost;
-    }, 0);
-    */
+  const handleDismantledMaterial = (dismantledMaterials : DismantledMaterialData[]) => {
+
+    console.log(' here ***********');
+    
+    console.log('Nok Rework Form * handleDismantledMaterial * dismantledMaterials ->', dismantledMaterials);
+    
     setFormValues({ ...formValues, dismantledMaterials: dismantledMaterials });
     setConfirmation({ ...confirmation, dismantledMaterials: true });
   };

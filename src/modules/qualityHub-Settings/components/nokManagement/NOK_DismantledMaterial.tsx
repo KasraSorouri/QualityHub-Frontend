@@ -37,28 +37,22 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 import { useNotificationSet } from '../../../../contexts/NotificationContext';
 
-import { MaterialStatus, NokDismantledMaterial, Reusable, Material, AffectedMaterial } from '../../../../types/QualityHubTypes';
+import { MaterialStatus, NokDismantledMaterial, Reusable, Material, AffectedMaterial, DismantledMaterialData } from '../../../../types/QualityHubTypes';
 import { useQuery } from 'react-query';
 import materialServices from '../../services/materialServices';
 
 interface EnhancedTableHeadProps {
   order: 'asc' | 'desc';
-  orderBy: keyof FormData;
+  orderBy: keyof DismantledMaterialData;
   onRequestSort: (_event: React.MouseEvent<unknown>, property: string) => void;
 }
 
 type DismantleMaterialListProps = {
   affectedMaterials: AffectedMaterial[];
-  nokDismantledMaterials? : NokDismantledMaterial[];
-  confirmSelection: (dismantledMaterial: NokDismantledMaterial[]) => void;
+  nokDismantledMaterials? : DismantledMaterialData[];
+  confirmSelection: (dismantledMaterial: DismantledMaterialData[]) => void;
   confirmChange: (value: boolean) => void;
   editable: boolean;
-}
-
-interface FormData extends NokDismantledMaterial {
-  isSelected: boolean;
-  rwNote?: string;
-  mandatoryRemove?: boolean;
 }
 
 type ExtraMaterial = {
@@ -72,27 +66,23 @@ type ExtraMaterial = {
 const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, confirmSelection, confirmChange, editable } : DismantleMaterialListProps) => {
 
   console.log('## Dismantled Matrail Form ** Nok DismantledMaterial -> ', nokDismantledMaterials);
-  console.log('** Dismantled Matrail Form **  Affected DismantledMaterial -> ', affectedMaterials);
+  //console.log('** Dismantled Matrail Form **  Affected DismantledMaterial -> ', affectedMaterials);
 
    
   const [ selectedMaterials, setSelectedMaterials ] = useState<number[]>([]);
-  const [ formValues, setFormValues ] = useState<FormData[]>([]);
+  const [ formValues, setFormValues ] = useState<DismantledMaterialData[]>([]);
   const [ confirmActive, setConfirmActive ] = useState<boolean>(false);
   const [ openDialog , setOpenDialog ] = useState<boolean>(false);
   const [ extraAffectedMaterials , setExteraAffectedMaterials ] = useState<ExtraMaterial[]>([]);
 
   const setNotification = useNotificationSet();
 
-  let materials = [...affectedMaterials, ...(nokDismantledMaterials || [])];
-  console.log('$$**## Dismantled Matrail Form **  materials -> ', materials);
-
-
   useEffect(() => {
     const affectedMaterialsData = affectedMaterials.map(afMaterial => {
 
       // find if the material is already dismantled
       const dismantledItem = nokDismantledMaterials?.find(dm => dm.rwDismantledMaterialId === afMaterial.rwDismantledMaterialId);
-      const data : FormData = {
+      const data : DismantledMaterialData = {
         isSelected: dismantledItem ? true : false,
         id: dismantledItem ? dismantledItem.id : 0,
         rwDismantledMaterialId: afMaterial.rwDismantledMaterialId,
@@ -104,14 +94,15 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
         suggestedDismantledQty: afMaterial.suggestedDismantledQty,
         mandatoryRemove: 'mandatoryRemove' in  afMaterial  ? afMaterial.mandatoryRemove : false,
         reusable: afMaterial.reusable,
-        actualDismantledQty: dismantledItem ? dismantledItem.actualDismantledQty : 0,
+        actualDismantledQty: dismantledItem?.actualDismantledQty ? dismantledItem.actualDismantledQty : 0,
         rwNote: 'rwNote' in  afMaterial  ? afMaterial.rwNote : '',
-        materialStatus: dismantledItem ? dismantledItem.materialStatus : undefined,
+        materialStatus: dismantledItem ? dismantledItem.materialStatus : MaterialStatus.SCRAPPED,
       };
       return data;
     });
 
-    const dismantledMaterialsData = nokDismantledMaterials?.map(dmMaterial => {
+    const dismantledMaterialsData = nokDismantledMaterials
+    /*const dismantledMaterialsData = nokDismantledMaterials?.map(dmMaterial => {
       const data : FormData = {
         isSelected: true,
         id: dmMaterial.id,
@@ -121,17 +112,25 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
         material: dmMaterial.material,
         recipeBomId: dmMaterial.recipeBomId,
         recipeQty: dmMaterial.recipeBom?.qty || 0,
-        suggestedDismantledQty: dmMaterial.suggestedDismantledQty,
+        suggestedDismantledQty: dmMaterial.rwDismantledMaterial?.dismantledQty,
         mandatoryRemove: dmMaterial.rwDismantledMaterial?.mandatoryRemove,
         reusable: dmMaterial.recipeBom?.reusable,
-        actualDismantledQty: dmMaterial.qty? dmMaterial.qty : 0,
+        actualDismantledQty: dmMaterial.actualDismantledQty? dmMaterial.actualDismantledQty : 0,
         rwNote: dmMaterial.rwDismantledMaterial?.note,
         materialStatus: dmMaterial.materialStatus,
       };
       return data;
-    });
+    });*/
+    const allMaterialsData =[...affectedMaterialsData, ...dismantledMaterialsData || []];
+    console.log('$1 Dismantled Matrail Form ** affectedMaterialsData -> ', affectedMaterialsData);
+    console.log('$2 Dismantled Matrail Form ** dismantledMaterialsData -> ', dismantledMaterialsData);
+    console.log('$3 Dismantled Matrail Form ** allMaterialsData -> ', allMaterialsData);
+    // Remove duplicates Items
+    const initialFormValues = allMaterialsData.filter((item, index, self) =>
+      index === self.findIndex((t) => t.rwDismantledMaterialId === item.rwDismantledMaterialId)
+    );
 
-    const initialFormValues = [...affectedMaterialsData, ...(dismantledMaterialsData || [])];
+    console.log('$$ Dismantled Matrail Form ** initialFormValues -> ', initialFormValues);
 
     const select : number[] = [];
     initialFormValues.map(material => {
@@ -149,11 +148,11 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
   const materialList = materialResult.data ? materialResult.data : [];
 
   // Sort Items
-  const [ sort, setSort ] = useState<{ sortItem: keyof FormData; sortOrder: number }>({ sortItem: 'material' , sortOrder: 1 });
+  const [ sort, setSort ] = useState<{ sortItem: keyof DismantledMaterialData; sortOrder: number }>({ sortItem: 'material' , sortOrder: 1 });
   const order : 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
-  const orderBy : keyof FormData = sort.sortItem;
+  const orderBy : keyof DismantledMaterialData = sort.sortItem;
 
-  const sortedMaterials: FormData[]  = formValues.sort((a, b) => {
+  const sortedMaterials: DismantledMaterialData[]  = formValues.sort((a, b) => {
     const aValue = a[orderBy];
     const bValue = b[orderBy];
 
@@ -236,7 +235,7 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
     );
   };
 
-  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof FormData) => {
+  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof DismantledMaterialData) => {
     const isAsc = orderBy === property && order ==='asc';
     setSort({ sortItem: property, sortOrder:isAsc ? -1 : 1 });
   };
@@ -286,6 +285,9 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
   // Set Dismantle Qty
   const handleActualDismantleQty = (value: number, index: number) => {
 
+    console.log('## Dismantled Matrail Form ** handleActualDismantleQty * params -> ', value, index);
+        
+
     const updateValue = formValues.find((item) => item.rwDismantledMaterialId === index);
     if (value <= 0) {
       setNotification({ message: 'Dismantled Qty must be greater than 0', type: 'error', time: 5 });
@@ -295,6 +297,8 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
       setFormValues([...formValues]);
       setConfirmActive(true);
       confirmChange(false);
+      console.log('## Dismantled Matrail Form ** handleActualDismantleQty * update  -> ', updateValue);
+      
     }
     if (updateValue && value > updateValue.recipeQty) {
       setOpenDialog(true);
@@ -373,7 +377,7 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
   };
 
   const handleConfirmSelection = () => {
-    const dismantledmaterials : NokDismantledMaterial[] = formValues.filter(material => material.isSelected);
+    const dismantledmaterials : DismantledMaterialData[] = formValues.filter(material => material.isSelected);
     dismantledmaterials.forEach(material => {
       if (material.actualDismantledQty === 0) {
         material.actualDismantledQty = material.suggestedDismantledQty ? material.suggestedDismantledQty : material.recipeQty;
@@ -386,7 +390,8 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
     if (extraAffectedMaterials.length > 0) {
       extraAffectedMaterials.forEach( em => {
         if (em.material && em.actualDismantledQty > 0) {
-          const newMaterial : NokDismantledMaterial = {
+          const newMaterial : DismantledMaterialData = {
+            isSelected: true,
             id: undefined,
             rwDismantledMaterialId: 0,
             recipeBomId: 0,
@@ -437,7 +442,7 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
           <EnhancedTableHead
             order={order}
             orderBy={orderBy}
-            onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof FormData)} />
+            onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof DismantledMaterialData)} />
           <TableBody>
             {extraAffectedMaterials.length > 0 ?
               extraAffectedMaterials.map((eMaterial, index) => {
@@ -502,7 +507,7 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
                         sx={{ '& .MuiInputBase-input': { maxHeight: '10px', padding: '8px', textAlign: 'center' }, overflow: 'hidden' }}
                         variant='filled'
                         value={eMaterial.actualDismantledQty}
-                        defaultValue={1}
+                        //defaultValue={1}
                         onChange={(event) => handleExtraMatrialQty(parseInt(event.target.value), index)}
                         required />
                     </TableCell>
@@ -517,7 +522,7 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
                         }}
                         select
                         value={eMaterial.status}
-                        defaultValue={MaterialStatus.SCRAPPED}
+                        //defaultValue={MaterialStatus.SCRAPPED}
                         onChange={(event) => handleExtraMatrialStatus(event.target.value as MaterialStatus, index)}
                       >
                         {Object.values(MaterialStatus).map((option) => (
@@ -587,7 +592,7 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
                         sx={{ '& .MuiInputBase-input': { maxHeight: '15px', padding: '5px', textAlign: 'center' }, overflow: 'hidden' }}
                         variant='filled'
                         value={material.actualDismantledQty || material.suggestedDismantledQty}
-                        defaultValue={material.suggestedDismantledQty}
+                        //defaultValue={material.suggestedDismantledQty}
                         onChange={(event) => handleActualDismantleQty(parseInt(event.target.value), material.rwDismantledMaterialId)}
                         required /> :
                       ''}
@@ -604,7 +609,7 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
                         }}
                         select
                         value={material.materialStatus}
-                        defaultValue={MaterialStatus.SCRAPPED}
+                        //defaultValue={MaterialStatus.SCRAPPED}
                         onChange={(event) => handleStatus(event.target.value as MaterialStatus, material.rwDismantledMaterialId)}
                       >
                         {(material.reusable === 'NO') ?
@@ -615,7 +620,7 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
                             <MenuItem key={option} value={option}>{option}</MenuItem>
                           ))}
                       </TextField>
-                      : material.materialStatus}
+                      : ''}
                   </TableCell>
                 </TableRow>
               );

@@ -347,7 +347,12 @@ export interface NokDismantledMaterial {
   materialStatus? : MaterialStatus;
   rwDismantledMaterial?: RwDismantledMaterial;
   recipeBom?: RecipeBOM;
-  qty?: number;
+}
+
+export interface DismantledMaterialData extends NokDismantledMaterial {
+  isSelected: boolean;
+  rwNote?: string;
+  mandatoryRemove?: boolean;
 }
 
 export interface AffectedMaterial extends Omit<NokDismantledMaterial, 'id' | 'actualDismantledQty' | 'reusable' | 'materialStatus'> {
