@@ -15,7 +15,7 @@ import {
   TextFieldVariants,
 } from '@mui/material';
 
-import { Station, WorkShift, NokAnalyseData, NewNokAnalyseData, NokData, Rework, NewNokReworkData, ReworkStatus, NokDismantledMaterial, AffectedMaterial } from '../../../../types/QualityHubTypes';
+import { Station, WorkShift, NokAnalyseData, NewNokAnalyseData, NokData, Rework, NewNokReworkData, ReworkStatus, NokDismantledMaterial, AffectedMaterial, DismantledMaterialData } from '../../../../types/QualityHubTypes';
 import nokDetectServices from '../../services/nokDetectServices';
 import NOK_Info from './NOK_Info';
 import ReworkChooseList from './ReworkChooseList';
@@ -30,13 +30,6 @@ type NokFromProps = {
   nokAnalyseData?: NokAnalyseData | NewNokAnalyseData  | null;
   removeNok: (nok: null) => void;
 }
-
-interface DismantledMaterialData extends NokDismantledMaterial {
-  isSelected: boolean;
-  rwNote?: string;
-  mandatoryRemove?: boolean;
-}
-
 
 type FormData = {
   id : number | undefined;
@@ -79,6 +72,7 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
     const dismantledMaterialsData = dismantledMaterials?.map(dmMaterial => {
       const data : DismantledMaterialData = {
         isSelected: true,
+        index: dmMaterial.rwDismantledMaterialId,
         id: dmMaterial.id,
         rwDismantledMaterialId: dmMaterial.rwDismantledMaterialId,
         recipeCode: dmMaterial.recipeBom?.recipe.recipeCode,

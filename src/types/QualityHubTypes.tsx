@@ -335,7 +335,7 @@ export interface AffectedMaterial extends Omit<RwDismantledMaterial, 'id' | 'dis
 */
 export interface NokDismantledMaterial {
   id: number | undefined;
-  rwDismantledMaterialId: number ;
+  rwDismantledMaterialId: number  ;
   recipeCode?: string;
   recipeDescription?: string;
   material: Material;
@@ -349,8 +349,11 @@ export interface NokDismantledMaterial {
   recipeBom?: RecipeBOM;
 }
 
-export interface DismantledMaterialData extends NokDismantledMaterial {
+export interface DismantledMaterialData extends Omit<NokDismantledMaterial,  'rwDismantledMaterialId' |'recipeBomId' > {
   isSelected: boolean;
+  index: number;
+  rwDismantledMaterialId?: number;
+  recipeBomId?: number;
   rwNote?: string;
   mandatoryRemove?: boolean;
 }
@@ -385,11 +388,12 @@ export interface NokRework {
   reworkStatus: ReworkStatus;
 }
 
-export interface NewNokReworkData extends Omit<NokRework, 'operator' | 'reworkShift' | 'reworkStation' | 'affectedRecipes'> {
+export interface NewNokReworkData extends Omit<NokRework, 'operator' | 'reworkShift' | 'reworkStation' | 'affectedRecipes' | 'nokDismantleMaterials'> {
   reworkOperator: string;
   reworkShift: number;
   reworkStation: number | undefined;
   affectedRecipes: number[];
+  nokDismantleMaterials: DismantledMaterialData[] | undefined;
 }
 
 export interface DismanteledMaterialData {
