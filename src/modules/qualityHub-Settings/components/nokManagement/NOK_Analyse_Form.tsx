@@ -10,6 +10,7 @@ import {
 	Grid,
 	IconButton,
 	OutlinedTextFieldProps,
+	Stack,
 	StandardTextFieldProps,
 	Table,
 	TableBody,
@@ -21,7 +22,7 @@ import {
 	Typography
 } from '@mui/material';
 
-import { NokCode, Station, WorkShift, Product, NokAnalyseData, NewNokAnalyseData, NokData, RCA, NewRca, NokCodeS, ClassCode, ReworkStatus } from '../../../../types/QualityHubTypes';
+import { NokCode, Station, WorkShift, Product, NokAnalyseData, NewNokAnalyseData, NokData, RCA, NewRca, NokCodeS, ClassCode, NokStatus } from '../../../../types/QualityHubTypes';
 import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import stationServices from '../../services/stationServices';
@@ -38,13 +39,19 @@ import nokrcaServices from '../../services/nokRcaServices';
 import nokRcaServices from '../../services/nokRcaServices';
 import nokAnalyseServices from '../../services/nokAnalyseServices';
 import classCodeServices from '../../services/classCodeServices';
-import NokStatus from './NokStatus';
+import NokStatusIndicator from './NokStatusIndicator';
+import NokAnalyseStatusForm from './NOK_Analyse_Status_Form';
 
 type NokFromProps = {
 	nokId: number,
 	formType: 'ADD' | 'EDIT' | 'VIEW';
 	nokAnalyseData?: NokAnalyseData | null;
 	removeNok: (nok: null) => void;
+}
+
+type AnalyzeStatus = {
+	analyseStatus: NokStatus;
+	removeFromReportStatus: boolean;
 }
 
 type FormData = {
@@ -77,10 +84,17 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
 		costData: nokAnalyseData?.costResult
 	};
 
+	const initAnalyseStatus: AnalyzeStatus = {
+		analyseStatus: NokStatus.PENDING,
+		removeFromReportStatus: false
+	};
+
 	const [ formValues, setFormValues ] = useState<FormData>(initFormValues);
 	const [ nok, setNok ] = useState<NokData | null>(null);
 	const [ showReworkForm, setShowReworkForm ] = useState<boolean>(false)
 	const [ showCostForm, setShowCostForm ] = useState<boolean>(false)
+	const [ status, setStatus] = useState<AnalyzeStatus>(initAnalyseStatus);
+
 
 
 	console.log('NOK Analyse * NOK Data ->', nok);
@@ -167,6 +181,12 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
 		}
 	};
 
+	// Update Analyse Status
+	const analyseStatusHandler = async () => {
+	 	const result = nokAnalyseServices.updateStatus(nokId, status);
+		console.log(' *** Analyse Form * Analyse is done -> ',result);
+	};
+
 	const handleSubmit = async (event: {preventDefault: () => void}) => {
 		event.preventDefault();
 		if (formType === 'ADD' &&
@@ -201,12 +221,13 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
 		claimStatus:  formValues.costData && (formValues.costData.approved > 0 ? 'Accepted' : formValues.costData.pendding > 0 ? 'Pending' : formValues.costData.rejected > 0 ? 'Rejected' : undefined )
 	} 
 	
+	
 
 
 	return (
 		<Grid container direction={'column'}>
 			<Grid container direction={'row'} >
-  			<Grid direction={'column'} xs={7}>
+  			<Grid direction={'column'} xs={6}>
 					<Grid item>
 						<Typography variant='h5' marginLeft={2}>
 							Detect Information
@@ -331,7 +352,7 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
 						</Box>
 			  	</Grid>
 				</Grid>
-			<Grid  direction={'row'}xs={5} >
+			<Grid  direction={'row'}xs={6} >
 
 			<Grid item marginTop={5}>
 						<Button variant='contained' sx={{ marginLeft: 2 }} onClick={() => setShowReworkForm(true)}>
@@ -340,14 +361,19 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
 						<Button variant='contained' sx={{ marginLeft: 2 }} onClick={() => setShowCostForm(true)}>
 							Calculate Cost
 						</Button>
+						<Button variant='contained' sx={{ marginLeft: 2 }} onClick={() => analyseStatusHandler()}>
+							Update Status
+						</Button>
 						<Button onClick={() => removeNok(null)} variant='contained' color='primary' size='small' sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}>
 							Back
 						</Button>
 						<Box>
-							<NokStatus status={nokStatus} />
+							<NokStatusIndicator status={nokStatus} />
 						</Box>
+					  <Stack direction={'row'} spacing={0} marginTop={1} marginLeft={1}>
+						<NokAnalyseStatusForm status={status} updateStatus={setStatus} />
 						<Box marginLeft={2}>
-							<Table size='small' sx={{ maxWidth: '250px', marginTop: 3 }}>
+							<Table size='small' sx={{ maxWidth: '250px', marginTop: 1 }}>
 								<TableHead sx={{ fontSize: 18,  fontWeight: 'bold'}}>
 								Dismantled Material Cost
 								</TableHead>
@@ -366,11 +392,12 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
 									</TableRow>
 									<TableRow>
 										<TableCell sx={{ color: 'blue'}}>CLAIMED</TableCell>
-										<TableCell sx={{ color: 'blue'}}>{formValues.costData?.CLAIMED}</TableCell>
+										<TableCell sx={{ color: 'blue'}}>{formValues.costData?.CLAIMABLE}</TableCell>
 									</TableRow>
 								</TableBody>
 							</Table>
 						</Box>
+						</Stack>
 					</Grid>
 					</Grid>
 					</Grid>

@@ -15,7 +15,7 @@ type NokStatusProps = {
   };
 };
 
-const NokStatus = ({ status }: NokStatusProps) => {
+const NokStatusIndicator = ({ status }: NokStatusProps) => {
   console.log(' Status ->', status);
   
 
@@ -96,13 +96,13 @@ const NokStatus = ({ status }: NokStatusProps) => {
   }
 
 	return (
-		<Stack direction={'row'} spacing={1} marginTop={1}>
-      <BuildCircleTwoToneIcon titleAccess='Rework Status' sx={{ fontSize: '60px', color: reworkStatusColor }} />
-      <MonetizationOnTwoToneIcon titleAccess='Cost Status' sx={{ fontSize: '60px', color: costStatusColor }} />
-      <ContentPasteSearchTwoToneIcon titleAccess='Analyse Status' sx={{ fontSize: '60px', color: analyseSatusColor}} />
-      <TroubleshootTwoToneIcon titleAccess='RCA Status' sx={{ fontSize: '60px', color: rcaStatusColor }} />
-      <Box sx={{ width: '100px', height: '35px', borderRadius: '10%', border:'4px solid',  textAlign: 'center', paddingTop: '3px', borderColor: claimStatusColor}}>
-        <Typography fontSize={24} sx={{ color: claimStatusColor }}>
+		<Stack direction={'row'} spacing={0} marginTop={1} marginLeft={1}>
+      <BuildCircleTwoToneIcon titleAccess='Rework Status' sx={{ fontSize: '45px', color: reworkStatusColor }} />
+      <MonetizationOnTwoToneIcon titleAccess='Cost Status' sx={{ fontSize: '45px', color: costStatusColor }} />
+      <ContentPasteSearchTwoToneIcon titleAccess='Analyse Status' sx={{ fontSize: '45px', color: analyseSatusColor}} />
+      <TroubleshootTwoToneIcon titleAccess='RCA Status' sx={{ fontSize: '45px', color: rcaStatusColor }} />
+      <Box sx={{ width: '80px', height: '35px', borderRadius: '10%', border:'4px solid',  textAlign: 'center', paddingTop: '3px', borderColor: claimStatusColor}}>
+        <Typography fontSize={22} sx={{ color: claimStatusColor }}>
           CLAIM
         </Typography>
       </Box>
@@ -110,4 +110,4 @@ const NokStatus = ({ status }: NokStatusProps) => {
 	);
 };
  
-export default NokStatus;
+export default NokStatusIndicator;
