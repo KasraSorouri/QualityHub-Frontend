@@ -200,6 +200,7 @@ export interface NokData {
   description: string;
   nokStatus: NokStatus;
   productStatus: ProductStatus;
+  removeReport?: boolean;
 }
 
 export interface NewNokData extends Omit<NokData, 'id' | 'product' | 'initNokCode' | 'detectedStation' | 'detectedShift' > {

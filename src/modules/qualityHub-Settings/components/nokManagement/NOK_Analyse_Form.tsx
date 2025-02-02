@@ -64,6 +64,7 @@ type FormData = {
 	materialWaste?: number;
 	closed: boolean;
 	costData?: {[key: string]: number }
+	reworkStatus?: string;
 }
 
 const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromProps) => {
@@ -115,12 +116,18 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
 					classCode: analyseResults.classCode,
 					description: analyseResults.description,
 					closed: analyseResults.closed,
-					costData: analyseResults.costResult
+					costData: analyseResults.costResult,
+					reworkStatus: nokResult.productStatus
 				}
 				console.log('* Nok Analize Form * newFormValue ->', newFormValue);
 
 				setFormValues(newFormValue);
 				console.log('$$$$ Nok Analize Form * form value * effect ->', formValues);
+
+				setStatus({
+					analyseStatus: nokResult.nokStatus,
+					removeFromReportStatus: nokResult.removeReport ? nokResult.removeReport : false
+				});
 
 		}
 		getInitData();
@@ -216,12 +223,13 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
 	const nokStatus  = {
 		rcaStatus: rcaList.length > 0 ? 'OK' : undefined,
 		costStatus: formValues.costData && (formValues.costData.issue == 1 ? 'SomeIssues' : formValues.costData.IQC > 0 ? 'IQC' : 'OK'),
-		reworkStatus: 'OK',
-		analyseSatus: formValues.nokCode ? 'OK' : undefined,
-		claimStatus:  formValues.costData && (formValues.costData.approved > 0 ? 'Accepted' : formValues.costData.pendding > 0 ? 'Pending' : formValues.costData.rejected > 0 ? 'Rejected' : undefined )
+		reworkStatus: formValues.reworkStatus,
+		analyseStatus: formValues.nokCode ? 'OK' : undefined,
+		claimStatus:  formValues.costData && (formValues.costData.approved > 0 ? 'Accepted' : formValues.costData.pendding > 0 ? 'Pending' : formValues.costData.rejected > 0 ? 'Rejected' : undefined ),
+		removedFromReport: status.removeFromReportStatus
 	} 
 	
-	
+	const closeAnalysePermision = nokStatus.rcaStatus === 'OK' && nokStatus.analyseStatus === 'OK' ;
 
 
 	return (
@@ -371,7 +379,7 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
 							<NokStatusIndicator status={nokStatus} />
 						</Box>
 					  <Stack direction={'row'} spacing={0} marginTop={1} marginLeft={1}>
-						<NokAnalyseStatusForm status={status} updateStatus={setStatus} />
+						<NokAnalyseStatusForm status={status} closeAnalysePermision={closeAnalysePermision} updateStatus={setStatus} />
 						<Box marginLeft={2}>
 							<Table size='small' sx={{ maxWidth: '250px', marginTop: 1 }}>
 								<TableHead sx={{ fontSize: 18,  fontWeight: 'bold'}}>

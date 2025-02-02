@@ -16,10 +16,11 @@ type AnalyzeStatus = {
 
 type NokStatusProps = {
   status: AnalyzeStatus;
+  closeAnalysePermision : boolean;
   updateStatus: (status: AnalyzeStatus) => void;
 }
 
-const NokAnalyseStatusForm = ({ status, updateStatus} : NokStatusProps) => {
+const NokAnalyseStatusForm = ({ status, closeAnalysePermision, updateStatus} : NokStatusProps) => {
 
 
   const handleStatusChange = (value: NokStatus) => {
@@ -51,7 +52,7 @@ const NokAnalyseStatusForm = ({ status, updateStatus} : NokStatusProps) => {
       <Typography variant='subtitle1' sx={{ fontWeight: 'bold', fontSize: 18 }}>
         Analyse Status:
       </Typography>
-      <FormControlLabel value={NokStatus.ANALYSED} checked={status.analyseStatus === 'ANALYSED'} control={<Radio />} label='Analyse is done' />
+      <FormControlLabel value={NokStatus.ANALYSED} checked={status.analyseStatus === 'ANALYSED'} disabled={!closeAnalysePermision} control={<Radio />} label='Analyse is done' />
       <FormControlLabel value={NokStatus.NEED_INVESTIGATION} checked={status.analyseStatus === 'NEED INVESTIGATION'} control={<Radio />} label='More investigation should be done' sx={{ marginTop: -1}} />
       <FormControlLabel value={NokStatus.NOT_FOUND} checked={status.analyseStatus === 'NOT FOUND'} control={<Radio />} label='Nok did not found' sx={{ marginTop: -1}} />
      

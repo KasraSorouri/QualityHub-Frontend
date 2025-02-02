@@ -9,9 +9,10 @@ type NokStatusProps = {
 	status: {
     reworkStatus?: string;
     rcaStatus?: string;
-    analyseSatus?: string;
+    analyseStatus?: string;
     costStatus?: string;
     claimStatus?: string;
+    removedFromReport: boolean;
   };
 };
 
@@ -69,7 +70,7 @@ const NokStatusIndicator = ({ status }: NokStatusProps) => {
 
   // Analyse Status Color
   let analyseSatusColor;
-  switch (status.analyseSatus) {
+  switch (status.analyseStatus) {
     case 'OK':
       analyseSatusColor = colors.green[500];
       break;
@@ -101,11 +102,18 @@ const NokStatusIndicator = ({ status }: NokStatusProps) => {
       <MonetizationOnTwoToneIcon titleAccess='Cost Status' sx={{ fontSize: '45px', color: costStatusColor }} />
       <ContentPasteSearchTwoToneIcon titleAccess='Analyse Status' sx={{ fontSize: '45px', color: analyseSatusColor}} />
       <TroubleshootTwoToneIcon titleAccess='RCA Status' sx={{ fontSize: '45px', color: rcaStatusColor }} />
-      <Box sx={{ width: '80px', height: '35px', borderRadius: '10%', border:'4px solid',  textAlign: 'center', paddingTop: '3px', borderColor: claimStatusColor}}>
+      <Box sx={{ width: '80px', height: '35px', borderRadius: '8px', border:'4px solid',  textAlign: 'center', paddingTop: '3px', borderColor: claimStatusColor}}>
         <Typography fontSize={22} sx={{ color: claimStatusColor }}>
           CLAIM
         </Typography>
       </Box>
+      {status.removedFromReport ? 
+      <Box sx={{ width: '230px', height: '35px', borderRadius: '8px', border:'4px solid',  textAlign: 'center', paddingTop: '3px', marginLeft: 1, borderColor: colors.red[500]}}>
+        <Typography fontSize={22} sx={{ color: colors.red[500] }}>
+          Removed from Report
+        </Typography>
+        </Box>
+      : null}
 		</Stack>
 	);
 };
