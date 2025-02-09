@@ -193,7 +193,7 @@ export interface NokData {
   id: number;
   product: Product;
   productSN: string;
-  initNokCode: NokCodeS;
+  initNokCode: NokCode;
   detectedStation: Station;
   detectedShift: WorkShift;
   detectTime: Date;
@@ -210,7 +210,7 @@ export interface NewNokData extends Omit<NokData, 'id' | 'product' | 'initNokCod
   detectShiftId: number;
   initNokCodeId: number;
   product?: Product;
-  initNokCode?: NokCodeS;
+  initNokCode?: NokCode;
   detectedStation?: Station;
   detectedShift?: WorkShift;
   removeReport: boolean;
@@ -418,4 +418,52 @@ export interface NewNokCostData {
   nokId: number;
   reworkId: number;
   dismantledMaterial: Omit<CostMaterialData, 'materialName'>[];
+}
+
+export interface ClaimListData {
+  id: number;
+  material: Material;
+  actualDismantledQty: number;
+  nokDetect: NokData;
+  nokCode: NokCode;
+  nokAnalyse: NokAnalyseData;
+  nokRework: NokRework;
+  product: Product;
+  productSN: string;
+  claimStatus: ClaimStatus;
+  unitPrice: number;
+}
+
+export interface Claim {
+  id?: number;
+  dismantledMaterialId: number;
+  date: Date;
+  claimStatus: ClaimStatus;
+  referenceType?: string;
+  reference?: string;
+  description?: string;
+}
+
+export interface IQCListData {
+  id: number;
+  material: Material;
+  materialStatus: MaterialStatus;
+  actualDismantledQty: number;
+  nokDetect: NokData;
+  nokCode: NokCode;
+  nokAnalyse: NokAnalyseData;
+  nokRework: NokRework;
+  product: Product;
+  reusable: Reusable;
+  productSN: string;
+  unitPrice: number;
+}
+
+export interface IQCData {
+  id?: number;
+  dismantledMaterialId: number;
+  date: Date;
+  materialStatus: MaterialStatus;
+  reference?: string;
+  description?: string;
 }

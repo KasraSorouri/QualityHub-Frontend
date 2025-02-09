@@ -50,7 +50,7 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
     initNokCode: nokData?.initNokCode ? nokData.initNokCode : null,
     detectedStation: nokData?.detectedStation ? nokData.detectedStation : null,
     detectedShift: nokData?.detectedShift ? nokData.detectedShift : null,
-    detectedTime: nokData?.detectedTime ? dayjs(nokData.detectedTime) : dayjs(new Date()),
+    detectedTime: nokData?.detectTime ? dayjs(nokData.detectTime) : dayjs(new Date()),
     description: nokData ? nokData.description : '',
   };
 
@@ -116,7 +116,7 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
           initNokCodeId: formValues.initNokCode.id,
           detectStationId: formValues.detectedStation.id,
           detectShiftId: formValues.detectedShift.id,
-          detectedTime: new Date(formValues.detectedTime.toISOString()),
+          detectTime: new Date(formValues.detectedTime.toISOString()),
           description: formValues.description,
           nokStatus: NokStatus.PENDING,
           productStatus: ProductStatus.NOK,
