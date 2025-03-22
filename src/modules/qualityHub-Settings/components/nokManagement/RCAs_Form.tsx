@@ -61,6 +61,7 @@ const RCAsForm = ({ nokId, rcas, updateRCA, formType } : RCAsProps) => {
   const blankItem : RCA_Data = {
     id: undefined,
     rcaIndex: rcas? rcas.length : 0,
+
     rcaCode: undefined,
     whCauseId: '',
     whCauseName: '',
@@ -248,6 +249,7 @@ const RCAsForm = ({ nokId, rcas, updateRCA, formType } : RCAsProps) => {
         setNotification({ message: 'Please choose a RCA Code!', type: 'error', time: 8 });
         return undefined;
       } else {
+
       const newNokRca : NewRca = {
         rcaCodeId: rcaData[index].rcaCode.id,
         whCauseId: rcaData[index].whCauseId,
@@ -265,6 +267,7 @@ const RCAsForm = ({ nokId, rcas, updateRCA, formType } : RCAsProps) => {
     }
   };};
   
+
   return(
     <Paper sx={{ marginLeft: 2 }}>
       <TableContainer sx={{ maxHeight: '180px', overflow: 'auto' }}>
