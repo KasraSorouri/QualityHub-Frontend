@@ -165,7 +165,7 @@ const NokList = ({ listType , selectNok } : NokListProps) => {
                     {new Date(nok.detectedTime).toLocaleString('fi-FI', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })}
                   </TableCell>
                   <TableCell align='center' >
-                    {nok.nokStatus}
+                    {listType === 'REWORK' ? nok.productStatus :  nok.nokStatus}
                   </TableCell>
                 </TableRow>
               );

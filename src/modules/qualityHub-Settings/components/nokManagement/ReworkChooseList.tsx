@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   Paper,
@@ -42,8 +42,12 @@ type RecipeListProps = {
 
 const ReworkChooseList = ({ productId, selectedReworks, confirmSelection, confirmChange, editable } : RecipeListProps) => {
 
-  const [ selectedRw, setSelectedRw ] = useState<number[]>(selectedReworks);
+  const [ selectedRw, setSelectedRw ] = useState<number[]>([]);
   const [ confirmActive, setConfirmActive ] = useState<boolean>(false);
+
+  useEffect(() => {
+    setSelectedRw(selectedReworks);
+  }, [selectedReworks]);
 
   const filterParameters = {
     productId: productId,

@@ -17,12 +17,14 @@ import NokForm from './NOK_Reg_Form';
 import NokList from './NOK_List';
 import NokAnalysis from './NOK_Analysis';
 import Nokreworks from './NOK_Rework';
+import ClaimManagement from '../claimManagement/ClaimManagement';
+import IqcManagement from '../iqcManagement/IqcManagement';
 
 const HomePageSubMenu = () => {
 
   const navigate = useNavigate();
 
-  type ShowListForm = 'NEW-NOK' | 'NOK-LIST' | 'ANALYSE' | 'REWORK' | '' | 'NONE'
+  type ShowListForm = 'NEW-NOK' | 'NOK-LIST' | 'ANALYSE' | 'REWORK' | '' | 'CLAIM' | 'IQC' | 'NONE'
 
   const [ showListForm, setShowListForm ] = useState<ShowListForm>('NONE');
 
@@ -60,6 +62,14 @@ const HomePageSubMenu = () => {
               <ListItemText primary='NOK List' sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
+            <ListItem onClick={() => setShowListForm('IQC')}>
+              <ListItemText primary='IQC' sx={{ color: 'black' }} />
+            </ListItem>
+            <Divider />
+            <ListItem onClick={() => setShowListForm('CLAIM')}>
+              <ListItemText primary='Claim Management' sx={{ color: 'black' }} />
+            </ListItem>
+            <Divider />
             <ListItem onClick={() => navigate('/nok/register')}>
               <ListItemText primary='' sx={{ color: 'black' }} />
             </ListItem>
@@ -68,9 +78,11 @@ const HomePageSubMenu = () => {
         <Grid width={'90%'}>
           <Box>
             {showListForm === 'NEW-NOK' && <NokForm formType={'ADD'} /> }
-            {showListForm === 'NOK-LIST' && <NokList listType='' /> }
+            {showListForm === 'NOK-LIST' && <NokList listType='' selectNok={()=>null } /> }
             {showListForm === 'ANALYSE' && <NokAnalysis />}
             {showListForm === 'REWORK' &&  <Nokreworks />}
+            {showListForm === 'IQC' &&  <IqcManagement />}
+            {showListForm === 'CLAIM' &&  <ClaimManagement />}
             {showListForm === '' && <HomePage /> }
           </Box>
         </Grid>

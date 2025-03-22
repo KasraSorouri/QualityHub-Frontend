@@ -15,11 +15,11 @@ import {
   TextFieldVariants,
 } from '@mui/material';
 
-import { Station, WorkShift, NokAnalyseData, NewNokAnalyseData, NokData, DismantledMaterial, Rework, RwDismantledMaterial, NewNokReworkData, ReworkStatus } from '../../../../types/QualityHubTypes';
+import { Station, WorkShift, NokAnalyseData, NewNokAnalyseData, NokData, Rework, NewNokReworkData, ReworkStatus, NokDismantledMaterial, AffectedMaterial, DismantledMaterialData } from '../../../../types/QualityHubTypes';
 import nokDetectServices from '../../services/nokDetectServices';
 import NOK_Info from './NOK_Info';
 import ReworkChooseList from './ReworkChooseList';
-import NokDismantledMaterial from './NOK_DismantleMaterial';
+import NokDismantledMaterialForm from './NOK_DismantledMaterial';
 import stationServices from '../../services/stationServices';
 import workShiftServices from '../../services/workShiftServices';
 import nokReworkServices from '../../services/nokReworkServices';
@@ -32,15 +32,16 @@ type NokFromProps = {
 }
 
 type FormData = {
+  id : number | undefined;
   materialCost?: number;
   operator: string;
   duration?: number | string;
   manPower?: number | string;
   reworkShift?: WorkShift | undefined;
   reworkStation: Station | undefined;
-  reworkActions?: number[];
+  reworkActions: number[];
   affectedRecipes?: number[],
-  dismantledMaterials?: DismantledMaterial[];
+  dismantledMaterials?: DismantledMaterialData[];
   note?: string;
   reworkStatus?: ReworkStatus;
 }
@@ -48,32 +49,75 @@ type FormData = {
 const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
 
   const initFormValues: FormData = {
+    id: undefined,
     operator: '',
     duration: '',
     manPower: '',
     reworkShift: undefined,
     reworkStation: undefined,
-    note: ''
-    //nokRework: [],
+    note: '',
+    reworkActions: [],
+    reworkStatus: ReworkStatus.IN_PROGRESS,
   };
 
   const [ formValues, setFormValues ] = useState<FormData>(initFormValues);
   const [ nok, setNok ] = useState<NokData | null>(null);
-  const [ dismantledMaterials, setDismantledMaterial ] = useState<RwDismantledMaterial[] | never[]>([]);
+  const [ affectedMaterials, setAffectedMaterial ] = useState<AffectedMaterial[] | never[]>([]);
+
   const [ confirmation, setConfirmation ] = useState<{chooseReworks: boolean, dismantledMaterials: boolean}>({ chooseReworks: false, dismantledMaterials: false });
 
-  console.log('Nok Rework fprm ** dismantledMaterials -> ',dismantledMaterials);
   console.log('Nok Rework fprm ** formValues -> ',formValues);
 
+  const convertDismanltedMaterial = (dismantledMaterials: NokDismantledMaterial[]) => {
+    const dismantledMaterialsData = dismantledMaterials?.map(dmMaterial => {
+      const data : DismantledMaterialData = {
+        isSelected: true,
+        index: dmMaterial.rwDismantledMaterialId,
+        id: dmMaterial.id,
+        rwDismantledMaterialId: dmMaterial.rwDismantledMaterialId,
+        recipeCode: dmMaterial.recipeBom?.recipe.recipeCode,
+        recipeDescription: dmMaterial.recipeDescription,
+        material: dmMaterial.material,
+        recipeBomId: dmMaterial.recipeBomId,
+        recipeQty: dmMaterial.recipeBom?.qty || 0,
+        suggestedDismantledQty: dmMaterial.rwDismantledMaterial?.dismantledQty,
+        mandatoryRemove: dmMaterial.rwDismantledMaterial?.mandatoryRemove,
+        reusable: dmMaterial.recipeBom?.reusable,
+        actualDismantledQty: dmMaterial.actualDismantledQty? dmMaterial.actualDismantledQty : 0,
+        rwNote: dmMaterial.rwDismantledMaterial?.note,
+        materialStatus: dmMaterial.materialStatus,
+      };
+      return data;
+    });
+    return dismantledMaterialsData;
+  };
+
   useEffect(() => {
-    setFormValues(initFormValues);
-    const getNokData = async () => {
-      const result = await nokDetectServices.getNokDetectById(nokId);
-      setNok(result);
-    };
-    getNokData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[formType]);
+        const getInitData = async () => {
+          const nokResult = await nokDetectServices.getNokDetectById(nokId);
+          setNok(nokResult);
+          const reworkResults = await nokReworkServices.getNokReworkByNokId(nokId);
+          console.log('* Nok Rework Form * Rework ->', reworkResults);
+          const newFormValue: FormData = {
+            id: reworkResults.id || undefined,
+            operator: reworkResults.reworkOperator,
+            duration: reworkResults.reworkDuration, 
+            manPower: reworkResults.reworkManPower,
+            reworkShift: reworkResults.reworkShift,
+            reworkStation: reworkResults.reworkStation,
+            note: reworkResults.reworkNote,
+            reworkStatus: reworkResults.reworkStatus === 'COMPLETED' ? ReworkStatus.COMPLETED : ReworkStatus.IN_PROGRESS,
+            reworkActions: reworkResults.reworkActionsId|| [],
+            dismantledMaterials: reworkResults.nokDismantleMaterials ? convertDismanltedMaterial(reworkResults.nokDismantleMaterials) : [],
+            }
+            console.log('* Nok Rework Form * newFormValue ->', newFormValue);
+    
+            setFormValues(newFormValue);
+            console.log('$$$$ Nok Rework Form * form value * effect ->', formValues);
+            setConfirmation({ chooseReworks: (reworkResults.reworkActionsId && reworkResults.reworkActionsId.length > 0 || false), dismantledMaterials: true });
+        }
+        getInitData();
+      },[nokId]);
 
   // get Station List
   const stationResults = useQuery('stations',stationServices.getStation, { refetchOnWindowFocus: false });
@@ -105,29 +149,50 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
   //  Handle Status Change
   const handleStatusChange = (status: ReworkStatus) => {
 
-    setFormValues({ ...formValues, reworkStatus: status });
+    setFormValues({ ...formValues, reworkStatus: status });     
   };
 
   // Handle Select Rework
   const handleSelectRework = (reworks: Rework[]) => {
-    let dismantledMaterials : RwDismantledMaterial[] = [];
+
+    console.log('Nok Rework Form * handleSelectRework * reworks ->', reworks);
+    
+    let affectedMaterials : AffectedMaterial[] = [];
+    let affectedReciepies : number[] = [];
     const newNokReworks = reworks.map(rework => {
-      rework.rwDismantledMaterials ? dismantledMaterials = dismantledMaterials.concat(rework.rwDismantledMaterials) : null;
+      rework.affectedRecipes ? affectedReciepies = affectedReciepies.concat(rework.affectedRecipes) : null;
+      if (rework.rwDismantledMaterials) {
+        rework.rwDismantledMaterials.map(rwDisMaterial => {
+          const newMaterial : AffectedMaterial = {
+            rwDismantledMaterialId  : rwDisMaterial.id,
+            recipeBomId: rwDisMaterial.recipeBom.id,
+            material: rwDisMaterial.recipeBom.material,
+            recipeQty: rwDisMaterial.recipeBom.qty,
+            suggestedDismantledQty: rwDisMaterial.dismantledQty,
+            mandatoryRemove: rwDisMaterial.mandatoryRemove,
+            reusable: rwDisMaterial.recipeBom.reusable,
+            rwNote: rwDisMaterial.note,
+            recipeCode: rwDisMaterial.recipeBom.recipe.recipeCode,
+
+          };
+          affectedMaterials.push(newMaterial);
+        });
+      }
       return (rework.id);
     });
-    setFormValues({ ...formValues, reworkActions: newNokReworks });
-    setDismantledMaterial(dismantledMaterials);
+    setFormValues({ ...formValues, reworkActions: newNokReworks, affectedRecipes: [... new Set(affectedReciepies)] });
+    setAffectedMaterial(affectedMaterials);
     setConfirmation({ ...confirmation, chooseReworks: true });
   };
 
 
-  const handleDismantledMaterial = (dismantledMaterials : DismantledMaterial[]) => {
-    // Calculate Material Cost
-    const materialCost = dismantledMaterials.reduce((totalCost, item) => {
-      const cost = item.material.price ? item.actualDismantledQty * item.material.price : 0;
-      return totalCost + cost;
-    }, 0);
-    setFormValues({ ...formValues, dismantledMaterials: dismantledMaterials, materialCost: materialCost });
+  const handleDismantledMaterial = (dismantledMaterials : DismantledMaterialData[]) => {
+
+    console.log(' here ***********');
+    
+    console.log('Nok Rework Form * handleDismantledMaterial * dismantledMaterials ->', dismantledMaterials);
+    
+    setFormValues({ ...formValues, dismantledMaterials: dismantledMaterials });
     setConfirmation({ ...confirmation, dismantledMaterials: true });
   };
 
@@ -159,8 +224,9 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
     }
     const newNokReworks : NewNokReworkData = {
       nokId: nokId,
-      reworkActions: formValues.reworkActions,
-      dismantledMaterials: formValues.dismantledMaterials,
+      id: formValues.id,
+      reworkActionsId: formValues.reworkActions,
+      nokDismantleMaterials: formValues.dismantledMaterials,
       affectedRecipes: formValues.affectedRecipes ? formValues.affectedRecipes : [],
       reworkShift: formValues.reworkShift.id,
       reworkStation: formValues.reworkStation?.id,
@@ -168,7 +234,7 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
       reworkDuration: formValues.duration,
       reworkManPower: formValues.manPower,
       reworkNote: formValues.note,
-      reworkStatus: formValues.reworkStatus
+      reworkStatus: formValues.reworkStatus 
     };
 
     nokReworkServices.createNokRework(newNokReworks);
@@ -283,8 +349,8 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
               onChange={(_event, value) => handleStatusChange(value as ReworkStatus)}
               aria-required
             >
-              <FormControlLabel value={ReworkStatus.IN_PROGRESS} control={<Radio />} label='More Reworks is needed' />
-              <FormControlLabel value={ReworkStatus.COMPLETED} control={<Radio />} label='Reworks are completed' />
+              <FormControlLabel value={ReworkStatus.IN_PROGRESS} checked={formValues.reworkStatus === 'IN_PROGRESS'} control={<Radio />} label='More Reworks is needed' />
+              <FormControlLabel value={ReworkStatus.COMPLETED} checked={formValues.reworkStatus === 'COMPLETED'} control={<Radio />} label='Reworks are completed' />
             </RadioGroup>
           </Grid>
           <Grid item >
@@ -311,10 +377,10 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
       </Grid>
       <Grid container direction={'row'} spacing={1} marginTop={1}>
         <Grid item xs={5}>
-          <ReworkChooseList productId={nok.product.id} selectedReworks={[]} confirmSelection={handleSelectRework} confirmChange={(value) => handleConfirmChange('chooseReworks', value)} editable={true} />
+          <ReworkChooseList productId={nok.product.id} selectedReworks={formValues.reworkActions || []} confirmSelection={handleSelectRework} confirmChange={(value) => handleConfirmChange('chooseReworks', value)} editable={true} />
         </Grid>
         <Grid item xs={7}>
-          <NokDismantledMaterial affectedMaterials={dismantledMaterials} confirmSelection={handleDismantledMaterial} confirmChange={(value) => handleConfirmChange('dismantledMaterials', value)} editable={true} />
+          <NokDismantledMaterialForm affectedMaterials={affectedMaterials} nokDismantledMaterials={formValues.dismantledMaterials} confirmSelection={handleDismantledMaterial} confirmChange={(value: boolean) => handleConfirmChange('dismantledMaterials', value)} editable={true} />
         </Grid>
       </Grid>
     </Grid>
