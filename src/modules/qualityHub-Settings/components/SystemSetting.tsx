@@ -16,6 +16,7 @@ import {
 import NokGrps from './nokGroup/NokGrps';
 import NokCodes from './nokCode/NokCodes';
 import RcaCodes from './rcaCode/RcaCodes';
+import Station from './station/Stations';
 import Machines from './machine/Machines';
 import WorkShifts from './workShift/WorkShifts';
 import ClassCodes from './classCode/ClassCodes';
@@ -24,7 +25,7 @@ const SystemSetting = () => {
 
   const navigate = useNavigate();
 
-  type ShowListForm = 'NOK-CODE' | 'NOK-GRP' | 'RCA-CODE' | 'CLASS-CODE' | 'DEVICE-TOOLS' | 'SHIFT' | 'NONE'
+  type ShowListForm = 'NOK-CODE' | 'NOK-GRP' | 'RCA-CODE' | 'CLASS-CODE' | 'STATION' | 'DEVICE-TOOLS' | 'SHIFT' | 'NONE'
 
   const [ showListForm, setShowListForm ] = useState<ShowListForm>('NONE');
 
@@ -40,7 +41,7 @@ const SystemSetting = () => {
           </Button>
         </Grid>
       </Box>
-      <Grid container display={'flex'} direction={'row'} height={'650px'}>
+      <Grid container display={'flex'} direction={'row'} height={'750px'}>
         <Grid item p={2}
           width={'180x'}
           bgcolor={'#E5E7E9'}
@@ -64,6 +65,10 @@ const SystemSetting = () => {
               <ListItemText primary='Defect Classification' sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
+            <ListItem onClick={() => setShowListForm('STATION')}>
+              <ListItemText primary='Stations' sx={{ color: 'black' }} />
+            </ListItem>
+            <Divider />
             <ListItem onClick={() => setShowListForm('DEVICE-TOOLS')}>
               <ListItemText primary='Device / Tools' sx={{ color: 'black' }} />
             </ListItem>
@@ -79,6 +84,7 @@ const SystemSetting = () => {
             {showListForm === 'NOK-GRP' && <NokGrps /> }
             {showListForm === 'RCA-CODE' && <RcaCodes /> }
             {showListForm === 'CLASS-CODE' && <ClassCodes /> }
+            {showListForm === 'STATION' && <Station /> }
             {showListForm === 'DEVICE-TOOLS' && <Machines />  }
             {showListForm === 'SHIFT' && <WorkShifts />  }
           </Box>

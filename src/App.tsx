@@ -26,7 +26,7 @@ function App() {
   },[]);
 
   return (
-    <div style={{ width: '98vw', minHeight: '60vh', margin: 10 }}>
+    <div style={{ width: '98vw', minHeight: '90vh', margin: 10 }}>
       <Router>
         <Navigation signedUser={user} />
         <Notification  />

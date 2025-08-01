@@ -162,7 +162,7 @@ const NokList = ({ listType , selectNok } : NokListProps) => {
                     {nok.detectedShift.shiftCode}
                   </TableCell>
                   <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
-                    {new Date(nok.detectedTime).toLocaleString('fi-FI', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })}
+                    {new Date(nok.detectTime).toLocaleString('fi-FI', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })}
                   </TableCell>
                   <TableCell align='center' >
                     {listType === 'REWORK' ? nok.productStatus :  nok.nokStatus}

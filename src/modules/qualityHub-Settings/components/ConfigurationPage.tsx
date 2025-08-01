@@ -24,7 +24,7 @@ const ConfigurationPage = ({ signedUser } :{ signedUser: Token | null}) => {
   const ShowConfigBom = signedUser && signedUser.roles?.includes('Admin');
 
   return(
-    <Grid container justifyContent='space-between' height={700} >
+    <Grid container justifyContent='space-between' height={800} >
       <Grid item margin={5}>
         { showConfigUser &&
           <Button

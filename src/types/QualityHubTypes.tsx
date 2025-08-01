@@ -196,14 +196,14 @@ export interface NokData {
   initNokCode: NokCode;
   detectedStation: Station;
   detectedShift: WorkShift;
-  detectedTime: Date;
+  detectTime: Date;
   description: string;
   nokStatus: NokStatus;
   productStatus: ProductStatus;
   removeReport?: boolean;
 }
 
-export interface NewNokData extends Omit<NokData, 'id' | 'product' | 'initNokCode' | 'detectedStation' | 'detectedShift' > {
+export interface NewNokData extends Omit<NokData, 'id' | 'product' | 'initNokCode' | 'detectedStation' | 'detectedShift' | 'detectTime'> {
   id?: number;
   productId: number;
   detectStationId: number;
@@ -214,6 +214,7 @@ export interface NewNokData extends Omit<NokData, 'id' | 'product' | 'initNokCod
   detectedStation?: Station;
   detectedShift?: WorkShift;
   removeReport: boolean;
+  detectedTime: Date;
 }
 
 export enum NokStatus {

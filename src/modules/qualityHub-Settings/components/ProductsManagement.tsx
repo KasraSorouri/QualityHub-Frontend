@@ -15,7 +15,6 @@ import {
 
 import Product from './product/Products';
 import ProductGrp from './productGroup/ProductGrps';
-import Station from './station/Stations';
 import Material from './material/Materials';
 import RecipeProductChoice from './recipe/RecipeProductChoice';
 import Reworks from './rework/Rework';
@@ -24,7 +23,7 @@ const ProductsManagement = () => {
 
   const navigate = useNavigate();
 
-  type ShowListForm = 'PRODUCT' | 'PRODUCT_GRP' | 'RECIPE' | 'MATERIAL' | 'STATION' | 'REWORK' | 'NONE'
+  type ShowListForm = 'PRODUCT' | 'PRODUCT_GRP' | 'RECIPE' | 'MATERIAL' | 'REWORK' | 'NONE'
 
   const [ showListForm, setShowListForm ] = useState<ShowListForm>('NONE');
 
@@ -40,7 +39,7 @@ const ProductsManagement = () => {
           </Button>
         </Grid>
       </Box>
-      <Grid container display={'flex'} direction={'row'} height={'650px'}>
+      <Grid container display={'flex'} direction={'row'} height={'750px'}>
         <Grid item p={2}
           width={'180x'}
           bgcolor={'#E5E7E9'}
@@ -54,10 +53,6 @@ const ProductsManagement = () => {
             <Divider />
             <ListItem onClick={() => setShowListForm('PRODUCT')}>
               <ListItemText primary='Products' sx={{ color: 'black' }} />
-            </ListItem>
-            <Divider />
-            <ListItem onClick={() => setShowListForm('STATION')}>
-              <ListItemText primary='Stations' sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
             <ListItem onClick={() => setShowListForm('MATERIAL')}>
@@ -77,7 +72,6 @@ const ProductsManagement = () => {
           <Box>
             {showListForm === 'PRODUCT' && <Product /> }
             {showListForm === 'PRODUCT_GRP' && <ProductGrp /> }
-            {showListForm === 'STATION' && <Station /> }
             {showListForm === 'MATERIAL' && <Material /> }
             {showListForm === 'RECIPE' && <RecipeProductChoice /> }
             {showListForm === 'REWORK' && <Reworks /> }
