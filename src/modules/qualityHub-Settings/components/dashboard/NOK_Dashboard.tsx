@@ -1,13 +1,16 @@
-import React from 'react';
 
 import { Grid, Paper } from "@mui/material";
-import NokDetectDashboard from './NoK_Detect_Dashboard';
+import NokDetectDashboard from './NOK_Detect_Dashboard';
+import NokAnalysedDashboard from './NOK_Analysed_Dashboard';
 
 const NokDashboard = () => {
   return (
     <Grid container spacing={2} justifyContent="center" alignItems="center" padding={2}>
       <Grid item xs={12} sm={8} md={6} margin={"auto"}>
           <NokDetectDashboard />
+      </Grid>
+      <Grid item xs={12} sm={8} md={6} margin={"auto"}>
+          <NokAnalysedDashboard />
       </Grid>
       <Grid item xs={12} sm={8} md={6}>
         <Paper elevation={3} style={{ padding: '20px', textAlign: 'center' }}>

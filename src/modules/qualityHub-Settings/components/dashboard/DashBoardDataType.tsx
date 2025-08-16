@@ -1,10 +1,16 @@
 export interface DetectedNokData {
-  product: string;
-  [nokStatus: string]: number | string;
+  productName: string;
+  pending: number;
+  analysed: number;
 }
 
-export interface DetectedNokResponse {
-  product: string;
-  nokStatus: string;
-  count: number;
+export interface ProductNokData {
+  productName: string;
+  shifts: { [key: string]: number };
+};
+
+export interface DashboardNokAnalysedData {
+  shifts: string[];
+  productsNok: ProductNokData[];
 }
+
