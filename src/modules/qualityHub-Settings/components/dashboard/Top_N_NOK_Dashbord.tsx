@@ -3,14 +3,16 @@ import { useQuery } from 'react-query';
 import { Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import dashboardServices from '../../services/dashboardServices';
 
-const NokAnalysedDashboard = () => {
+const Top_N_NOK_Dashbord = () => {
+  // Define the number of top NOK products to display
+  const topN = 10; 
 
-  const queryResult = useQuery('nokAnalysedDashboard', dashboardServices.getNokAnanysedData,
+  const queryResult = useQuery('top_N_Nok', () => dashboardServices.getTop_N_NokData(topN),
     { refetchOnWindowFocus: true, retry: 1 });
  
   const dashboardData = queryResult.data;
-    console.log('* Analysed NOK * dashboardData', dashboardData);
-
+  console.log('* TOP NOK * dashboardData', dashboardData);
+  
   if (queryResult.isLoading) {
     return <div>Loading...</div>;
   }
@@ -20,11 +22,13 @@ const NokAnalysedDashboard = () => {
       <Grid item xs={12}>
         <Paper elevation={3} style={{ padding: '20px', textAlign: 'center' }}>
           <TableContainer component={Paper}>
-            <h1>Anaysed NOK</h1>
+            <h1>Top {topN} NOK</h1>
             <Table>
               <TableHead>
                 <TableRow>
                   <TableCell>Product</TableCell>
+                  <TableCell align='center'>NOK Code</TableCell>
+                  <TableCell align='center'>NOK Count</TableCell>
                   {
                     dashboardData && dashboardData.shifts.map((shift, index) => (
                       <TableCell key={index} align='center'>{shift}</TableCell>
@@ -33,18 +37,22 @@ const NokAnalysedDashboard = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {dashboardData?.productsNok.map((row, index) => (
+                {dashboardData && dashboardData.TopNok.map((data, index) => (
                   <TableRow key={index}>
-                    <TableCell align='left'>{row.productName}</TableCell>
+                    <TableCell>{data.productName}</TableCell>
+                    <TableCell align='center'>{data.nokCode}</TableCell>
+                    <TableCell align='center'>{data.count}</TableCell>
                     {
                       dashboardData.shifts.map((shift, shiftIndex) => (
                         <TableCell key={shiftIndex} align='center'>
-                          {row.shifts[shift] || 0}
+                          {data.shifts[shift] || 0}
                         </TableCell>
                       ))
                     }
-                   </TableRow>
+
+                  </TableRow>
                 ))}
+
               </TableBody>
             </Table>
           </TableContainer>
@@ -54,4 +62,4 @@ const NokAnalysedDashboard = () => {
   );
 }
 
-export default NokAnalysedDashboard;
+export default Top_N_NOK_Dashbord;

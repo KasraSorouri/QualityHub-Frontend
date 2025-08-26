@@ -1,7 +1,8 @@
 
-import { Grid, Paper } from "@mui/material";
+import { Grid } from "@mui/material";
 import NokDetectDashboard from './NOK_Detect_Dashboard';
 import NokAnalysedDashboard from './NOK_Analysed_Dashboard';
+import Top_N_NOK_Dashbord from "./Top_N_NOK_Dashbord";
 
 const NokDashboard = () => {
   return (
@@ -12,11 +13,8 @@ const NokDashboard = () => {
       <Grid item xs={12} sm={8} md={6} margin={"auto"}>
           <NokAnalysedDashboard />
       </Grid>
-      <Grid item xs={12} sm={8} md={6}>
-        <Paper elevation={3} style={{ padding: '20px', textAlign: 'center' }}>
-          <h1>NOK Dashboard</h1>
-          <p>Here you can manage your NOK settings and view relevant information.</p>
-        </Paper>
+      <Grid item xs={12} sm={12} md={12}>
+          <Top_N_NOK_Dashbord />
       </Grid>
     </Grid>
   );
