@@ -1,6 +1,6 @@
 import { useQuery } from 'react-query';
 
-import { Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import dashboardServices from '../../services/dashboardServices';
 
 const Top_N_NOK_Dashbord = () => {
@@ -18,47 +18,41 @@ const Top_N_NOK_Dashbord = () => {
   }
   
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12}>
-        <Paper elevation={3} style={{ padding: '20px', textAlign: 'center' }}>
-          <TableContainer component={Paper}>
-            <h1>Top {topN} NOK</h1>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Product</TableCell>
-                  <TableCell align='center'>NOK Code</TableCell>
-                  <TableCell align='center'>NOK Count</TableCell>
-                  {
-                    dashboardData && dashboardData.shifts.map((shift, index) => (
-                      <TableCell key={index} align='center'>{shift}</TableCell>
-                    ))
-                  }
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {dashboardData && dashboardData.TopNok.map((data, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{data.productName}</TableCell>
-                    <TableCell align='center'>{data.nokCode}</TableCell>
-                    <TableCell align='center'>{data.count}</TableCell>
-                    {
-                      dashboardData.shifts.map((shift, shiftIndex) => (
-                        <TableCell key={shiftIndex} align='center'>
-                          {data.shifts[shift] || 0}
-                        </TableCell>
-                      ))
-                    }
-
-                  </TableRow>
-                ))}
-
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
-      </Grid>
-    </Grid>
+    <Paper elevation={0} style={{ padding: '2px', textAlign: 'center' }}>
+      <TableContainer component={Paper}>
+        <h1>Top {topN} NOK</h1>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Product</TableCell>
+              <TableCell align='center'>NOK Code</TableCell>
+              <TableCell align='center'>NOK Count</TableCell>
+              {
+                dashboardData && dashboardData.shifts.map((shift, index) => (
+                  <TableCell key={index} align='center'>{shift}</TableCell>
+                ))
+              }
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {dashboardData && dashboardData.TopNok.map((data, index) => (
+              <TableRow key={index}>
+                <TableCell>{data.productName}</TableCell>
+                <TableCell align='center'>{data.nokCode}</TableCell>
+                <TableCell align='center'>{data.count}</TableCell>
+                {
+                  dashboardData.shifts.map((shift, shiftIndex) => (
+                    <TableCell key={shiftIndex} align='center'>
+                      {data.shifts[shift] || 0}
+                    </TableCell>
+                  ))
+                }
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
   );
 }
 

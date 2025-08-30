@@ -1,24 +1,41 @@
+import { useState } from 'react';
 import { useQuery } from 'react-query';
 
 import { Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import dashboardServices from '../../services/dashboardServices';
 import { DetectedNokData } from './DashBoardDataType';
 
-
+import WidgetsIcon from '@mui/icons-material/Widgets';
+import Filter_NOK_Detect from './Filter_NOK_Detect';
 
 const   NokDetectDashboard = () => {
+
+  const [showFilter, setShowFilter] = useState(false);
+  console.log(' show filter ->', showFilter);
+  
+
 
   const queryResult = useQuery('nokDashboard', dashboardServices.getNokDashboardData,
     { refetchOnWindowFocus: false, retry: 1 });
 
   const nokDashboardData = queryResult?.data || [] as DetectedNokData[];
 
+  const setfilter = () => {
+    setShowFilter(!showFilter);
+  };
+
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12}>
-        <Paper elevation={3} style={{ padding: '20px', textAlign: 'center' }}>
+        <Paper elevation={0} style={{ padding: '2px', textAlign: 'center' }}>
           <TableContainer component={Paper}>
-            <h1>NOK Detect</h1>
+            <Grid container alignItems="center" spacing={1}>
+              <Grid item xs >
+                <h2>Detected NOK</h2>
+              </Grid>
+              <Grid item margin={1}>
+              <WidgetsIcon fontSize="small" onClick={setfilter} />
+              { showFilter && <Filter_NOK_Detect closeFilter={() => setShowFilter(false)}/> }
+              </Grid>
+            </Grid>
             <Table>
               <TableHead>
                 <TableRow>
@@ -39,8 +56,6 @@ const   NokDetectDashboard = () => {
             </Table>
           </TableContainer>
         </Paper>
-      </Grid>
-    </Grid>
   );
 }
 

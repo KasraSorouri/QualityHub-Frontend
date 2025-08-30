@@ -11,11 +11,25 @@ const getNokDashboardData = async () : Promise<DetectedNokData[]> => {
     headers: { Authorization: token },
   };
 
+  const rawFilterData = window.sessionStorage.getItem('NokDetectFilter');
+  const filterData = rawFilterData ? JSON.parse(rawFilterData) : null;
+
+  const products = filterData ? JSON.parse(filterData.products) : [];
+  const shifts = filterData ? JSON.parse(filterData.shifts) : [];
+
+  console.log('*Nok Service * Filter data ->', filterData);
+  console.log('*Nok Service * Products ->', products);
+  console.log('*Nok Service * Shifts ->', shifts);
+  
+
   const parsmsData = {
-    'startDate' : '2025.07.01',
-    'endDate' : '2025.08.28',
-    'productId' : []
-  };
+    'startDate' : filterData ? filterData.time_from : null,
+    'endDate' : filterData ? filterData.time_until : null,
+    'productId' : products.map((item: any) => item.id),
+    'shifts' : shifts.map((item: any) => item.id)
+  }
+
+  console.log('*+* NOK Dashboard Data Params =>', parsmsData);
   
   try {
     const res = await axios.post(`${api_url}/quality/dashboard/detected-nok`,parsmsData, config);
