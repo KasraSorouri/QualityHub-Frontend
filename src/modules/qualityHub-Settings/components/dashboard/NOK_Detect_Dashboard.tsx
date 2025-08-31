@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 
 import { Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import dashboardServices from '../../services/dashboardServices';
@@ -10,18 +10,23 @@ import Filter_NOK_Detect from './Filter_NOK_Detect';
 
 const   NokDetectDashboard = () => {
 
+  const queryClient = useQueryClient();
+
   const [showFilter, setShowFilter] = useState(false);
-  console.log(' show filter ->', showFilter);
-  
 
-
-  const queryResult = useQuery('nokDashboard', dashboardServices.getNokDashboardData,
+  const queryResult = useQuery('nokDashboard', () => dashboardServices.getNokDashboardData(),
     { refetchOnWindowFocus: false, retry: 1 });
 
   const nokDashboardData = queryResult?.data || [] as DetectedNokData[];
 
   const setfilter = () => {
     setShowFilter(!showFilter);
+  };
+
+  const applyFilter = (apply:boolean) => {
+    if (apply) {
+      queryClient.invalidateQueries('nokDashboard');
+    }
   };
 
   return (
@@ -33,7 +38,7 @@ const   NokDetectDashboard = () => {
               </Grid>
               <Grid item margin={1}>
               <WidgetsIcon fontSize="small" onClick={setfilter} />
-              { showFilter && <Filter_NOK_Detect closeFilter={() => setShowFilter(false)}/> }
+              { showFilter && <Filter_NOK_Detect applyFilter={applyFilter} closeFilter={() => setShowFilter(false)}/> }
               </Grid>
             </Grid>
             <Table>

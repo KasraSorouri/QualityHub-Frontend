@@ -1,14 +1,23 @@
-import { useQuery } from 'react-query';
+import { useState } from 'react';
+import { useQuery, useQueryClient } from 'react-query';
 
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import dashboardServices from '../../services/dashboardServices';
+import Filter_Top_NOK from './Filter_Top_NOK';
+
+import WidgetsIcon from '@mui/icons-material/Widgets';
 
 const Top_N_NOK_Dashbord = () => {
-  // Define the number of top NOK products to display
-  const topN = 10; 
 
-  const queryResult = useQuery('top_N_Nok', () => dashboardServices.getTop_N_NokData(topN),
-    { refetchOnWindowFocus: true, retry: 1 });
+  const queryClient = useQueryClient();
+  
+  const [showFilter, setShowFilter] = useState(false);
+
+  const queryResult = useQuery('top_N_Nok', () => dashboardServices.getTop_N_NokData(),
+    { refetchOnWindowFocus: false, retry: 1 });
+
+  const filterData = window.sessionStorage.getItem('TopNokFilter') ? JSON.parse(window.sessionStorage.getItem('TopNokFilter')!) : null;
+  const topN = filterData?.topN || 10;
  
   const dashboardData = queryResult.data;
   console.log('* TOP NOK * dashboardData', dashboardData);
@@ -16,11 +25,30 @@ const Top_N_NOK_Dashbord = () => {
   if (queryResult.isLoading) {
     return <div>Loading...</div>;
   }
+
+  const setfilter = () => {
+    setShowFilter(!showFilter);
+  };
+
+  const applyFilter = (apply:boolean) => {
+    console.log('apply filter', apply);
+    if (apply) {
+      queryClient.invalidateQueries('top_N_Nok');
+    }
+  };
   
   return (
     <Paper elevation={0} style={{ padding: '2px', textAlign: 'center' }}>
       <TableContainer component={Paper}>
-        <h1>Top {topN} NOK</h1>
+        <Grid container alignItems="center" spacing={1}>
+          <Grid item xs >
+            <h2>Top {topN} NOK</h2>
+            </Grid>
+            <Grid item margin={1}>
+            <WidgetsIcon fontSize="small" onClick={setfilter} />
+            { showFilter && <Filter_Top_NOK applyFilter={applyFilter} closeFilter={() => setShowFilter(false)}/> }
+          </Grid>
+        </Grid>
         <Table>
           <TableHead>
             <TableRow>

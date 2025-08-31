@@ -20,9 +20,9 @@ interface FilterProps {
   applyFilter(apply: boolean) : void;
 }
 
-const Filter_NOK_Detect = ({closeFilter, applyFilter}: FilterProps )=> {
+const Filter_Analysed_NOK = ({closeFilter, applyFilter}: FilterProps )=> {
 
-  const [ filterParams, setFilterParams ] = useState(window.sessionStorage.getItem('NokDetectFilter') ? JSON.parse(window.sessionStorage.getItem('NokDetectFilter') || '{}') : {});
+  const [ filterParams, setFilterParams ] = useState(window.sessionStorage.getItem('NokAnalysedFilter') ? JSON.parse(window.sessionStorage.getItem('NokAnalysedFilter') || '{}') : {});
 
   const shiftList = useQuery('workShifts', workShiftServices.getShift,
     { refetchOnWindowFocus: false, retry: 1 });
@@ -48,20 +48,20 @@ const Filter_NOK_Detect = ({closeFilter, applyFilter}: FilterProps )=> {
 
   const clearFilter = () => {
     setFilterParams({});
-    window.sessionStorage.removeItem('NokDetectFilter');
+    window.sessionStorage.removeItem('NokAnalysedFilter');
     applyFilter(true);
     closeFilter();
   }
 
   const saveFilter = () => {
-    window.sessionStorage.setItem('NokDetectFilter', JSON.stringify(filterParams));
+    window.sessionStorage.setItem('NokAnalysedFilter', JSON.stringify(filterParams));
     applyFilter(true);
     closeFilter();
   }
 
   return (
     <Dialog open={true}>
-      <DialogTitle variant='h5' fontWeight={'bold'} align='center'>
+      <DialogTitle variant='h5' fontWeight={'bold'} align='center' >
         Set Filters
       </DialogTitle>
       <Grid container spacing={1} alignContent={'start'} direction={'row'}>  
@@ -199,4 +199,4 @@ const Filter_NOK_Detect = ({closeFilter, applyFilter}: FilterProps )=> {
   );
 }
 
-export default Filter_NOK_Detect;
+export default Filter_Analysed_NOK;
