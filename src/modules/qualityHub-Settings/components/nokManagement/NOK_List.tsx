@@ -42,7 +42,7 @@ const NokList = ({ listType , selectNok } : NokListProps) => {
 
 
   // Sort Items
-  const [ sort, setSort ] = useState<{ sortItem: keyof NokData; sortOrder: number }>({ sortItem: 'detectedTime' , sortOrder: 1 });
+  const [ sort, setSort ] = useState<{ sortItem: keyof NokData; sortOrder: number }>({ sortItem: 'detectTime' , sortOrder: 1 });
   const order : 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
   const orderBy : keyof NokData = sort.sortItem;
 

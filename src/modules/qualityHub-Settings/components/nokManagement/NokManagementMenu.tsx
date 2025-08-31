@@ -19,6 +19,7 @@ import NokAnalysis from './NOK_Analysis';
 import Nokreworks from './NOK_Rework';
 import ClaimManagement from '../claimManagement/ClaimManagement';
 import IqcManagement from '../iqcManagement/IqcManagement';
+import NOK_Dashboard from '../dashboard/NOK_Dashboard';
 
 const HomePageSubMenu = () => {
 
@@ -84,6 +85,7 @@ const HomePageSubMenu = () => {
             {showListForm === 'IQC' &&  <IqcManagement />}
             {showListForm === 'CLAIM' &&  <ClaimManagement />}
             {showListForm === '' && <HomePage /> }
+            {showListForm === 'NONE' && <NOK_Dashboard /> }
           </Box>
         </Grid>
       </Stack>
