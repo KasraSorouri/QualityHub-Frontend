@@ -20,7 +20,7 @@ interface FilterProps {
   applyFilter(apply: boolean) : void;
 }
 
-const Filter_Analysed_NOK = ({closeFilter, applyFilter}: FilterProps )=> {
+const Filter_Analysed_NOK = ({ closeFilter, applyFilter }: FilterProps ) => {
 
   const [ filterParams, setFilterParams ] = useState(window.sessionStorage.getItem('NokAnalysedFilter') ? JSON.parse(window.sessionStorage.getItem('NokAnalysedFilter') || '{}') : {});
 
@@ -34,40 +34,40 @@ const Filter_Analysed_NOK = ({closeFilter, applyFilter}: FilterProps )=> {
     setFilterParams({ ...filterParams, shifts: JSON.stringify(value) });
   };
 
-    const handleProductChange = (_event: unknown, value: Product[]) => {
+  const handleProductChange = (_event: unknown, value: Product[]) => {
     setFilterParams({ ...filterParams, products: JSON.stringify(value) });
   };
 
   const timeFromHandler = (newValue: dayjs.Dayjs | null) => {
     setFilterParams({ ...filterParams, time_from: newValue ? newValue.toISOString() : null });
-  }
+  };
 
   const timeUntilHandler = (newValue: dayjs.Dayjs | null) => {
     setFilterParams({ ...filterParams, time_until: newValue ? newValue.toISOString() : null });
-  }
+  };
 
   const clearFilter = () => {
     setFilterParams({});
     window.sessionStorage.removeItem('NokAnalysedFilter');
     applyFilter(true);
     closeFilter();
-  }
+  };
 
   const saveFilter = () => {
     window.sessionStorage.setItem('NokAnalysedFilter', JSON.stringify(filterParams));
     applyFilter(true);
     closeFilter();
-  }
+  };
 
   return (
     <Dialog open={true}>
       <DialogTitle variant='h5' fontWeight={'bold'} align='center' >
         Set Filters
       </DialogTitle>
-      <Grid container spacing={1} alignContent={'start'} direction={'row'}>  
+      <Grid container spacing={1} alignContent={'start'} direction={'row'}>
         <Grid item xs={2} marginTop={1}>
           <Typography variant='h6' fontWeight={'bold'} align='right'>
-            Time: 
+            Time:
           </Typography>
         </Grid>
         <Grid item xs={5}>
@@ -85,7 +85,7 @@ const Filter_Analysed_NOK = ({closeFilter, applyFilter}: FilterProps )=> {
               format= 'YYYY.MM.DD  HH:mm'
               maxDate={dayjs(new Date())}
             />
-            </LocalizationProvider>
+          </LocalizationProvider>
         </Grid>
         <Grid item xs={5}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -102,15 +102,15 @@ const Filter_Analysed_NOK = ({closeFilter, applyFilter}: FilterProps )=> {
               format= 'YYYY.MM.DD  HH:mm'
               maxDate={dayjs(new Date())}
             />
-            </LocalizationProvider>
+          </LocalizationProvider>
         </Grid>
       </Grid>
-      <Grid container spacing={1} alignContent={'start'} direction={'row'}>  
+      <Grid container spacing={1} alignContent={'start'} direction={'row'}>
         <Grid item xs={2} marginTop={1}>
           <Typography variant='h6' fontWeight={'bold'} align='right'>
-            Shift: 
+            Shift:
           </Typography>
-        </Grid>        
+        </Grid>
         <Grid item xs={10} mt={1} >
           <Autocomplete
             multiple
@@ -133,7 +133,7 @@ const Filter_Analysed_NOK = ({closeFilter, applyFilter}: FilterProps )=> {
                 </li>
               );
             }}
-            sx={{ width: "100%" }}
+            sx={{ width: '100%' }}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -146,12 +146,12 @@ const Filter_Analysed_NOK = ({closeFilter, applyFilter}: FilterProps )=> {
           />
         </Grid>
       </Grid>
-      <Grid container spacing={1} alignContent={'start'} direction={'row'}>  
+      <Grid container spacing={1} alignContent={'start'} direction={'row'}>
         <Grid item xs={2} marginTop={1}>
           <Typography variant='h6' fontWeight={'bold'} align='right'>
-            product: 
+            product:
           </Typography>
-        </Grid>        
+        </Grid>
         <Grid item xs={10} mt={1} >
           <Autocomplete
             multiple
@@ -175,7 +175,7 @@ const Filter_Analysed_NOK = ({closeFilter, applyFilter}: FilterProps )=> {
                 </li>
               );
             }}
-            sx={{ width: "100%" }}
+            sx={{ width: '100%' }}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -188,15 +188,15 @@ const Filter_Analysed_NOK = ({closeFilter, applyFilter}: FilterProps )=> {
           />
         </Grid>
       </Grid>
-        <DialogActions>
-          <Stack direction={'row'} spacing={2} justifyContent={'flex-end'}>
-            <Button variant="outlined" size="small" onClick={() => closeFilter()}>Cancel</Button>
-            <Button variant="outlined" size="small" onClick={() => clearFilter()}>Clear filter</Button>
-            <Button variant="outlined" size="small" onClick={() => saveFilter()}>Set Filter</Button>
-          </Stack>
-        </DialogActions>
+      <DialogActions>
+        <Stack direction={'row'} spacing={2} justifyContent={'flex-end'}>
+          <Button variant="outlined" size="small" onClick={() => closeFilter()}>Cancel</Button>
+          <Button variant="outlined" size="small" onClick={() => clearFilter()}>Clear filter</Button>
+          <Button variant="outlined" size="small" onClick={() => saveFilter()}>Set Filter</Button>
+        </Stack>
+      </DialogActions>
     </Dialog>
   );
-}
+};
 
 export default Filter_Analysed_NOK;

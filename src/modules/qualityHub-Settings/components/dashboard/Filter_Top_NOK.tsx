@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import { useQuery } from 'react-query';
-import workShiftServices from '../../services/workShiftServices';
-import { Autocomplete, Button, Checkbox, Dialog, DialogActions, DialogTitle, Grid, Paper, Stack, TextField, Typography } from '@mui/material';
 
+import { Autocomplete, Button, Checkbox, Dialog, DialogActions, DialogTitle, Grid, Stack, TextField, Typography } from '@mui/material';
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 
+import productServices from '../../services/productServices';
+import workShiftServices from '../../services/workShiftServices';
+
+import { Product, WorkShift } from '../../../../types/QualityHubTypes';
+
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import { Product, WorkShift } from '../../../../types/QualityHubTypes';
-import productServices from '../../services/productServices';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
 const checkedIcon = <CheckBoxIcon fontSize='small' />;
@@ -20,7 +22,7 @@ interface FilterProps {
   applyFilter(apply: boolean) : void;
 }
 
-const Filter_NOK_Detect = ({closeFilter, applyFilter}: FilterProps )=> {
+const Filter_NOK_Detect = ({ closeFilter, applyFilter }: FilterProps ) => {
 
   const [ filterParams, setFilterParams ] = useState(window.sessionStorage.getItem('TopNokFilter') ? JSON.parse(window.sessionStorage.getItem('TopNokFilter') || '{}') : {});
 
@@ -38,40 +40,40 @@ const Filter_NOK_Detect = ({closeFilter, applyFilter}: FilterProps )=> {
     setFilterParams({ ...filterParams, shifts: JSON.stringify(value) });
   };
 
-    const handleProductChange = (_event: unknown, value: Product[]) => {
+  const handleProductChange = (_event: unknown, value: Product[]) => {
     setFilterParams({ ...filterParams, products: JSON.stringify(value) });
   };
 
   const timeFromHandler = (newValue: dayjs.Dayjs | null) => {
     setFilterParams({ ...filterParams, time_from: newValue ? newValue.toISOString() : null });
-  }
+  };
 
   const timeUntilHandler = (newValue: dayjs.Dayjs | null) => {
     setFilterParams({ ...filterParams, time_until: newValue ? newValue.toISOString() : null });
-  }
+  };
 
   const clearFilter = () => {
     setFilterParams({});
     window.sessionStorage.removeItem('TopNokFilter');
     applyFilter(true);
     closeFilter();
-  }
+  };
 
   const saveFilter = () => {
     window.sessionStorage.setItem('TopNokFilter', JSON.stringify(filterParams));
     applyFilter(true);
     closeFilter();
-  }
+  };
 
   return (
     <Dialog open={true}>
       <DialogTitle variant='h5' fontWeight={'bold'} align='center' >
           Set Filters
       </DialogTitle>
-      <Grid container spacing={1} alignContent={'start'} direction={'row'}>  
+      <Grid container spacing={1} alignContent={'start'} direction={'row'}>
         <Grid item xs={2} marginTop={1}>
           <Typography variant='h6' fontWeight={'bold'} align='right'>
-            Top: 
+            Top:
           </Typography>
         </Grid>
         <Grid item xs={5}>
@@ -81,14 +83,14 @@ const Filter_NOK_Detect = ({closeFilter, applyFilter}: FilterProps )=> {
             datatype='Number'
             defaultValue={10}
             size='small'
-            onChange={(newValue) =>handleTopN(newValue.target.value) }
+            onChange={(newValue) => handleTopN(newValue.target.value) }
           />
         </Grid>
       </Grid>
-      <Grid container spacing={1} alignContent={'start'} direction={'row'}>  
+      <Grid container spacing={1} alignContent={'start'} direction={'row'}>
         <Grid item xs={2} marginTop={1}>
           <Typography variant='h6' fontWeight={'bold'} align='right'>
-            Time: 
+            Time:
           </Typography>
         </Grid>
         <Grid item xs={5}>
@@ -106,7 +108,7 @@ const Filter_NOK_Detect = ({closeFilter, applyFilter}: FilterProps )=> {
               format= 'YYYY.MM.DD  HH:mm'
               maxDate={dayjs(new Date())}
             />
-            </LocalizationProvider>
+          </LocalizationProvider>
         </Grid>
         <Grid item xs={5}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -123,15 +125,15 @@ const Filter_NOK_Detect = ({closeFilter, applyFilter}: FilterProps )=> {
               format= 'YYYY.MM.DD  HH:mm'
               maxDate={dayjs(new Date())}
             />
-            </LocalizationProvider>
+          </LocalizationProvider>
         </Grid>
       </Grid>
-      <Grid container spacing={1} alignContent={'start'} direction={'row'}>  
+      <Grid container spacing={1} alignContent={'start'} direction={'row'}>
         <Grid item xs={2} marginTop={1}>
           <Typography variant='h6' fontWeight={'bold'} align='right'>
-            Shift: 
+            Shift:
           </Typography>
-        </Grid>        
+        </Grid>
         <Grid item xs={10} mt={1} >
           <Autocomplete
             multiple
@@ -154,7 +156,7 @@ const Filter_NOK_Detect = ({closeFilter, applyFilter}: FilterProps )=> {
                 </li>
               );
             }}
-            sx={{ width: "100%" }}
+            sx={{ width: '100%' }}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -167,12 +169,12 @@ const Filter_NOK_Detect = ({closeFilter, applyFilter}: FilterProps )=> {
           />
         </Grid>
       </Grid>
-      <Grid container spacing={1} alignContent={'start'} direction={'row'}>  
+      <Grid container spacing={1} alignContent={'start'} direction={'row'}>
         <Grid item xs={2} marginTop={1}>
           <Typography variant='h6' fontWeight={'bold'} align='right'>
-            product: 
+            product:
           </Typography>
-        </Grid>        
+        </Grid>
         <Grid item xs={10} mt={1} >
           <Autocomplete
             multiple
@@ -196,7 +198,7 @@ const Filter_NOK_Detect = ({closeFilter, applyFilter}: FilterProps )=> {
                 </li>
               );
             }}
-            sx={{ width: "100%" }}
+            sx={{ width: '100%' }}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -209,15 +211,15 @@ const Filter_NOK_Detect = ({closeFilter, applyFilter}: FilterProps )=> {
           />
         </Grid>
       </Grid>
-        <DialogActions>
-          <Stack direction={'row'} spacing={2} justifyContent={'flex-end'}>
-            <Button variant="outlined" size="small" onClick={() => closeFilter()}>Cancel</Button>
-            <Button variant="outlined" size="small" onClick={() => clearFilter()}>Clear filter</Button>
-            <Button variant="outlined" size="small" onClick={() => saveFilter()}>Set Filter</Button>
-          </Stack>
-        </DialogActions>
+      <DialogActions>
+        <Stack direction={'row'} spacing={2} justifyContent={'flex-end'}>
+          <Button variant="outlined" size="small" onClick={() => closeFilter()}>Cancel</Button>
+          <Button variant="outlined" size="small" onClick={() => clearFilter()}>Clear filter</Button>
+          <Button variant="outlined" size="small" onClick={() => saveFilter()}>Set Filter</Button>
+        </Stack>
+      </DialogActions>
     </Dialog>
   );
-}
+};
 
 export default Filter_NOK_Detect;

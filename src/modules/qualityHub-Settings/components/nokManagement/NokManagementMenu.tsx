@@ -79,7 +79,7 @@ const HomePageSubMenu = () => {
         <Grid width={'90%'}>
           <Box>
             {showListForm === 'NEW-NOK' && <NokForm formType={'ADD'} /> }
-            {showListForm === 'NOK-LIST' && <NokList listType='' selectNok={()=>null } /> }
+            {showListForm === 'NOK-LIST' && <NokList listType='' selectNok={() => null } /> }
             {showListForm === 'ANALYSE' && <NokAnalysis />}
             {showListForm === 'REWORK' &&  <Nokreworks />}
             {showListForm === 'IQC' &&  <IqcManagement />}

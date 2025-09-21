@@ -84,7 +84,7 @@ const MachineList = ({ machines, displayMachineForm, selectMachine } : MachineLi
             <TableCell
               key={column.id}
               align='center'
-              style={{ width: column.width ? column.width : undefined, minWidth: column.minWidth }}
+              style={{ width: column.width ? column.width : undefined }}
               sx={{ backgroundColor: '#1976d2', color: 'white' , borderRight: column.borderRight ? '1px solid white' : undefined }}
               sortDirection={orderBy === column.id ? order : false }
             >

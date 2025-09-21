@@ -15,12 +15,11 @@ import {
   TableSortLabel,
   TextField,
 } from '@mui/material';
-
 import { visuallyHidden } from '@mui/utils';
 
-
 import nokCostServices from '../../services/nokCostServices';
-import { DismanteledMaterialData, MaterialStatus, NewNokCostData} from '../../../../types/QualityHubTypes';
+
+import { DismanteledMaterialData, MaterialStatus, NewNokCostData } from '../../../../types/QualityHubTypes';
 
 interface NokCostProps {
   nokId: number,
@@ -55,14 +54,10 @@ const NokCostForm = ({ nokId, formType, readonly }: NokCostProps) => {
     dismantledQty: 0,
     status: MaterialStatus.SCRAPPED,
     unitPrice: 0,
-  }
-  
+  };
+
   const [ materialData, setMaterialData ] = useState<MaterialData[]>([blankMaterialData]);
   const [ sort, setSort ] = useState<{ sortItem: keyof MaterialData; sortOrder: number }>({ sortItem: 'materialName' , sortOrder: 1 });
-
-  console.log('material cost * Material Data ->', materialData);
-  
-
 
   // find rework for Nok Id
   //const rework = nokReworkServices.getNokReworkByNokId(nokId);
@@ -74,7 +69,7 @@ const NokCostForm = ({ nokId, formType, readonly }: NokCostProps) => {
   console.log('Form prop * Material List -> ', materialList);
 
   useEffect(() => {
-    return setMaterialData(materialList.map((item, _index) => ({
+    return setMaterialData(materialList.map((item) => ({
       materialId: item.material.id,
       materialName: item.material.itemShortName,
       registeredPrice: Number(item.material.price) || 0,
@@ -119,7 +114,7 @@ const NokCostForm = ({ nokId, formType, readonly }: NokCostProps) => {
       onRequestSort(event, property);
     };
 
-   return (
+    return (
       <TableHead>
         <TableRow>
           {columnHeader.map((column) => (
@@ -154,107 +149,99 @@ const NokCostForm = ({ nokId, formType, readonly }: NokCostProps) => {
     setSort({ sortItem: property, sortOrder:isAsc ? -1 : 1 });
   };
 
-
-
-
   const handleCopyPrice = (): void => {
-    const newMaterialData = materialData.map((m)=>({...m, unitPrice : m.registeredPrice}))
+    const newMaterialData = materialData.map((m) => ({ ...m, unitPrice : m.registeredPrice }));
     setMaterialData(newMaterialData);
-  }
+  };
 
   function handleSavePrice(): void {
     const newNokCostData : NewNokCostData = {
       nokId: nokId,
       reworkId: 1,
       dismantledMaterial: materialData
-    }
-    nokCostServices.createNokCost(newNokCostData)
+    };
+    nokCostServices.createNokCost(newNokCostData);
   }
 
   return(
-      <Paper>
-        <Button variant='contained' sx={{ margin: '10px' }} onClick={() => handleCopyPrice()}>{`Registered Price -> Price`}</Button>
-        {
-          (sortedMaterial.reduce(
-            (check, material) => check * material.unitPrice,
-            1
-          ) !== 0) && (
-            <Button variant='contained' sx={{ margin: '10px' }} onClick={() => handleSavePrice()}>Save</Button>
-          )
-        }
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <TextField
-            name='totalPrice'
-            label='Total Price'
-            sx={{ width: '20%', margin: '10px' }}
-            value={materialData.reduce((total, material) => total + material.unitPrice * material.dismantledQty, 0)}
-            InputProps={{ readOnly: true }}
+    <Paper>
+      <Button variant='contained' sx={{ margin: '10px' }} onClick={() => handleCopyPrice()}>{'Registered Price -> Price'}</Button>
+      {
+        (sortedMaterial.reduce(
+          (check, material) => check * material.unitPrice,
+          1
+        ) !== 0) && (
+          <Button variant='contained' sx={{ margin: '10px' }} onClick={() => handleSavePrice()}>Save</Button>
+        )
+      }
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <TextField
+          name='totalPrice'
+          label='Total Price'
+          sx={{ width: '20%', margin: '10px' }}
+          value={materialData.reduce((total, material) => total + material.unitPrice * material.dismantledQty, 0)}
+          InputProps={{ readOnly: true }}
+        />
+      </Box>
+      <TableContainer sx={{ maxHeight: '550Px' }}>
+        <Table stickyHeader aria-label='sticky table' size='small'>
+          <EnhancedTableHead
+            order={order}
+            orderBy={orderBy}
+            onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof MaterialData)}
           />
-        </Box>
-        <TableContainer sx={{ maxHeight: '550Px' }}>
-          <Table stickyHeader aria-label='sticky table' size='small'>
-            <EnhancedTableHead
-              order={order}
-              orderBy={orderBy}
-              onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof MaterialData)}
-            />
-            <TableBody>
-              { sortedMaterial.map((material, index) => {
-                return(
-                  <TableRow hover role='checkbox' tabIndex={-1} key={index}>
-                    <TableCell align='left' sx={{ borderRight: '1px solid gray' }}>
-                      {material.materialName}
-                    </TableCell>
-                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
-                      {material.dismantledQty}
-                    </TableCell>
-                    <TableCell align='center'
-                      sx={{ borderRight: '1px solid gray',
-                        backgroundColor: material.status === MaterialStatus.OK ? '#A8F285' :
+          <TableBody>
+            { sortedMaterial.map((material, index) => {
+              return(
+                <TableRow hover role='checkbox' tabIndex={-1} key={index}>
+                  <TableCell align='left' sx={{ borderRight: '1px solid gray' }}>
+                    {material.materialName}
+                  </TableCell>
+                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
+                    {material.dismantledQty}
+                  </TableCell>
+                  <TableCell align='center'
+                    sx={{ borderRight: '1px solid gray',
+                      backgroundColor: material.status === MaterialStatus.OK ? '#A8F285' :
                         material.status === MaterialStatus.IQC ? '#FFFFAB' : '#F2A8A8' }}>
-                      {material.status}
+                    {material.status}
+                  </TableCell>
+                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
+                    {material.registeredPrice}
+                  </TableCell>
+                  { !readonly ?
+                    <TableCell align='justify'>
+                      <TextField
+                        name='price'
+                        //type='number'
+                        sx={{ width: '98%' }}
+                        value={material.unitPrice}
+                        onChange={(event) => {
+                          const newMaterialData = materialData.map((item, i) => {
+                            if (i === index) {
+                              return {
+                                ...item,
+                                unitPrice: parseInt(event.target.value) || 0,
+                              };
+                            }
+                            return item;
+                          });
+                          setMaterialData(newMaterialData);
+                        }}
+                        size='small'
+                        required />
+                    </TableCell> : material.unitPrice !== 0 ? <TableCell align='justify'>
+                      {material.unitPrice}
                     </TableCell>
-                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
-                      {material.registeredPrice}
-                    </TableCell>
-                    { !readonly ?
-                      <TableCell align='justify'>
-                        <TextField
-                          name='price'
-                          //type='number'
-                          sx={{ width: '98%' }}
-                          value={material.unitPrice}
-                          onChange={(event) => {
-                            const newMaterialData = materialData.map((item, i) => {
-                              if (i === index) {
-                                return {
-                                  ...item,
-                                  unitPrice: parseInt(event.target.value) || 0,
-                                };
-                              }
-                              return item;
-                            });
-                            setMaterialData(newMaterialData);
-                          }}
-
-                          //margin='dense'
-                          //variant='outlined'
-                          size='small'
-                          required />
-                      </TableCell> : material.unitPrice !== 0 ? <TableCell align='justify'>
-                        {material.unitPrice}
-                      </TableCell>
                       : null }
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Paper>
-  )
-
-  
-}
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
+  );
+};
 
 export default NokCostForm;

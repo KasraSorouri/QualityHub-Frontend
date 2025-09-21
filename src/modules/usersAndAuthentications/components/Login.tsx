@@ -17,7 +17,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import loginServices from '../services/loginServices';
 
 import { useUserSet } from '../../../contexts/userContext';
-import { Credentials, UserBase } from '../../../types/UserAuthTypes';
+import { Credentials } from '../../../types/UserAuthTypes';
 import { useNotificationSet } from '../../../contexts/NotificationContext';
 
 const defaultTheme = createTheme();
@@ -38,7 +38,16 @@ const SignIn = () => {
 
     try {
       const response = await loginServices.login(credentials);
-      const user : UserBase = response ? response : null;
+      const user = response
+        ? {
+            firstName: response.firstName,
+            lastName: response.lastName,
+            username: response.username,
+            token: response.token,
+            roles: response.roles,
+            rights: response.rights,
+          }
+        : null;
 
       window.localStorage.setItem('QualityHub_SignedUser', JSON.stringify(user));
 

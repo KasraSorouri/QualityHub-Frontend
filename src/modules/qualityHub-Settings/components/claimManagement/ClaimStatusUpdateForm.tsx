@@ -23,7 +23,7 @@ interface FormProps {
   onSubmit: (formData: MaterialFormData) => void;
 }
 
-const ClaimStatusUpdateForm = ({materialId, onSubmit} : FormProps) => {
+const ClaimStatusUpdateForm = ({ materialId, onSubmit } : FormProps) => {
   const [formData, setFormData] = useState<MaterialFormData>({
     user: '',
     date: dayjs(new Date()),
@@ -36,7 +36,7 @@ const ClaimStatusUpdateForm = ({materialId, onSubmit} : FormProps) => {
   // Status options for combo box
   const statusOptions = [
     'PENDING',
-    'ACCEPTED', 
+    'ACCEPTED',
     'DENIED',
   ];
 
@@ -53,7 +53,7 @@ const ClaimStatusUpdateForm = ({materialId, onSubmit} : FormProps) => {
       setFormData(prevState => ({
         ...prevState,
         date: value
-        }));
+      }));
     }
   };
 
@@ -75,14 +75,14 @@ const ClaimStatusUpdateForm = ({materialId, onSubmit} : FormProps) => {
       referenceType:  formData.referenceType,
       reference: formData.reference,
       description: formData.description,
-      
-    }
+
+    };
     claimServices.editClaimStatus(materialId, newClaimData);
-    onSubmit(formData)
+    onSubmit(formData);
   };
 
   return (
-    <Grid direction={'row'} spacing={1} margin={1} > 
+    <Grid direction={'row'} spacing={1} margin={1} >
       <TextField
         required
         name='user'
@@ -102,7 +102,7 @@ const ClaimStatusUpdateForm = ({materialId, onSubmit} : FormProps) => {
           disableFuture
           format= 'YYYY.MM.DD'
           maxDate={dayjs(new Date())}
-          views={['year', 'month', 'day']} 
+          views={['year', 'month', 'day']}
         />
       </LocalizationProvider>
       <TextField
@@ -125,30 +125,30 @@ const ClaimStatusUpdateForm = ({materialId, onSubmit} : FormProps) => {
         name='description'
         label='Description'
         size='small'
-        sx={{ margin :1 ,  minWidth: '200px'}}
+        sx={{ margin :1 ,  minWidth: '200px' }}
         value={formData.description}
         onChange={handleInputChange}
       />
       <FormControl>
         <Stack direction={'row'}>
-        <InputLabel>Status</InputLabel>
-        <Select
-          name='status'
-          value={formData.status}
-          label='Status'
-          size='small'
-          sx={{ margin :1 }}
-          onChange={handleSelectChange}
-        >
-          {statusOptions.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
-            </MenuItem>
-          ))}
-        </Select>
-        <Button variant='contained' color='primary' size='small' sx={{ margin: 1, height:'40px' }} onClick={updateStatus}>
+          <InputLabel>Status</InputLabel>
+          <Select
+            name='status'
+            value={formData.status}
+            label='Status'
+            size='small'
+            sx={{ margin :1 }}
+            onChange={handleSelectChange}
+          >
+            {statusOptions.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+          <Button variant='contained' color='primary' size='small' sx={{ margin: 1, height:'40px' }} onClick={updateStatus}>
           Update
-        </Button>
+          </Button>
         </Stack>
       </FormControl>
     </Grid>

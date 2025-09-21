@@ -24,8 +24,8 @@ const editIqcStatus = async(id: number, iqcData: IQCData) : Promise<IQCListData 
   };
 
   console.log(' calim service * iqc data ->', iqcData);
-  
-    try{
+
+  try{
     const res = await axios.put(`${api_url}/quality/iqcs/${id}`, iqcData, config);
     return res.data;
   } catch (err : unknown) {

@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
   Paper,
@@ -33,7 +32,7 @@ interface EnhancedTableHeadProps {
 
 type DismantleMaterialListProps = {
   affectedMaterials: AffectedMaterial[];
-  rwRwDismantledMaterial? : RwDismantledMaterial[];
+  rwDismantledMaterial? : RwDismantledMaterial[];
   confirmSelection: (dismantledMaterial: RwDismantledMaterial[]) => void;
   confirmChange: (value: boolean ) => void;
   editable: boolean;
@@ -43,22 +42,23 @@ interface FormData extends RwDismantledMaterial {
   isSelected: boolean;
 }
 
-const ReworkRwDismantledMaterial = ({ affectedMaterials, rwRwDismantledMaterial, confirmSelection, confirmChange, editable } : DismantleMaterialListProps) => {
+const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confirmSelection, confirmChange, editable } : DismantleMaterialListProps) => {
 
   const [ selectedMaterials, setSelectedMaterials ] = useState<number[]>([]);
   const [ formValues, setFormValues ] = useState<FormData[]>([]);
   const [ confirmActive, setConfirmActive ] = useState<boolean>(false);
 
   const setNotification = useNotificationSet();
-
+ 
   useEffect(() => {
     const initialFormValues = affectedMaterials.map(material => {
 
       // find the rwDismantled Material where id is equal to material id
-      const rwDismantled = rwRwDismantledMaterial?.find(rwm => rwm.recipeBom.id === material.recipeBom.id);
+      const rwDismantled = rwDismantledMaterial?.find((rwm: { recipeBom: { id: number | undefined; }; }) => rwm.recipeBom.id === material.recipeBom?.id);
       return {
-        id: material.recipeBom.id,
-        isSelected: rwRwDismantledMaterial?.map(dm => (dm.recipeBom.id)).includes(material.recipeBom.id) || false,
+        id: material.recipeBom?.id || 0,
+        isSelected: typeof material.recipeBom?.id === 'number' && rwDismantledMaterial?.map((dm: { recipeBom: { id: number; }; }) => dm.recipeBom.id).includes(material.recipeBom.id) || false,
+        //...(rwDismantled ? { rwDismantledMaterial: rwDismantled.rwDismantledMaterial } : {}),
         ...material,
         dismantledQty: rwDismantled ? rwDismantled.dismantledQty : 0,
         note: rwDismantled ? rwDismantled.note : '',
@@ -68,7 +68,7 @@ const ReworkRwDismantledMaterial = ({ affectedMaterials, rwRwDismantledMaterial,
 
     const select : number[] = [];
     initialFormValues.map(material => {
-      if (material.isSelected) {
+      if (material.isSelected && material.recipeBom) {
         select.push(material.recipeBom.id);
       }
     });
@@ -153,7 +153,7 @@ const ReworkRwDismantledMaterial = ({ affectedMaterials, rwRwDismantledMaterial,
     );
   };
 
-  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof AffectedMaterial) => {
+  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof FormData) => {
     const isAsc = orderBy === property && order ==='asc';
     setSort({ sortItem: property, sortOrder:isAsc ? -1 : 1 });
   };
@@ -193,7 +193,7 @@ const ReworkRwDismantledMaterial = ({ affectedMaterials, rwRwDismantledMaterial,
     if (value <= 0) {
       setNotification({ message: 'Dismantled Qty must be greater than 0', type: 'error', time: 5 });
     }
-    if (value > updateValue[0].recipeBom.qty) {
+    if (updateValue[0].recipeBom && value > updateValue[0].recipeBom.qty) {
       setNotification({ message: 'Dismantled Qty must be less than or equal to the Qty', type: 'error', time: 5 });
     } else {
       if (updateValue.length > 0 && value > 0) {
@@ -266,7 +266,7 @@ const ReworkRwDismantledMaterial = ({ affectedMaterials, rwRwDismantledMaterial,
           <EnhancedTableHead
             order={order}
             orderBy={orderBy}
-            onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof AffectedMaterial)}
+            onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof FormData)}
           />
           <TableBody>
             { sortedMaterials.map((material, index) => {
@@ -355,4 +355,4 @@ const ReworkRwDismantledMaterial = ({ affectedMaterials, rwRwDismantledMaterial,
   );
 };
 
-export default ReworkRwDismantledMaterial;
+export default ReworkDismantledMaterial;

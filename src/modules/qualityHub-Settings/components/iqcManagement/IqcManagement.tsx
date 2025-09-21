@@ -21,41 +21,41 @@ interface IqcStatusFormProp {
 
 const IqcManagement = () => {
 
-  const [ listType, setListType ] = useState<string>('pending')
-  const [ iqcList, setIqcList ] = useState<IQCListData[] | never[] >([])
-  const [ iqcStatusForm, setIqcStatusForm ] = useState<IqcStatusFormProp>({materialId: undefined, showForm: false})
+  const [ listType, setListType ] = useState<string>('pending');
+  const [ iqcList, setIqcList ] = useState<IQCListData[] | never[] >([]);
+  const [ iqcStatusForm, setIqcStatusForm ] = useState<IqcStatusFormProp>({ materialId: undefined, showForm: false });
 
   useEffect(() => {
     const getIqcs = async () => {
-      const iqcs = listType === 'all' ? 
+      const iqcs = listType === 'all' ?
         await iqcServices.getAllIqcs() :
         await iqcServices.getPendingIqcs();
       console.log('IqcManagement * Iqcs -> ', iqcs);
       setIqcList(iqcs);
-    }
-    getIqcs()
-  }, [listType])
+    };
+    getIqcs();
+  }, [listType]);
 
   // Sort Items
-    const [ sort, setSort ] = useState<{ sortItem: keyof IQCListData; sortOrder: number }>({ sortItem: 'id' , sortOrder: 1 });
-    const order : 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
-    const orderBy : keyof IQCListData = sort.sortItem;
-  
-    const sortedList: IQCListData[]  = iqcList.sort((a, b) => {
-      const aValue = a[orderBy];
-      const bValue = b[orderBy];
-  
-      if (aValue !== undefined && bValue !== undefined) {
-        if (aValue < bValue) {
-          return -1 * sort.sortOrder;
-        }
-        if (aValue > bValue) {
-          return 1 * sort.sortOrder;
-        }
+  const [ sort, setSort ] = useState<{ sortItem: keyof IQCListData; sortOrder: number }>({ sortItem: 'id' , sortOrder: 1 });
+  const order : 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
+  const orderBy : keyof IQCListData = sort.sortItem;
+
+  const sortedList: IQCListData[]  = iqcList.sort((a, b) => {
+    const aValue = a[orderBy];
+    const bValue = b[orderBy];
+
+    if (aValue !== undefined && bValue !== undefined) {
+      if (aValue < bValue) {
+        return -1 * sort.sortOrder;
       }
-      return 0;
-    });
-  
+      if (aValue > bValue) {
+        return 1 * sort.sortOrder;
+      }
+    }
+    return 0;
+  });
+
 
   // Table Header
   const columnHeader = [
@@ -118,17 +118,17 @@ const IqcManagement = () => {
     );
   };
 
-    const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof IQCListData) => {
-      const isAsc = orderBy === property && order ==='asc';
-      setSort({ sortItem: property, sortOrder:isAsc ? -1 : 1 });
-    };
-  
+  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof IQCListData) => {
+    const isAsc = orderBy === property && order ==='asc';
+    setSort({ sortItem: property, sortOrder:isAsc ? -1 : 1 });
+  };
+
   const handleChangeStatus = (materialId: number) => {
-    setIqcStatusForm({ materialId, showForm: !(iqcStatusForm.showForm) })
-  }
+    setIqcStatusForm({ materialId, showForm: !(iqcStatusForm.showForm) });
+  };
 
   return (
-    <Paper sx={{ pointerEvents: true ? 'all' : 'none' }} >
+    <Paper sx={{ pointerEvents: 'all' }} >
       <Grid container justifyContent={'space-between'} flexDirection={'row'} marginLeft={1} width={'98%'}>
         <Typography variant='h3' margin={1}>IQC Management</Typography>
         <Grid item marginTop={2} marginRight={3}>
@@ -155,32 +155,32 @@ const IqcManagement = () => {
               //const labelId = `enhanced-table-checkbox-${material.id}`;
               return (
                 <React.Fragment key={material.id}>
-                <TableRow>
-                   <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
-                    {material.nokDetect.product.productName}
-                  </TableCell>
-                  <TableCell align='left' sx={{ borderRight: '1px solid gray' }}>
-                    {material.nokDetect.productSN}
-                  </TableCell>
-                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
-                    {material.material.itemShortName}
-                  </TableCell>
-                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
-                    {material.nokDetect.description}
-                  </TableCell>
-                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
-                    {new Date(material.nokDetect.detectTime).toLocaleString('fi-FI',{ year: 'numeric', month: '2-digit', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false})}
-                  </TableCell>
-                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
-                    {material.actualDismantledQty}
-                  </TableCell>
-                  <TableCell align='center' sx={{
-                    borderRight: '1px solid gray',
-                    backgroundColor: material.reusable === Reusable.YES ? '#A8F285' : material.reusable === Reusable.IQC ? '#FFFFAB' : '#F2A8A8'
-                  }}>
-                    {material.reusable}
-                  </TableCell>
-                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
+                  <TableRow>
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
+                      {material.nokDetect.product.productName}
+                    </TableCell>
+                    <TableCell align='left' sx={{ borderRight: '1px solid gray' }}>
+                      {material.nokDetect.productSN}
+                    </TableCell>
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
+                      {material.material.itemShortName}
+                    </TableCell>
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
+                      {material.nokDetect.description}
+                    </TableCell>
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
+                      {new Date(material.nokDetect.detectTime).toLocaleString('fi-FI',{ year: 'numeric', month: '2-digit', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false })}
+                    </TableCell>
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
+                      {material.actualDismantledQty}
+                    </TableCell>
+                    <TableCell align='center' sx={{
+                      borderRight: '1px solid gray',
+                      backgroundColor: material.reusable === Reusable.YES ? '#A8F285' : material.reusable === Reusable.IQC ? '#FFFFAB' : '#F2A8A8'
+                    }}>
+                      {material.reusable}
+                    </TableCell>
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
                       <TextField
                         name='status'
                         sx={{
@@ -192,30 +192,30 @@ const IqcManagement = () => {
                         }}
                         value={material.materialStatus}
                       />
-                  </TableCell>
-                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
-                    <Button onClick={() => handleChangeStatus(material.id)} size='small' variant='contained' color='primary' >
-                      {iqcStatusForm.showForm && iqcStatusForm.materialId === material.id ? 'Cancel' : 'Update Status'}
-                    </Button>
-                  </TableCell>
-                </TableRow>
-                <TableRow key={material.id}>
-                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
-                  <Collapse in={iqcStatusForm.showForm && iqcStatusForm.materialId === material.id} timeout='auto' unmountOnExit>
-                    <Box margin={1}>
-                      <MaterialStatusUpdateForm materialId={material.id} onSubmit={() => setIqcStatusForm({ materialId: undefined, showForm: false})} />
-                    </Box>
-                  </Collapse>
-                </TableCell>
-              </TableRow>
-              </React.Fragment>
+                    </TableCell>
+                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
+                      <Button onClick={() => handleChangeStatus(material.id)} size='small' variant='contained' color='primary' >
+                        {iqcStatusForm.showForm && iqcStatusForm.materialId === material.id ? 'Cancel' : 'Update Status'}
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow key={material.id}>
+                    <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
+                      <Collapse in={iqcStatusForm.showForm && iqcStatusForm.materialId === material.id} timeout='auto' unmountOnExit>
+                        <Box margin={1}>
+                          <MaterialStatusUpdateForm materialId={material.id} onSubmit={() => setIqcStatusForm({ materialId: undefined, showForm: false })} />
+                        </Box>
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
               );
             })}
           </TableBody>
         </Table>
       </TableContainer>
     </Paper>
-  )
-}
+  );
+};
 
 export default IqcManagement;

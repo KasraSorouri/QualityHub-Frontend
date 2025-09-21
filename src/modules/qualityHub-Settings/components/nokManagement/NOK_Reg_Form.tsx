@@ -35,7 +35,7 @@ type FormData = {
   initNokCode: NokCode | null;
   detectedStation: Station | null;
   detectedShift: WorkShift | null;
-  detectedTime: Dayjs;
+  detectTime: Dayjs;
   description: string;
 }
 
@@ -50,7 +50,7 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
     initNokCode: nokData?.initNokCode ? nokData.initNokCode : null,
     detectedStation: nokData?.detectedStation ? nokData.detectedStation : null,
     detectedShift: nokData?.detectedShift ? nokData.detectedShift : null,
-    detectedTime: nokData?.detectedTime ? dayjs(nokData.detectedTime) : dayjs(new Date()),
+    detectTime: nokData?.detectTime ? dayjs(nokData.detectTime) : dayjs(new Date()),
     description: nokData ? nokData.description : '',
   };
 
@@ -109,14 +109,14 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
   const handleSubmit = async (event: {preventDefault: () => void}) => {
     event.preventDefault();
     if (formType === 'ADD') {
-      if (formValues.product && formValues.initNokCode && formValues.detectedStation && formValues.detectedShift && formValues.detectedTime) {
+      if (formValues.product && formValues.initNokCode && formValues.detectedStation && formValues.detectedShift && formValues.detectTime) {
         const newNokData: NewNokData = {
           productId: formValues.product.id,
           productSN: formValues.productSN,
           initNokCodeId: formValues.initNokCode.id,
           detectStationId: formValues.detectedStation.id,
           detectShiftId: formValues.detectedShift.id,
-          detectedTime: new Date(formValues.detectedTime.toISOString()),
+          detectTime: new Date(formValues.detectTime.toISOString()),
           description: formValues.description,
           nokStatus: NokStatus.PENDING,
           productStatus: ProductStatus.NOK,
@@ -179,7 +179,7 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
                 viewRenderers={{
                   seconds: null
                 }}
-                value={formValues.detectedTime}
+                value={formValues.detectTime}
                 onChange={(newValue) => timeHandler(newValue)}
                 sx={{ marginLeft: 2, marginTop: 1, width: '210px','& .MuiInputBase-root': { height: '40px' } }}
                 disableFuture

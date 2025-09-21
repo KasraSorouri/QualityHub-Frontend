@@ -73,9 +73,9 @@ const RCAsForm = ({ nokId, rcas, updateRCA, formType } : RCAsProps) => {
   const [ rcaData, setRcaData ] = useState<RCA_Data[]>([blankItem]);
   const rcas_data :  RCA[] = rcas ? rcas : [ ];
 
-  
+
   useEffect(() => {
-      setRcaData(rcas_data.map((item, index) => ({
+    setRcaData(rcas_data.map((item, index) => ({
       id: item.id,
       rcaIndex: index,
       rcaCode: item.rcaCode,
@@ -84,16 +84,16 @@ const RCAsForm = ({ nokId, rcas, updateRCA, formType } : RCAsProps) => {
       description: item.description,
       improveSuggestion: item.improveSuggestion,
     })));
-    
+
   }, [rcas]);
 
-  console.log(' RCA form * RCA List -> ', rcas)
-  
+  console.log(' RCA form * RCA List -> ', rcas);
+
 
   // Get RCA Code List
   const rcaCodeResults = useQuery('rcaCode', rcaCodeServices.getRcaCode, { refetchOnWindowFocus: false });
   const rcaCodeList: RcaCode[] = rcaCodeResults.data || [];
-  console.log(' RCA form * RCA Codes -> ', rcaCodeList)
+  console.log(' RCA form * RCA Codes -> ', rcaCodeList);
 
 
   // Sort Items
@@ -203,7 +203,7 @@ const RCAsForm = ({ nokId, rcas, updateRCA, formType } : RCAsProps) => {
 
   const removeRcaItem = async (index: number) => {
     if (rcaData[index].id) {
-      const result = await nokRcaServices.removeNokRca(rcaData[index].id)
+      const result = await nokRcaServices.removeNokRca(rcaData[index].id);
       if (result) {
         const newRca = rcaData.filter(rcaData => rcaData.rcaIndex !== index);
         setRcaData(newRca);
@@ -245,10 +245,10 @@ const RCAsForm = ({ nokId, rcas, updateRCA, formType } : RCAsProps) => {
 
 
   const handleUpdateRCA = async(index: number) => {
-      if (!rcaData[index].rcaCode ) {
-        setNotification({ message: 'Please choose a RCA Code!', type: 'error', time: 8 });
-        return undefined;
-      } else {
+    if (!rcaData[index].rcaCode ) {
+      setNotification({ message: 'Please choose a RCA Code!', type: 'error', time: 8 });
+      return undefined;
+    } else {
 
       const newNokRca : NewRca = {
         rcaCodeId: rcaData[index].rcaCode.id,
@@ -258,15 +258,15 @@ const RCAsForm = ({ nokId, rcas, updateRCA, formType } : RCAsProps) => {
         improveSuggestion: rcaData[index].improveSuggestion,
         id : rcaData[index].id  || undefined,
         nokId: nokId
-    };
-    console.log('RCA form * Update RCA * index : ', index , ' -> ', newNokRca );
-    
-    const result = await updateRCA(newNokRca);
-    if (result) {
-      setRcaData(rcaData.map((item) => ({ ...item, itemEditable: false })));
-    }
-  };};
-  
+      };
+      console.log('RCA form * Update RCA * index : ', index , ' -> ', newNokRca );
+
+      const result = await updateRCA(newNokRca);
+      if (result) {
+        setRcaData(rcaData.map((item) => ({ ...item, itemEditable: false })));
+      }
+    }};
+
 
   return(
     <Paper sx={{ marginLeft: 2 }}>

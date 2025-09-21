@@ -7,7 +7,7 @@ export interface DetectedNokData {
 export interface ProductNokData {
   productName: string;
   shifts: { [key: string]: number };
-};
+}
 
 export interface DashboardNokAnalysedData {
   shifts: string[];

@@ -30,38 +30,38 @@ const   NokDetectDashboard = () => {
   };
 
   return (
-        <Paper elevation={0} style={{ padding: '2px', textAlign: 'center' }}>
-          <TableContainer component={Paper}>
-            <Grid container alignItems="center" spacing={1}>
-              <Grid item xs >
-                <h2>Detected NOK</h2>
-              </Grid>
-              <Grid item margin={1}>
-              <WidgetsIcon fontSize="small" onClick={setfilter} />
-              { showFilter && <Filter_NOK_Detect applyFilter={applyFilter} closeFilter={() => setShowFilter(false)}/> }
-              </Grid>
-            </Grid>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Product</TableCell>
-                  <TableCell>Pendding</TableCell>
-                  <TableCell>Analysed</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {nokDashboardData.map((row, index) => (
-                  <TableRow key={index}>
-                    <TableCell align='left'>{row.productName}</TableCell>
-                    <TableCell align='center'>{row.pending ?? 0}</TableCell>
-                    <TableCell align='center'>{row.analysed ?? 0}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
+    <Paper elevation={0} style={{ padding: '2px', textAlign: 'center' }}>
+      <TableContainer component={Paper}>
+        <Grid container alignItems="center" spacing={1}>
+          <Grid item xs >
+            <h2>Detected NOK</h2>
+          </Grid>
+          <Grid item margin={1}>
+            <WidgetsIcon fontSize="small" onClick={setfilter} />
+            { showFilter && <Filter_NOK_Detect applyFilter={applyFilter} closeFilter={() => setShowFilter(false)}/> }
+          </Grid>
+        </Grid>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Product</TableCell>
+              <TableCell>Pendding</TableCell>
+              <TableCell>Analysed</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {nokDashboardData.map((row, index) => (
+              <TableRow key={index}>
+                <TableCell align='left'>{row.productName}</TableCell>
+                <TableCell align='center'>{row.pending ?? 0}</TableCell>
+                <TableCell align='center'>{row.analysed ?? 0}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
   );
-}
+};
 
 export default NokDetectDashboard;

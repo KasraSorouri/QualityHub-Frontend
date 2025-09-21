@@ -119,9 +119,9 @@ const NokList = ({ listType , selectNok } : NokListProps) => {
 
   const showEditNok = (id : number | string) => {
     const nokData: NokData = noks.filter((u) => u.id === id )[0];
- 
+
     selectNok(nokData);
-   
+
     console.log('list type ->',listType);
 
   };

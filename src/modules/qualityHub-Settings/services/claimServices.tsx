@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import { api_url } from '../../../configs/config';
 import setToken from '../../usersAndAuthentications/services/authentication';
-import { Claim, ClaimListData, ClaimStatus } from '../../../types/QualityHubTypes';
+import { Claim, ClaimListData } from '../../../types/QualityHubTypes';
 
 // Get all Claims
 const getAllClaims = async() : Promise<ClaimListData[]> => {
@@ -24,8 +24,8 @@ const editClaimStatus = async(id: number, claimData: Claim) : Promise<ClaimListD
   };
 
   console.log(' calim service * claim data ->', claimData);
-  
-    try{
+
+  try{
     const res = await axios.put(`${api_url}/quality/claims/${id}`, claimData, config);
     return res.data;
   } catch (err : unknown) {

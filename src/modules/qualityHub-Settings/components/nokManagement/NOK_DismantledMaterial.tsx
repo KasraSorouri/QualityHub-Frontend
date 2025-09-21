@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
 
 import {
   Paper,
@@ -30,16 +30,16 @@ import {
   StandardTextFieldProps,
   IconButton,
 } from '@mui/material';
-
 import { visuallyHidden } from '@mui/utils';
-
-import DeleteIcon from '@mui/icons-material/Delete';
 
 import { useNotificationSet } from '../../../../contexts/NotificationContext';
 
-import { MaterialStatus, Reusable, Material, AffectedMaterial, DismantledMaterialData } from '../../../../types/QualityHubTypes';
-import { useQuery } from 'react-query';
 import materialServices from '../../services/materialServices';
+
+import { MaterialStatus, Reusable, Material, AffectedMaterial, DismantledMaterialData } from '../../../../types/QualityHubTypes';
+
+
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface EnhancedTableHeadProps {
   order: 'asc' | 'desc';
@@ -64,7 +64,7 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
   console.log('## Dismantled Matrail Form ** Nok DismantledMaterial -> ', nokDismantledMaterials);
   //console.log('** Dismantled Matrail Form **  Affected DismantledMaterial -> ', affectedMaterials);
 
-   
+
   const [ selectedMaterials, setSelectedMaterials ] = useState<string[]>([]);
   const [ formValues, setFormValues ] = useState<FormDismantledMaterialData[]>([]);
   const [ confirmActive, setConfirmActive ] = useState<boolean>(false);
@@ -104,9 +104,9 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
       if (!dmMaterial.rwDismantledMaterialId) {
         externalMateralIndex--;
       }
-      
+
       const data : FormDismantledMaterialData = {
-        ...dmMaterial, 
+        ...dmMaterial,
         recipeCode: dmMaterial.recipeCode || 'extra',
         index: dmMaterial.rwDismantledMaterialId ? dmMaterial.rwDismantledMaterialId : externalMateralIndex,
         index2: dmMaterial.rwDismantledMaterialId ? `dm-${ dmMaterial.index}` : `de-${externalMateralIndex}`,
@@ -128,7 +128,7 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
 
     const select : string[] = [];
     initialFormValues.map(material => {
-       if (material.isSelected) {
+      if (material.isSelected) {
         select.push(material.index2);
       }
     });
@@ -279,7 +279,7 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
   const handleActualDismantleQty = (value: number, index: string) => {
 
     console.log('## Dismantled Matrail Form ** handleActualDismantleQty * params -> ', value, index);
-        
+
 
     const updateValue = formValues.find((item) => item.index2 === index);
     if (value <= 0) {
@@ -291,9 +291,9 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
       setConfirmActive(true);
       confirmChange(false);
       console.log('## Dismantled Matrail Form ** handleActualDismantleQty * update  -> ', updateValue);
-      
+
     }
-    if (updateValue && updateValue.recipeCode != 'extra' && value > updateValue.recipeQty) {
+    if (updateValue && updateValue.recipeCode !== 'extra' && value > updateValue.recipeQty) {
       setOpenDialog(true);
     }
   };
@@ -332,7 +332,7 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
       materialStatus: MaterialStatus.SCRAPPED,
       id: undefined,
       material: materialList[0],
-      rwDismantledMaterialId: 0,};
+      rwDismantledMaterialId: 0, };
     setExteraAffectedMaterials(extraAffectedMaterials.concat(newExtraMaterial));
   };
 
@@ -523,8 +523,8 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
                         sx={{
                           '& .MuiInputBase-input': { maxHeight: '15px', padding: '5px', textAlign: 'center', width: '100px' },
                           backgroundColor: eMaterial.materialStatus === MaterialStatus.OK ? '#A8F285' :
-                          eMaterial.materialStatus === MaterialStatus.IQC ? '#FFFFAB' :
-                          eMaterial.materialStatus === MaterialStatus.CLAIMABLE ? '#44bafc' : '#f93a00',
+                            eMaterial.materialStatus === MaterialStatus.IQC ? '#FFFFAB' :
+                              eMaterial.materialStatus === MaterialStatus.CLAIMABLE ? '#44bafc' : '#f93a00',
                           overflow: 'hidden',
                           marginLeft: '-10px'
                         }}
@@ -610,8 +610,8 @@ const NokDismantledMaterialForm = ({ affectedMaterials, nokDismantledMaterials, 
                         sx={{
                           '& .MuiInputBase-input': { maxHeight: '15px', padding: '5px', textAlign: 'center', width: '100px' },
                           backgroundColor: material.materialStatus === MaterialStatus.OK ? '#A8F285' :
-                           material.materialStatus === MaterialStatus.IQC ? '#FFFFAB' :
-                           material.materialStatus === MaterialStatus.CLAIMABLE ? '#44bafc' : '#f93a00',
+                            material.materialStatus === MaterialStatus.IQC ? '#FFFFAB' :
+                              material.materialStatus === MaterialStatus.CLAIMABLE ? '#44bafc' : '#f93a00',
                           overflow: 'hidden',
                           marginLeft: '-10px'
                         }}

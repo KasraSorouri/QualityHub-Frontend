@@ -53,7 +53,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
   const submitTitle = formType === 'ADD' ? 'Add' : 'Update';
 
   console.log(' **-** rework Data ->', reworkData);
-  
+
 
   // convert rwDismanled Material
   const rwDismantledMaterials = reworkData?.rwDismantledMaterials?.map(material => {
@@ -115,14 +115,23 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
       const recipe = recipeList.filter(r => r.recipeType === 'PRODUCTION').find(r => r.id === recipeId);
       if (recipe) {
         recipe.recipeMaterials?.map(recipeMaterial => {
-          const newMaterial = {
+          const newMaterial: AffectedMaterial = {
+            rwDismantledMaterialId: 0,
+            recipeBomId: recipeMaterial.id,
+            material: recipeMaterial.material,
+            recipeQty: recipeMaterial.qty,
             recipeBom: {
               id: recipeMaterial.id,
               recipe: recipe,
-              qty: recipeMaterial.qty,
               material: recipeMaterial.material,
-              reusable: recipeMaterial.reusable
+              qty: recipeMaterial.qty,
+              reusable: recipeMaterial.reusable,
             },
+            mandatoryRemove: false,
+            reusable: recipeMaterial.reusable,
+            rwNote: '',
+            recipeCode: recipe.recipeCode,
+            recipeDescription: recipe.description,
           };
           affectedMaterials.push(newMaterial);
         });
@@ -405,7 +414,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
           <Divider sx={{ margin:1 }}/>
           <ReworkRecipeList recipes={productionRecipes} selectedRecipes={reworkData?.affectedRecipes ? reworkData.affectedRecipes : []} confirmSelection={selectAffectedRecipes} confirmChange={(value) => handleConfirmChange('affectedRecipes', value)} title='Affected Recipes (Recipes affected by rework)' editable={formType === 'ADD' ? true : false } />
           <Divider sx={{ margin:1 }}/>
-          <ReworkRwDismantledMaterial affectedMaterials={affectedMaterial} rwRwDismantledMaterial={reworkData?.rwDismantledMaterials} confirmSelection={selectRwDismantledMaterials} confirmChange={(value) => handleConfirmChange('dismantledMaterials', value)} editable={formType === 'ADD' ? true : false }  />
+          <ReworkRwDismantledMaterial affectedMaterials={affectedMaterial} rwDismantledMaterial={reworkData?.rwDismantledMaterials} confirmSelection={selectRwDismantledMaterials} confirmChange={(value) => handleConfirmChange('dismantledMaterials', value)} editable={formType === 'ADD' ? true : false }  />
         </form>
       </Box>
     </Grid>

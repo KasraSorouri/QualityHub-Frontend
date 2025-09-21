@@ -1,5 +1,3 @@
-import { ReactNode } from 'react';
-
 export interface Product {
   id: number;
   productName: string;
@@ -50,7 +48,6 @@ export interface NewStation extends Omit<Station,'id'> {
 }
 
 export interface Material {
-  [x: string]: ReactNode;
   id: number;
   itemShortName: string;
   itemLongName: string;
@@ -58,6 +55,7 @@ export interface Material {
   traceable?: boolean;
   price?: number;
   unit?: string;
+  reusable?: Reusable;
   active: boolean;
 }
 
@@ -96,13 +94,6 @@ export enum Reusable  {
   YES ='YES',
   NO = 'NO',
   IQC = 'IQC'
-}
-
-export interface ConsumingMaterial {
-  id : number;
-  material: Material;
-  qty: number;
-  reusable: Reusable;
 }
 
 export interface ConsumingMaterialData extends Omit<ConsumingMaterial, 'material'> {
@@ -203,7 +194,7 @@ export interface NokData {
   removeReport?: boolean;
 }
 
-export interface NewNokData extends Omit<NokData, 'id' | 'product' | 'initNokCode' | 'detectedStation' | 'detectedShift' | 'detectTime'> {
+export interface NewNokData extends Omit<NokData, 'id' | 'product' | 'initNokCode' | 'detectedStation' | 'detectedShift' > {
   id?: number;
   productId: number;
   detectStationId: number;
@@ -214,7 +205,6 @@ export interface NewNokData extends Omit<NokData, 'id' | 'product' | 'initNokCod
   detectedStation?: Station;
   detectedShift?: WorkShift;
   removeReport: boolean;
-  detectedTime: Date;
 }
 
 export enum NokStatus {
@@ -314,16 +304,19 @@ export interface NewRework extends Omit<Rework, 'id' | 'product' | 'nokCode' | '
   //dismantledMaterials: DismantledMaterial[];
 }
 
-interface RecipeBOM {
-  id: number;
-  recipe: Recipe;
-  qty: number;
+export interface ConsumingMaterial {
+  id : number;
   material: Material;
+  qty: number;
   reusable: Reusable;
 }
 
+export interface RecipeBOM  extends ConsumingMaterial {
+  recipe: Recipe;
+}
+
 export interface RwDismantledMaterial {
-  rwDismantledMaterial: RwDismantledMaterial;
+  //rwDismantledMaterial: RwDismantledMaterial;
   id: number;
   recipeBom: RecipeBOM;
   dismantledQty : number;
@@ -331,11 +324,7 @@ export interface RwDismantledMaterial {
   mandatoryRemove?: boolean;
   reusable?: Reusable;
 }
-/*
-export interface AffectedMaterial extends Omit<RwDismantledMaterial, 'id' | 'dismantledQty'> {
-  dismantledQty? : number;
-}
-*/
+
 export interface NokDismantledMaterial {
   id: number | undefined;
   rwDismantledMaterialId: number  ;
@@ -361,11 +350,27 @@ export interface DismantledMaterialData extends Omit<NokDismantledMaterial,  'rw
   mandatoryRemove?: boolean;
 }
 
+export interface AffectedMaterial {
+  rwDismantledMaterialId: number  ;
+  recipeCode?: string;
+  recipeDescription?: string;
+  material: Material;
+  recipeBomId: number;
+  recipeQty: number;
+  recipeBom: RecipeBOM;
+  mandatoryRemove?: boolean;
+  suggestedDismantledQty?: number;
+  reusable?: Reusable;
+  rwNote?: string;
+}
+
+/*
 export interface AffectedMaterial extends Omit<NokDismantledMaterial, 'id' | 'actualDismantledQty' | 'reusable' | 'materialStatus'> {
   mandatoryRemove?: boolean;
   reusable?: Reusable;
   rwNote?: string;
 }
+*/
 
 export enum ReworkStatus {
   PENDING = 'PENDING',
