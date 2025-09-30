@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
-import {
-  Grid,
-  LinearProgress,
-} from '@mui/material';
+import { Grid, LinearProgress } from '@mui/material';
 
 import productGrpServices from '../../services/productGrpServices';
 import ProductGrpList from './ProductGrpList';
@@ -15,9 +12,11 @@ import { ProductGroup, NewProductGrp } from '../../../../types/QualityHubTypes';
 import ProductGrpForm from './ProductGrpForm';
 
 const ProductGrps = () => {
-
-  const [ showProductGrpForm, setShowProductGrpForm ] = useState<{ show: boolean, formType: 'ADD' | 'EDIT' }>({ show: false, formType: 'ADD' });
-  const [ selectedProductGrp, setSelectedProductGrp ] = useState<ProductGroup | null>(null);
+  const [showProductGrpForm, setShowProductGrpForm] = useState<{ show: boolean; formType: 'ADD' | 'EDIT' }>({
+    show: false,
+    formType: 'ADD',
+  });
+  const [selectedProductGrp, setSelectedProductGrp] = useState<ProductGroup | null>(null);
 
   const setNotification = useNotificationSet();
 
@@ -32,28 +31,26 @@ const ProductGrps = () => {
     },
     onError: (err) => {
       setNotification({ message: `${err}`, type: 'error', time: 8 });
-    }
+    },
   });
 
   // Edit ProductGrp
-  const editProductGrpMutation = useMutation(productGrpServices.editProductGrp,{
+  const editProductGrpMutation = useMutation(productGrpServices.editProductGrp, {
     onSuccess: () => {
       queryClient.invalidateQueries('productGrps');
       setNotification({ message: 'Product Group updated successfully!', type: 'info', time: 3 });
     },
     onError: (err) => {
       setNotification({ message: `${err}`, type: 'error', time: 8 });
-    }
+    },
   });
 
-
   // Get ProductGrp List
-  const productGrpResults = useQuery('productGrps',productGrpServices.getProductGrp, { refetchOnWindowFocus: false });
+  const productGrpResults = useQuery('productGrps', productGrpServices.getProductGrp, { refetchOnWindowFocus: false });
 
   const productGrps: ProductGroup[] = productGrpResults.data || [];
 
-  const handleProductGrpFormSubmit = (newUserData:  NewProductGrp) => {
-
+  const handleProductGrpFormSubmit = (newUserData: NewProductGrp) => {
     if (showProductGrpForm.formType === 'ADD') {
       newProductGrpMutation.mutate(newUserData as NewProductGrp);
     }
@@ -62,14 +59,27 @@ const ProductGrps = () => {
       editProductGrpMutation.mutate(newUserData as NewProductGrp);
     }
   };
-  return(
+  return (
     <Grid container direction={'column'} spacing={2}>
       <Grid item>
-        { productGrpResults.isLoading && <LinearProgress sx={{ margin: 1 }}/> }
-        { showProductGrpForm.show && <ProductGrpForm productGrpData={selectedProductGrp} formType={showProductGrpForm.formType} submitHandler={handleProductGrpFormSubmit} displayProductGrpForm={setShowProductGrpForm} />}
+        {productGrpResults.isLoading && <LinearProgress sx={{ margin: 1 }} />}
+        {showProductGrpForm.show && (
+          <ProductGrpForm
+            productGrpData={selectedProductGrp}
+            formType={showProductGrpForm.formType}
+            submitHandler={handleProductGrpFormSubmit}
+            displayProductGrpForm={setShowProductGrpForm}
+          />
+        )}
       </Grid>
       <Grid item>
-        { productGrpResults.data && <ProductGrpList productGrps={productGrps} selectProductGrp={setSelectedProductGrp} displayProductGrpForm={setShowProductGrpForm}/>}
+        {productGrpResults.data && (
+          <ProductGrpList
+            productGrps={productGrps}
+            selectProductGrp={setSelectedProductGrp}
+            displayProductGrpForm={setShowProductGrpForm}
+          />
+        )}
       </Grid>
     </Grid>
   );

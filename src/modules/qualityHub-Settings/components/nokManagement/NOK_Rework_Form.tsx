@@ -15,7 +15,19 @@ import {
   TextFieldVariants,
 } from '@mui/material';
 
-import { Station, WorkShift, NokAnalyseData, NewNokAnalyseData, NokData, Rework, NewNokReworkData, ReworkStatus, NokDismantledMaterial, AffectedMaterial, DismantledMaterialData } from '../../../../types/QualityHubTypes';
+import {
+  Station,
+  WorkShift,
+  NokAnalyseData,
+  NewNokAnalyseData,
+  NokData,
+  Rework,
+  NewNokReworkData,
+  ReworkStatus,
+  NokDismantledMaterial,
+  AffectedMaterial,
+  DismantledMaterialData,
+} from '../../../../types/QualityHubTypes';
 import nokDetectServices from '../../services/nokDetectServices';
 import NOK_Info from './NOK_Info';
 import ReworkChooseList from './ReworkChooseList';
@@ -25,14 +37,14 @@ import workShiftServices from '../../services/workShiftServices';
 import nokReworkServices from '../../services/nokReworkServices';
 
 type NokFromProps = {
-  nokId: number,
+  nokId: number;
   formType: 'ADD' | 'EDIT' | 'VIEW';
-  nokAnalyseData?: NokAnalyseData | NewNokAnalyseData  | null;
+  nokAnalyseData?: NokAnalyseData | NewNokAnalyseData | null;
   removeNok: (nok: null) => void;
-}
+};
 
 type FormData = {
-  id : number | undefined;
+  id: number | undefined;
   materialCost?: number;
   operator: string;
   duration?: number | string;
@@ -40,14 +52,13 @@ type FormData = {
   reworkShift?: WorkShift | undefined;
   reworkStation: Station | undefined;
   reworkActions: number[];
-  affectedRecipes?: number[],
+  affectedRecipes?: number[];
   dismantledMaterials?: DismantledMaterialData[];
   note?: string;
   reworkStatus?: ReworkStatus;
-}
+};
 
 const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
-
   const initFormValues: FormData = {
     id: undefined,
     operator: '',
@@ -60,17 +71,20 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
     reworkStatus: ReworkStatus.IN_PROGRESS,
   };
 
-  const [ formValues, setFormValues ] = useState<FormData>(initFormValues);
-  const [ nok, setNok ] = useState<NokData | null>(null);
-  const [ affectedMaterials, setAffectedMaterial ] = useState<AffectedMaterial[] | never[]>([]);
+  const [formValues, setFormValues] = useState<FormData>(initFormValues);
+  const [nok, setNok] = useState<NokData | null>(null);
+  const [affectedMaterials, setAffectedMaterial] = useState<AffectedMaterial[] | never[]>([]);
 
-  const [ confirmation, setConfirmation ] = useState<{chooseReworks: boolean, dismantledMaterials: boolean}>({ chooseReworks: false, dismantledMaterials: false });
+  const [confirmation, setConfirmation] = useState<{ chooseReworks: boolean; dismantledMaterials: boolean }>({
+    chooseReworks: false,
+    dismantledMaterials: false,
+  });
 
-  console.log('Nok Rework fprm ** formValues -> ',formValues);
+  console.log('Nok Rework fprm ** formValues -> ', formValues);
 
   const convertDismanltedMaterial = (dismantledMaterials: NokDismantledMaterial[]) => {
-    const dismantledMaterialsData = dismantledMaterials?.map(dmMaterial => {
-      const data : DismantledMaterialData = {
+    const dismantledMaterialsData = dismantledMaterials?.map((dmMaterial) => {
+      const data: DismantledMaterialData = {
         isSelected: true,
         index: dmMaterial.rwDismantledMaterialId,
         id: dmMaterial.id,
@@ -83,7 +97,7 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
         suggestedDismantledQty: dmMaterial.rwDismantledMaterial?.dismantledQty,
         mandatoryRemove: dmMaterial.rwDismantledMaterial?.mandatoryRemove,
         reusable: dmMaterial.recipeBom?.reusable,
-        actualDismantledQty: dmMaterial.actualDismantledQty? dmMaterial.actualDismantledQty : 0,
+        actualDismantledQty: dmMaterial.actualDismantledQty ? dmMaterial.actualDismantledQty : 0,
         rwNote: dmMaterial.rwDismantledMaterial?.note,
         materialStatus: dmMaterial.materialStatus,
       };
@@ -107,20 +121,26 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
         reworkStation: reworkResults.reworkStation,
         note: reworkResults.reworkNote,
         reworkStatus: reworkResults.reworkStatus === 'COMPLETED' ? ReworkStatus.COMPLETED : ReworkStatus.IN_PROGRESS,
-        reworkActions: reworkResults.reworkActionsId|| [],
-        dismantledMaterials: reworkResults.nokDismantleMaterials ? convertDismanltedMaterial(reworkResults.nokDismantleMaterials) : [],
+        reworkActions: reworkResults.reworkActionsId || [],
+        dismantledMaterials: reworkResults.nokDismantleMaterials
+          ? convertDismanltedMaterial(reworkResults.nokDismantleMaterials)
+          : [],
       };
       console.log('* Nok Rework Form * newFormValue ->', newFormValue);
 
       setFormValues(newFormValue);
       console.log('$$$$ Nok Rework Form * form value * effect ->', formValues);
-      setConfirmation({ chooseReworks: (reworkResults.reworkActionsId && reworkResults.reworkActionsId.length > 0 || false), dismantledMaterials: true });
+      setConfirmation({
+        chooseReworks: (reworkResults.reworkActionsId && reworkResults.reworkActionsId.length > 0) || false,
+        dismantledMaterials: true,
+      });
     };
     getInitData();
-  },[nokId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nokId]);
 
   // get Station List
-  const stationResults = useQuery('stations',stationServices.getStation, { refetchOnWindowFocus: false });
+  const stationResults = useQuery('stations', stationServices.getStation, { refetchOnWindowFocus: false });
   const stationList: Station[] = stationResults.data || [];
 
   // Get Work Shift List
@@ -128,9 +148,9 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
   const workShiftList: WorkShift[] = workShiftResults.data || [];
 
   // handle Changes
-  const handleChange = (event: {target: { name: string, value: unknown, checked: boolean}}) => {
+  const handleChange = (event: { target: { name: string; value: unknown; checked: boolean } }) => {
     const { name, value, checked } = event.target;
-    const newValue = name === 'active'  ? checked : value;
+    const newValue = name === 'active' ? checked : value;
 
     setFormValues((prevValues: FormData) => ({
       ...prevValues,
@@ -138,8 +158,7 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
     }));
   };
 
-  const handleAutoCompeletChange = (parameter: string, newValue: | Station | WorkShift) => {
-
+  const handleAutoCompeletChange = (parameter: string, newValue: Station | WorkShift) => {
     setFormValues((prevValues: FormData) => ({
       ...prevValues,
       [`${parameter}`]: newValue,
@@ -148,23 +167,21 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
 
   //  Handle Status Change
   const handleStatusChange = (status: ReworkStatus) => {
-
     setFormValues({ ...formValues, reworkStatus: status });
   };
 
   // Handle Select Rework
   const handleSelectRework = (reworks: Rework[]) => {
-
     console.log('Nok Rework Form * handleSelectRework * reworks ->', reworks);
 
-    const affectedMaterials : AffectedMaterial[] = [];
-    let affectedReciepies : number[] = [];
-    const newNokReworks = reworks.map(rework => {
-      rework.affectedRecipes ? affectedReciepies = affectedReciepies.concat(rework.affectedRecipes) : null;
+    const affectedMaterials: AffectedMaterial[] = [];
+    let affectedReciepies: number[] = [];
+    const newNokReworks = reworks.map((rework) => {
+      rework.affectedRecipes ? (affectedReciepies = affectedReciepies.concat(rework.affectedRecipes)) : null;
       if (rework.rwDismantledMaterials) {
-        rework.rwDismantledMaterials.map(rwDisMaterial => {
-          const newMaterial : AffectedMaterial = {
-            rwDismantledMaterialId  : rwDisMaterial.id,
+        rework.rwDismantledMaterials.map((rwDisMaterial) => {
+          const newMaterial: AffectedMaterial = {
+            rwDismantledMaterialId: rwDisMaterial.id,
             recipeBomId: rwDisMaterial.recipeBom.id,
             material: rwDisMaterial.recipeBom.material,
             recipeQty: rwDisMaterial.recipeBom.qty,
@@ -178,16 +195,14 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
           affectedMaterials.push(newMaterial);
         });
       }
-      return (rework.id);
+      return rework.id;
     });
-    setFormValues({ ...formValues, reworkActions: newNokReworks, affectedRecipes: [... new Set(affectedReciepies)] });
+    setFormValues({ ...formValues, reworkActions: newNokReworks, affectedRecipes: [...new Set(affectedReciepies)] });
     setAffectedMaterial(affectedMaterials);
     setConfirmation({ ...confirmation, chooseReworks: true });
   };
 
-
-  const handleDismantledMaterial = (dismantledMaterials : DismantledMaterialData[]) => {
-
+  const handleDismantledMaterial = (dismantledMaterials: DismantledMaterialData[]) => {
     console.log(' here ***********');
 
     console.log('Nok Rework Form * handleDismantledMaterial * dismantledMaterials ->', dismantledMaterials);
@@ -203,11 +218,10 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
   };
 
   // enable Submit Button
-  let disableSubmmit : boolean = true;
+  let disableSubmmit: boolean = true;
   if (formType === 'ADD') {
-    disableSubmmit = (!confirmation.chooseReworks || !confirmation.dismantledMaterials );
-  }
-  else {
+    disableSubmmit = !confirmation.chooseReworks || !confirmation.dismantledMaterials;
+  } else {
     if (formType === 'EDIT') {
       disableSubmmit = false;
     }
@@ -219,10 +233,10 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
       return;
     }
     if (!formValues.reworkStatus) {
-      alert('Please select Rework Status' + '\n' +'Does it need more rework or rework is complete?');
+      alert('Please select Rework Status' + '\n' + 'Does it need more rework or rework is complete?');
       return;
     }
-    const newNokReworks : NewNokReworkData = {
+    const newNokReworks: NewNokReworkData = {
       nokId: nokId,
       id: formValues.id,
       reworkActionsId: formValues.reworkActions,
@@ -234,20 +248,15 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
       reworkDuration: formValues.duration,
       reworkManPower: formValues.manPower,
       reworkNote: formValues.note,
-      reworkStatus: formValues.reworkStatus
+      reworkStatus: formValues.reworkStatus,
     };
 
     nokReworkServices.createNokRework(newNokReworks);
     removeNok(null);
   };
 
-
   if (!nok) {
-    return(
-      <div>
-        loading ....
-      </div>
-    );
+    return <div>loading ....</div>;
   }
 
   return (
@@ -257,42 +266,45 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
           <NOK_Info nokId={nokId} />
         </Grid>
         <Stack direction={'row'}>
-          <Stack direction={'column'} width={'60%'} >
+          <Stack direction={'column'} width={'60%'}>
             <Stack direction={'row'}>
               <TextField
-                id='operator'
-                name='operator'
-                label='Operator'
+                id="operator"
+                name="operator"
+                label="Operator"
                 disabled={formType === 'VIEW'}
                 sx={{ marginLeft: 1, marginTop: 1, width: '15%', minWidth: '150px' }}
                 value={formValues.operator}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-                size='small'
-                required />
+                size="small"
+                required
+              />
               <TextField
-                id='duration'
-                name='duration'
-                label='Duration'
+                id="duration"
+                name="duration"
+                label="Duration"
                 disabled={formType === 'VIEW'}
                 sx={{ marginLeft: 1, marginTop: 1, width: '10%', minWidth: '100px' }}
                 value={formValues.duration}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
                 fullWidth
-                size='small' />
+                size="small"
+              />
               <TextField
-                id='manPower'
-                name='manPower'
-                label='Man Power'
+                id="manPower"
+                name="manPower"
+                label="Man Power"
                 disabled={formType === 'VIEW'}
                 sx={{ marginLeft: 1, marginTop: 1, width: '10%', minWidth: '120px' }}
                 value={formValues.manPower}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
                 fullWidth
-                size='small' />
+                size="small"
+              />
               <Autocomplete
-                id='reworkShift'
+                id="reworkShift"
                 sx={{ marginLeft: 1, marginTop: 1, width: '12%', minWidth: '140px' }}
-                size='small'
+                size="small"
                 aria-required
                 disabled={formType === 'VIEW'}
                 clearIcon={false}
@@ -300,19 +312,18 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
                 isOptionEqualToValue={(option: WorkShift, value: WorkShift) => option.shiftName === value.shiftName}
                 value={formValues.reworkShift ? formValues.reworkShift : null}
                 onChange={(_event, newValue) => newValue && handleAutoCompeletChange('reworkShift', newValue)}
-                getOptionLabel={(option: { shiftName: string; }) => option.shiftName}
-                renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
-                  <TextField
-                    {...params}
-                    label='Shift'
-                    placeholder='Shift'
-                    size='small'
-                    required />
-                )} />
+                getOptionLabel={(option: { shiftName: string }) => option.shiftName}
+                renderInput={(
+                  params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined } & Omit<
+                      OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps,
+                      'variant'
+                    >,
+                ) => <TextField {...params} label="Shift" placeholder="Shift" size="small" required />}
+              />
               <Autocomplete
-                id='reworkStation'
+                id="reworkStation"
                 sx={{ marginLeft: 1, marginTop: 1, width: '15%', minWidth: '190px' }}
-                size='small'
+                size="small"
                 aria-required
                 disabled={!(formType === 'ADD')}
                 clearIcon={false}
@@ -320,67 +331,92 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
                 isOptionEqualToValue={(option: Station, value: Station) => option.stationName === value.stationName}
                 value={formValues.reworkStation ? formValues.reworkStation : null}
                 onChange={(_event, newValue) => newValue && handleAutoCompeletChange('reworkStation', newValue)}
-                getOptionLabel={(option: { stationName: string; }) => option.stationName}
-                renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
-                  <TextField
-                    {...params}
-                    label='Station'
-                    placeholder='Add Station'
-                    size='small'
-                  />
-                )} />
+                getOptionLabel={(option: { stationName: string }) => option.stationName}
+                renderInput={(
+                  params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined } & Omit<
+                      OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps,
+                      'variant'
+                    >,
+                ) => <TextField {...params} label="Station" placeholder="Add Station" size="small" />}
+              />
             </Stack>
-            <Grid >
+            <Grid>
               <TextField
-                id='note'
-                name='note'
-                label='Note'
+                id="note"
+                name="note"
+                label="Note"
                 disabled={formType === 'VIEW'}
                 sx={{ marginLeft: 1, marginTop: 1, width: '98%' }}
                 value={formValues.note}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
                 multiline
-                size='small' />
+                size="small"
+              />
             </Grid>
           </Stack>
-          <Grid item marginLeft={2}  >
+          <Grid item marginLeft={2}>
             <RadioGroup
               value={formValues.reworkStatus}
               onChange={(_event, value) => handleStatusChange(value as ReworkStatus)}
               aria-required
             >
-              <FormControlLabel value={ReworkStatus.IN_PROGRESS} checked={formValues.reworkStatus === 'IN_PROGRESS'} control={<Radio />} label='More Reworks is needed' />
-              <FormControlLabel value={ReworkStatus.COMPLETED} checked={formValues.reworkStatus === 'COMPLETED'} control={<Radio />} label='Reworks are completed' />
+              <FormControlLabel
+                value={ReworkStatus.IN_PROGRESS}
+                checked={formValues.reworkStatus === 'IN_PROGRESS'}
+                control={<Radio />}
+                label="More Reworks is needed"
+              />
+              <FormControlLabel
+                value={ReworkStatus.COMPLETED}
+                checked={formValues.reworkStatus === 'COMPLETED'}
+                control={<Radio />}
+                label="Reworks are completed"
+              />
             </RadioGroup>
           </Grid>
-          <Grid item >
+          <Grid item>
             <Stack marginLeft={0} marginTop={1} spacing={2}>
               <Button
-                variant='contained'
-                color='primary'
+                variant="contained"
+                color="primary"
                 sx={{ height: '30px', width: '60px' }}
                 onClick={() => removeNok(null)}
-              > Back
+              >
+                {' '}
+                Back
               </Button>
               <Button
-                variant='contained'
+                variant="contained"
                 disabled={disableSubmmit}
-                color='primary'
+                color="primary"
                 sx={{ height: '30px', width: '60px' }}
                 onClick={handleSaveRework}
-              > Save
+              >
+                {' '}
+                Save
               </Button>
             </Stack>
           </Grid>
         </Stack>
-
       </Grid>
       <Grid container direction={'row'} spacing={1} marginTop={1}>
         <Grid item xs={5}>
-          <ReworkChooseList productId={nok.product.id} selectedReworks={formValues.reworkActions || []} confirmSelection={handleSelectRework} confirmChange={(value) => handleConfirmChange('chooseReworks', value)} editable={true} />
+          <ReworkChooseList
+            productId={nok.product.id}
+            selectedReworks={formValues.reworkActions || []}
+            confirmSelection={handleSelectRework}
+            confirmChange={(value) => handleConfirmChange('chooseReworks', value)}
+            editable={true}
+          />
         </Grid>
         <Grid item xs={7}>
-          <NokDismantledMaterialForm affectedMaterials={affectedMaterials} nokDismantledMaterials={formValues.dismantledMaterials} confirmSelection={handleDismantledMaterial} confirmChange={(value: boolean) => handleConfirmChange('dismantledMaterials', value)} editable={true} />
+          <NokDismantledMaterialForm
+            affectedMaterials={affectedMaterials}
+            nokDismantledMaterials={formValues.dismantledMaterials}
+            confirmSelection={handleDismantledMaterial}
+            confirmChange={(value: boolean) => handleConfirmChange('dismantledMaterials', value)}
+            editable={true}
+          />
         </Grid>
       </Grid>
     </Grid>

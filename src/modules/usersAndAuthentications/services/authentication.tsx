@@ -1,5 +1,5 @@
 const setToken = () => {
-  let token : string | null = null;
+  let token: string | null = null;
 
   // Read User
   const signedUser: string | null = window.localStorage.getItem('QualityHub_SignedUser');
@@ -13,9 +13,3 @@ const setToken = () => {
   return token;
 };
 export default setToken;
-
-
-
-
-
-

@@ -13,7 +13,7 @@ import {
   Checkbox,
   Typography,
   IconButton,
-  Grid
+  Grid,
 } from '@mui/material';
 
 import { visuallyHidden } from '@mui/utils';
@@ -27,9 +27,9 @@ import { UserBase } from '../../../types/UserAuthTypes';
 type UserListProps = {
   users: UserBase[];
   allUsers: number;
-  displayUserForm: ({ show, formType }:{show: boolean, formType: 'ADD' | 'EDIT'}) => void;
+  displayUserForm: ({ show, formType }: { show: boolean; formType: 'ADD' | 'EDIT' }) => void;
   selectUser: (userData: UserBase | null) => void;
-}
+};
 
 interface EnhancedTableHeadProps {
   order: 'asc' | 'desc';
@@ -37,14 +37,16 @@ interface EnhancedTableHeadProps {
   onRequestSort: (event: React.MouseEvent<unknown>, property: string) => void;
 }
 
-const UsersList = ({ users, allUsers,  displayUserForm, selectUser }: UserListProps) : JSX.Element => {
-
+const UsersList = ({ users, allUsers, displayUserForm, selectUser }: UserListProps): JSX.Element => {
   // Sort Items
-  const [ sort, setSort ] = useState<{ sortItem: keyof UserBase; sortOrder: number }>({ sortItem: 'lastName' , sortOrder: 1 });
-  const order : 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
-  const orderBy : keyof UserBase = sort.sortItem;
+  const [sort, setSort] = useState<{ sortItem: keyof UserBase; sortOrder: number }>({
+    sortItem: 'lastName',
+    sortOrder: 1,
+  });
+  const order: 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
+  const orderBy: keyof UserBase = sort.sortItem;
 
-  const sortedUsers: UserBase[]  = users.sort((a, b) => {
+  const sortedUsers: UserBase[] = users.sort((a, b) => {
     const aValue = a[orderBy];
     const bValue = b[orderBy];
 
@@ -59,8 +61,8 @@ const UsersList = ({ users, allUsers,  displayUserForm, selectUser }: UserListPr
     return 0;
   });
 
-  const showEditUser = (id : number | string) => {
-    const userData: UserBase = users.filter((u) => u.id === id )[0];
+  const showEditUser = (id: number | string) => {
+    const userData: UserBase = users.filter((u) => u.id === id)[0];
     selectUser(userData);
     displayUserForm({ show: true, formType: 'EDIT' });
   };
@@ -71,17 +73,13 @@ const UsersList = ({ users, allUsers,  displayUserForm, selectUser }: UserListPr
   };
 
   const columnHeader = [
-    { id: 'lastName', lable: 'Last Name', minWidth: 10  },
+    { id: 'lastName', lable: 'Last Name', minWidth: 10 },
     { id: 'firstName', lable: 'First Name', minWidth: 10 },
     { id: 'username', lable: 'Username', minWidth: 5 },
     { id: 'active', lable: 'Active', minWidth: 5 },
   ];
 
-  const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
-    order,
-    orderBy,
-    onRequestSort,
-  }) => {
+  const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({ order, orderBy, onRequestSort }) => {
     const createSortHandler = (property: string) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
@@ -92,21 +90,19 @@ const UsersList = ({ users, allUsers,  displayUserForm, selectUser }: UserListPr
           {columnHeader.map((column) => (
             <TableCell
               key={column.id}
-              align='center'
+              align="center"
               style={{ minWidth: column.minWidth }}
               sx={{ backgroundColor: '#1976d2', color: 'white' }}
-              sortDirection={orderBy === column.id ? order : false }
+              sortDirection={orderBy === column.id ? order : false}
             >
               <TableSortLabel
                 active={orderBy === column.id}
-                direction={orderBy === column.id ? order : 'asc' }
+                direction={orderBy === column.id ? order : 'asc'}
                 onClick={createSortHandler(column.id)}
               >
                 {column.lable}
                 {orderBy === column.id ? (
-                  <Box  sx={visuallyHidden}>
-                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                  </Box>
+                  <Box sx={visuallyHidden}>{order === 'desc' ? 'sorted descending' : 'sorted ascending'}</Box>
                 ) : null}
               </TableSortLabel>
             </TableCell>
@@ -117,46 +113,41 @@ const UsersList = ({ users, allUsers,  displayUserForm, selectUser }: UserListPr
   };
 
   const handleRequestSort = (_event: undefined, property: keyof UserBase) => {
-    const isAsc = orderBy === property && order ==='asc';
-    setSort({ sortItem: property, sortOrder:isAsc ? -1 : 1 });
+    const isAsc = orderBy === property && order === 'asc';
+    setSort({ sortItem: property, sortOrder: isAsc ? -1 : 1 });
   };
 
-  return(
+  return (
     <div>
       <Paper>
-        <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'} >
-          <Typography margin={1} >USER LIST</Typography>
-          <Typography margin={1} >{users.length} of {allUsers} users</Typography>
-          <div style={{ margin: '10px' }} >
-            <IconButton onClick={addNewUser} style={{ height: '16px', width: '16px', color:'white' }}>
+        <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'}>
+          <Typography margin={1}>USER LIST</Typography>
+          <Typography margin={1}>
+            {users.length} of {allUsers} users
+          </Typography>
+          <div style={{ margin: '10px' }}>
+            <IconButton onClick={addNewUser} style={{ height: '16px', width: '16px', color: 'white' }}>
               <PersonAddAlt1Icon />
             </IconButton>
           </div>
         </Grid>
         <TableContainer sx={{ maxHeight: '550Px' }}>
-          <Table stickyHeader aria-label='sticky table' size='small'>
-            <EnhancedTableHead
-              order={order}
-              orderBy={orderBy}
-              onRequestSort={() => handleRequestSort}
-            />
+          <Table stickyHeader aria-label="sticky table" size="small">
+            <EnhancedTableHead order={order} orderBy={orderBy} onRequestSort={() => handleRequestSort} />
             <TableBody>
-              { sortedUsers.map((user) => {
-                return(
-                  <TableRow hover role='checkbox' tabIndex={-1} key={user.id} >
-                    <TableCell align='left' >
-                      {user.lastName}
-                    </TableCell>
-                    <TableCell align='left' >
-                      {user.firstName}
-                    </TableCell>
-                    <TableCell align='left' >
-                      {user.username}
-                    </TableCell>
-                    <TableCell align='center' >
-                      <Box justifyContent={'space-between'} >
-                        <Checkbox checked={user.active} style={{ height: '16px', width: '16px' }}/>
-                        <IconButton onClick={() => showEditUser(user.id)} style={{ height: '12px', width: '12px', marginLeft: 25 , color:'#1976d2d9' }}>
+              {sortedUsers.map((user) => {
+                return (
+                  <TableRow hover role="checkbox" tabIndex={-1} key={user.id}>
+                    <TableCell align="left">{user.lastName}</TableCell>
+                    <TableCell align="left">{user.firstName}</TableCell>
+                    <TableCell align="left">{user.username}</TableCell>
+                    <TableCell align="center">
+                      <Box justifyContent={'space-between'}>
+                        <Checkbox checked={user.active} style={{ height: '16px', width: '16px' }} />
+                        <IconButton
+                          onClick={() => showEditUser(user.id)}
+                          style={{ height: '12px', width: '12px', marginLeft: 25, color: '#1976d2d9' }}
+                        >
                           <EditIcon />
                         </IconButton>
                       </Box>

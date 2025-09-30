@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Autocomplete,
   Box,
@@ -7,15 +8,22 @@ import {
   OutlinedTextFieldProps,
   StandardTextFieldProps,
   TextField,
-  TextFieldVariants
+  TextFieldVariants,
 } from '@mui/material';
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 
-
-
-import { NokData, NewNokData, NokCode, Station, WorkShift, Product, NokStatus, ProductStatus } from '../../../../types/QualityHubTypes';
+import {
+  NokData,
+  NewNokData,
+  NokCode,
+  Station,
+  WorkShift,
+  Product,
+  NokStatus,
+  ProductStatus,
+} from '../../../../types/QualityHubTypes';
 import { useEffect, useState } from 'react';
 import productServices from '../../services/productServices';
 import { useQuery } from 'react-query';
@@ -26,8 +34,8 @@ import nokDetectServices from '../../services/nokDetectServices';
 
 type NokFromProps = {
   formType: 'ADD' | 'EDIT' | 'VIEW';
-  nokData?: NokData | NewNokData  | null;
-}
+  nokData?: NokData | NewNokData | null;
+};
 
 type FormData = {
   product: Product | null;
@@ -37,13 +45,11 @@ type FormData = {
   detectedShift: WorkShift | null;
   detectTime: Dayjs;
   description: string;
-}
+};
 
 const NokForm = ({ nokData, formType }: NokFromProps) => {
-
   const submitTitle = formType === 'ADD' ? 'Add NOK' : 'Update NOK';
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const initFormValues: FormData = {
     product: nokData?.product ? nokData.product : null,
     productSN: nokData ? nokData.productSN : '',
@@ -54,18 +60,19 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
     description: nokData ? nokData.description : '',
   };
 
-  const [ formValues, setFormValues ] = useState<FormData>(initFormValues);
+  const [formValues, setFormValues] = useState<FormData>(initFormValues);
 
   useEffect(() => {
     setFormValues(initFormValues);
-  },[formType,nokData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formType, nokData]);
 
   // Get Production List
   const productResults = useQuery('productions', productServices.getProduct, { refetchOnWindowFocus: false });
   const productList: Product[] = productResults.data || [];
 
   // get Station List
-  const stationResults = useQuery('stations',stationServices.getStation, { refetchOnWindowFocus: false });
+  const stationResults = useQuery('stations', stationServices.getStation, { refetchOnWindowFocus: false });
   const stationList: Station[] = stationResults.data || [];
 
   // Get NOK Code List
@@ -76,10 +83,8 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
   const workShiftResults = useQuery('workShifts', workShiftServices.getShift, { refetchOnWindowFocus: false });
   const workShiftList: WorkShift[] = workShiftResults.data || [];
 
-
-
   // handle Changes
-  const handleChange = (event: {target: { name: string, value: unknown, checked: boolean}}) => {
+  const handleChange = (event: { target: { name: string; value: unknown; checked: boolean } }) => {
     const { name, value, checked } = event.target;
     const newValue = name === 'active' ? checked : value;
 
@@ -90,7 +95,6 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
   };
 
   const handleAutoCompeletChange = (parameter: string, newValue: Product | Station | WorkShift | NokCode) => {
-
     setFormValues((prevValues: FormData) => ({
       ...prevValues,
       [`${parameter}`]: newValue,
@@ -106,10 +110,16 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
     }
   };
 
-  const handleSubmit = async (event: {preventDefault: () => void}) => {
+  const handleSubmit = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
     if (formType === 'ADD') {
-      if (formValues.product && formValues.initNokCode && formValues.detectedStation && formValues.detectedShift && formValues.detectTime) {
+      if (
+        formValues.product &&
+        formValues.initNokCode &&
+        formValues.detectedStation &&
+        formValues.detectedShift &&
+        formValues.detectTime
+      ) {
         const newNokData: NewNokData = {
           productId: formValues.product.id,
           productSN: formValues.productSN,
@@ -125,7 +135,6 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
 
         const result = await nokDetectServices.createNokDetect(newNokData);
         console.log(' *** NOK registeration * Submit form * result -> ', result);
-
       } else {
         console.log(' *** NOK registeration * Submit form * Error -> ', 'Missing data');
       }
@@ -134,31 +143,26 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
 
   return (
     <Box>
-      <form onSubmit={handleSubmit} >
+      <form onSubmit={handleSubmit}>
         <Grid container direction={'column'} sx={{ background: '#9FEAF7' }}>
-          <Grid container width={'100%'} flexDirection={'row'}  marginTop={1} >
+          <Grid container width={'100%'} flexDirection={'row'} marginTop={1}>
             <Autocomplete
-              id='product'
+              id="product"
               sx={{ marginLeft: 2, marginTop: 1, width: '20%', minWidth: '180px' }}
-              size='small'
+              size="small"
               disabled={formType === 'VIEW'}
               aria-required
               options={productList}
-              isOptionEqualToValue={
-                (option: Product, value: Product) => option.id === value.id
-              }
+              isOptionEqualToValue={(option: Product, value: Product) => option.id === value.id}
               value={formValues.product ? formValues.product : null}
-              onChange={(_event, newValue) => newValue && handleAutoCompeletChange('product',newValue)}
-              getOptionLabel={(option: { productName: string; }) => option.productName}
-              renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
-                <TextField
-                  {...params}
-                  label='Product'
-                  placeholder='Product'
-                  size='small'
-                  required
-                />
-              )}
+              onChange={(_event, newValue) => newValue && handleAutoCompeletChange('product', newValue)}
+              getOptionLabel={(option: { productName: string }) => option.productName}
+              renderInput={(
+                params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined } & Omit<
+                    OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps,
+                    'variant'
+                  >,
+              ) => <TextField {...params} label="Product" placeholder="Product" size="small" required />}
             />
             <TextField
               id="productSN"
@@ -168,95 +172,80 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
               sx={{ marginLeft: 2, marginTop: 1, width: '20%', minWidth: '180px' }}
               value={formValues.productSN}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-              size='small'
+              size="small"
               required
             />
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
-                name='detectedTime'
-                label='Detect Time'
+                name="detectedTime"
+                label="Detect Time"
                 disabled={formType === 'VIEW'}
                 viewRenderers={{
-                  seconds: null
+                  seconds: null,
                 }}
                 value={formValues.detectTime}
                 onChange={(newValue) => timeHandler(newValue)}
-                sx={{ marginLeft: 2, marginTop: 1, width: '210px','& .MuiInputBase-root': { height: '40px' } }}
+                sx={{ marginLeft: 2, marginTop: 1, width: '210px', '& .MuiInputBase-root': { height: '40px' } }}
                 disableFuture
-                format= 'YYYY.MM.DD    HH:mm'
+                format="YYYY.MM.DD    HH:mm"
                 maxDate={dayjs(new Date())}
               />
             </LocalizationProvider>
           </Grid>
-          <Grid container width={'100%'} flexDirection={'row'} >
+          <Grid container width={'100%'} flexDirection={'row'}>
             <Autocomplete
-              id='detectedStation'
+              id="detectedStation"
               sx={{ marginLeft: 2, marginTop: 1, width: '20%', minWidth: '200px' }}
-              size='small'
+              size="small"
               aria-required
               disabled={formType === 'VIEW'}
               options={stationList}
-              isOptionEqualToValue={
-                (option: Station, value: Station) => option.stationName === value.stationName
-              }
+              isOptionEqualToValue={(option: Station, value: Station) => option.stationName === value.stationName}
               value={formValues.detectedStation ? formValues.detectedStation : null}
               onChange={(_event, newValue) => newValue && handleAutoCompeletChange('detectedStation', newValue)}
-              getOptionLabel={(option: { stationName: string; }) => option.stationName}
-              renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
-                <TextField
-                  {...params}
-                  label='Station'
-                  placeholder='Add Station'
-                  size='small'
-                  required
-                />
-              )}
+              getOptionLabel={(option: { stationName: string }) => option.stationName}
+              renderInput={(
+                params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined } & Omit<
+                    OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps,
+                    'variant'
+                  >,
+              ) => <TextField {...params} label="Station" placeholder="Add Station" size="small" required />}
             />
             <Autocomplete
-              id='initNokCode'
+              id="initNokCode"
               sx={{ marginLeft: 2, marginTop: 1, width: '15%', minWidth: '150px' }}
-              size='small'
+              size="small"
               aria-required
               disabled={formType === 'VIEW'}
               options={nokCodeList}
-              isOptionEqualToValue={
-                (option: NokCode, value: NokCode) => option.nokCode === value.nokCode
-              }
+              isOptionEqualToValue={(option: NokCode, value: NokCode) => option.nokCode === value.nokCode}
               value={formValues.initNokCode ? formValues.initNokCode : null}
               onChange={(_event, newValue) => newValue && handleAutoCompeletChange('initNokCode', newValue)}
-              getOptionLabel={(option: { nokCode: string; }) => option.nokCode}
-              renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
-                <TextField
-                  {...params}
-                  label='NOK Code'
-                  placeholder='NOK Code'
-                  size='small'
-                  required
-                />
-              )}
+              getOptionLabel={(option: { nokCode: string }) => option.nokCode}
+              renderInput={(
+                params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined } & Omit<
+                    OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps,
+                    'variant'
+                  >,
+              ) => <TextField {...params} label="NOK Code" placeholder="NOK Code" size="small" required />}
             />
             <Autocomplete
-              id='detectedShift'
-              sx={{ marginLeft: 2, marginTop: 1, width: '15%', minWidth:'140px' }}
-              size='small'
+              id="detectedShift"
+              sx={{ marginLeft: 2, marginTop: 1, width: '15%', minWidth: '140px' }}
+              size="small"
               aria-required
               disabled={formType === 'VIEW'}
               options={workShiftList}
-              isOptionEqualToValue={
-                (option: WorkShift, value: WorkShift) => option.shiftName === value.shiftName
-              }
+              isOptionEqualToValue={(option: WorkShift, value: WorkShift) => option.shiftName === value.shiftName}
               value={formValues.detectedShift ? formValues.detectedShift : null}
               onChange={(_event, newValue) => newValue && handleAutoCompeletChange('detectedShift', newValue)}
-              getOptionLabel={(option: { shiftName: string; }) => option.shiftName}
-              renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
-                <TextField
-                  {...params}
-                  label='Shift'
-                  placeholder='Shift'
-                  size='small'
-                  required
-                />
-              )}
+              getOptionLabel={(option: { shiftName: string }) => option.shiftName}
+              renderInput={(
+                params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined } & Omit<
+                    OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps,
+                    'variant'
+                  >,
+              ) => <TextField {...params} label="Shift" placeholder="Shift" size="small" required />}
             />
           </Grid>
           <Grid display={'flex'} marginBottom={1}>
@@ -265,15 +254,23 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
               name="description"
               label="Description"
               disabled={formType === 'VIEW'}
-              sx={{ marginLeft: 2, marginTop: 1 , width:'85%' }}
+              sx={{ marginLeft: 2, marginTop: 1, width: '85%' }}
               value={formValues.description}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
               fullWidth
-              size='small'
+              size="small"
             />
-            {formType !== 'VIEW' && <Button type='submit' variant='contained' color='primary' size='small' sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}>
-              {submitTitle}
-            </Button> }
+            {formType !== 'VIEW' && (
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                size="small"
+                sx={{ margin: 1, marginLeft: 1, width: 'auto', height: '38px' }}
+              >
+                {submitTitle}
+              </Button>
+            )}
           </Grid>
         </Grid>
       </form>

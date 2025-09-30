@@ -9,56 +9,54 @@ import {
   Button,
   Paper,
   Autocomplete,
-  Grid
+  Grid,
 } from '@mui/material';
 
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import { NewRole, Right, Role, RoleUpdate } from '../../../types/UserAuthTypes';
 
-const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
-const checkedIcon = <CheckBoxIcon fontSize='small' />;
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 interface FormData extends Role {
-  rightData: (number | string)[]
+  rightData: (number | string)[];
 }
 
 type RoleFormProps = {
   roleData: Role | null;
   formType: 'ADD' | 'EDIT';
   submitHandler: (role: NewRole | RoleUpdate) => void;
-  displayRoleForm: ({ show, formType } : { show: boolean, formType: 'ADD' | 'EDIT' }) => void;
+  displayRoleForm: ({ show, formType }: { show: boolean; formType: 'ADD' | 'EDIT' }) => void;
   rightList: Right[];
-}
+};
 
-const RoleForm = ({ formType, roleData, submitHandler, displayRoleForm, rightList } : RoleFormProps) => {
-
+const RoleForm = ({ formType, roleData, submitHandler, displayRoleForm, rightList }: RoleFormProps) => {
   const formTitle = formType === 'ADD' ? 'Add New Role' : 'Edit Role';
   const submitTitle = formType === 'ADD' ? 'Add Role' : 'Update Role';
 
-  const initialFormData : FormData = {
+  const initialFormData: FormData = {
     id: roleData ? roleData.id : '',
-    roleName: roleData ? roleData.roleName :'',
+    roleName: roleData ? roleData.roleName : '',
     active: roleData ? roleData.active : true,
     rights: roleData ? roleData.rights : [],
-    rightData: []
+    rightData: [],
   };
 
-
-  const [ formValues, setFormValues ] = useState<FormData>(initialFormData);
+  const [formValues, setFormValues] = useState<FormData>(initialFormData);
 
   useEffect(() => {
-    const formData : FormData = {
+    const formData: FormData = {
       id: roleData ? roleData.id : '',
-      roleName: roleData ? roleData.roleName :'',
+      roleName: roleData ? roleData.roleName : '',
       active: roleData ? roleData.active : true,
       rights: roleData ? roleData.rights : [],
-      rightData: roleData?.rights ? roleData.rights?.map(right => right.id) : []
+      rightData: roleData?.rights ? roleData.rights?.map((right) => right.id) : [],
     };
     setFormValues(formData);
-  },[roleData]);
+  }, [roleData]);
 
-  const handleChange = (event: { target: { name: string; value: string | number | boolean; checked: boolean; }; }) => {
+  const handleChange = (event: { target: { name: string; value: string | number | boolean; checked: boolean } }) => {
     const { name, value, checked } = event.target;
     const newValue = name === 'active' ? checked : value;
 
@@ -69,45 +67,58 @@ const RoleForm = ({ formType, roleData, submitHandler, displayRoleForm, rightLis
   };
 
   const handleRightChange = (_event: unknown, value: Right[]) => {
-    setFormValues((preValues : FormData) => ({
+    setFormValues((preValues: FormData) => ({
       ...preValues,
       rights: value,
     }));
   };
 
-
-  const handleSubmit = (event: { preventDefault: () => void; }) => {
+  const handleSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault();
-    const newRole : RoleUpdate | NewRole = { ...formValues, rights: formValues.rights?.map(right => right.id) };
+    const newRole: RoleUpdate | NewRole = { ...formValues, rights: formValues.rights?.map((right) => right.id) };
     submitHandler(newRole);
   };
 
-  return(
+  return (
     <Paper elevation={5} sx={{ borderRadius: 3, marginBottom: 1 }}>
-      <Box display='flex' justifyContent='space-between' alignItems='center'
-        border={'solid'} borderColor={'#1976d270'} borderRadius={3}  margin={0}
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        border={'solid'}
+        borderColor={'#1976d270'}
+        borderRadius={3}
+        margin={0}
         bgcolor={'#1976d270'}
       >
-        <Typography variant='h6' marginLeft={2}  >{formTitle}</Typography>
-        <Button variant='contained' onClick={() => displayRoleForm({ show: false, formType: 'ADD' })}>
+        <Typography variant="h6" marginLeft={2}>
+          {formTitle}
+        </Typography>
+        <Button variant="contained" onClick={() => displayRoleForm({ show: false, formType: 'ADD' })}>
           close
         </Button>
       </Box>
-      <form onSubmit={handleSubmit} >
-        <Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-evenly'
-          border={'solid'} borderColor={'#1976d2'} borderRadius={3}
+      <form onSubmit={handleSubmit}>
+        <Box
+          display="flex"
+          flexDirection="row"
+          alignItems="center"
+          justifyContent="space-evenly"
+          border={'solid'}
+          borderColor={'#1976d2'}
+          borderRadius={3}
         >
           <Grid container flexDirection={'column'}>
-            <Grid container flexDirection={'row'} justifyContent={'space-between'} >
+            <Grid container flexDirection={'row'} justifyContent={'space-between'}>
               <Grid>
                 <TextField
-                  label='Role'
-                  name='roleName'
+                  label="Role"
+                  name="roleName"
                   value={formValues.roleName}
                   onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-                  margin='dense'
-                  variant='outlined'
-                  size='small'
+                  margin="dense"
+                  variant="outlined"
+                  size="small"
                   required
                   sx={{ marginLeft: 2 }}
                 />
@@ -117,18 +128,18 @@ const RoleForm = ({ formType, roleData, submitHandler, displayRoleForm, rightLis
                       sx={{ marginLeft: 2 }}
                       checked={formValues.active}
                       onChange={handleChange}
-                      name='active'
-                      color='primary'
+                      name="active"
+                      color="primary"
                     />
                   }
-                  label='Active'
+                  label="Active"
                 />
               </Grid>
               <Grid>
                 <Autocomplete
-                  sx={{ marginLeft: 2 , marginTop: 1 }}
+                  sx={{ marginLeft: 2, marginTop: 1 }}
                   multiple
-                  id='rights'
+                  id="rights"
                   options={rightList}
                   disableCloseOnSelect
                   value={formValues.rights}
@@ -138,12 +149,7 @@ const RoleForm = ({ formType, roleData, submitHandler, displayRoleForm, rightLis
                   renderOption={(props, option, { selected }) => {
                     return (
                       <li {...props}>
-                        <Checkbox
-                          icon={icon}
-                          checkedIcon={checkedIcon}
-                          style={{ marginRight: 8 }}
-                          checked={selected}
-                        />
+                        <Checkbox icon={icon} checkedIcon={checkedIcon} style={{ marginRight: 8 }} checked={selected} />
                         {option.right}
                       </li>
                     );
@@ -152,9 +158,9 @@ const RoleForm = ({ formType, roleData, submitHandler, displayRoleForm, rightLis
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label='Rights'
-                      placeholder='Add right'
-                      size='small'
+                      label="Rights"
+                      placeholder="Add right"
+                      size="small"
                       sx={{ maxWidth: '250px', marginBottom: 1 }}
                     />
                   )}
@@ -162,7 +168,7 @@ const RoleForm = ({ formType, roleData, submitHandler, displayRoleForm, rightLis
               </Grid>
             </Grid>
             <Grid container>
-              <Button type='submit' variant='contained' color='primary' sx={{ marginLeft: 2, marginBottom: 2 }}>
+              <Button type="submit" variant="contained" color="primary" sx={{ marginLeft: 2, marginBottom: 2 }}>
                 {submitTitle}
               </Button>
             </Grid>

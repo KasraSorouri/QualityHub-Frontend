@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
-import {
-  Grid,
-  LinearProgress,
-} from '@mui/material';
+import { Grid, LinearProgress } from '@mui/material';
 
 import shiftServices from '../../services/workShiftServices';
 import ShiftList from './WorkShiftList';
@@ -15,9 +12,11 @@ import { WorkShift, WorkShiftData } from '../../../../types/QualityHubTypes';
 import ShiftForm from './WorkShiftForm';
 
 const Shifts = () => {
-
-  const [ showShiftForm, setShowShiftForm ] = useState<{ show: boolean, formType: 'ADD' | 'EDIT' }>({ show: false, formType: 'ADD' });
-  const [ selectedShift, setSelectedShift ] = useState<WorkShift | null>(null);
+  const [showShiftForm, setShowShiftForm] = useState<{ show: boolean; formType: 'ADD' | 'EDIT' }>({
+    show: false,
+    formType: 'ADD',
+  });
+  const [selectedShift, setSelectedShift] = useState<WorkShift | null>(null);
 
   const setNotification = useNotificationSet();
 
@@ -32,31 +31,28 @@ const Shifts = () => {
     },
     onError: (err) => {
       setNotification({ message: `${err}`, type: 'error', time: 8 });
-    }
+    },
   });
 
   // Edit Shift
-  const editShiftMutation = useMutation(shiftServices.editShift,{
+  const editShiftMutation = useMutation(shiftServices.editShift, {
     onSuccess: () => {
       queryClient.invalidateQueries('shifts');
       setNotification({ message: 'Shift updated successfully!', type: 'info', time: 3 });
     },
     onError: (err) => {
       setNotification({ message: `${err}`, type: 'error', time: 8 });
-    }
+    },
   });
 
-
   // Get Shift List
-  const shiftResults = useQuery('shifts',shiftServices.getShift, { refetchOnWindowFocus: false });
+  const shiftResults = useQuery('shifts', shiftServices.getShift, { refetchOnWindowFocus: false });
 
   const shifts: WorkShift[] = shiftResults.data || [];
 
   console.log('materilas  ->', shifts);
 
-
-  const handleShiftFormSubmit = (newShiftData:  WorkShiftData) => {
-
+  const handleShiftFormSubmit = (newShiftData: WorkShiftData) => {
     if (showShiftForm.formType === 'ADD') {
       newShiftMutation.mutate(newShiftData);
     }
@@ -65,14 +61,23 @@ const Shifts = () => {
       editShiftMutation.mutate(newShiftData);
     }
   };
-  return(
+  return (
     <Grid container direction={'column'} spacing={2}>
       <Grid item>
-        { shiftResults.isLoading && <LinearProgress sx={{ margin: 1 }}/> }
-        { showShiftForm.show && <ShiftForm shiftData={selectedShift} formType={showShiftForm.formType} submitHandler={handleShiftFormSubmit} displayShiftForm={setShowShiftForm} />}
+        {shiftResults.isLoading && <LinearProgress sx={{ margin: 1 }} />}
+        {showShiftForm.show && (
+          <ShiftForm
+            shiftData={selectedShift}
+            formType={showShiftForm.formType}
+            submitHandler={handleShiftFormSubmit}
+            displayShiftForm={setShowShiftForm}
+          />
+        )}
       </Grid>
       <Grid item>
-        { shiftResults.data && <ShiftList shifts={shifts} selectShift={setSelectedShift} displayShiftForm={setShowShiftForm}/>}
+        {shiftResults.data && (
+          <ShiftList shifts={shifts} selectShift={setSelectedShift} displayShiftForm={setShowShiftForm} />
+        )}
       </Grid>
     </Grid>
   );

@@ -1,22 +1,13 @@
 import { useEffect, useState } from 'react';
 
-import {
-  TextField,
-  Box,
-  Typography,
-  FormControlLabel,
-  Checkbox,
-  Button,
-  Paper,
-  Grid,
-} from '@mui/material';
+import { TextField, Box, Typography, FormControlLabel, Checkbox, Button, Paper, Grid } from '@mui/material';
 
 import { ProductGroup, NewProductGrp } from '../../../../types/QualityHubTypes';
 
 interface FormData {
   id: number | string;
   groupName: string;
-  groupCode:  string;
+  groupCode: string;
   active: boolean;
 }
 
@@ -24,36 +15,33 @@ type ProductGrpFormProps = {
   productGrpData: ProductGroup | null;
   formType: 'ADD' | 'EDIT';
   submitHandler: (productGrp: NewProductGrp | NewProductGrp) => void;
-  displayProductGrpForm: ({ show, formType } : { show: boolean, formType: 'ADD' | 'EDIT' }) => void;
-}
+  displayProductGrpForm: ({ show, formType }: { show: boolean; formType: 'ADD' | 'EDIT' }) => void;
+};
 
-
-
-const ProductGrpForm = ({ productGrpData, formType, submitHandler, displayProductGrpForm } : ProductGrpFormProps) => {
-
+const ProductGrpForm = ({ productGrpData, formType, submitHandler, displayProductGrpForm }: ProductGrpFormProps) => {
   const formTitle = formType === 'ADD' ? 'Add New ProductGrp' : 'Edit ProductGrp';
   const submitTitle = formType === 'ADD' ? 'Add ProductGrp' : 'Update ProductGrp';
 
-  const initialFormData : FormData = {
+  const initialFormData: FormData = {
     id: productGrpData ? productGrpData.id : '',
     groupName: productGrpData ? productGrpData.groupName : '',
-    groupCode:  productGrpData ? productGrpData.groupCode : '',
+    groupCode: productGrpData ? productGrpData.groupCode : '',
     active: productGrpData ? productGrpData.active : false,
   };
 
-  const [ formValues, setFormValues ] = useState<FormData>(initialFormData);
+  const [formValues, setFormValues] = useState<FormData>(initialFormData);
 
   useEffect(() => {
-    const formData : FormData = {
+    const formData: FormData = {
       id: productGrpData ? productGrpData.id : '',
       groupName: productGrpData ? productGrpData.groupName : '',
-      groupCode:  productGrpData ? productGrpData.groupCode : '',
+      groupCode: productGrpData ? productGrpData.groupCode : '',
       active: productGrpData ? productGrpData.active : false,
     };
     setFormValues(formData);
-  },[formType, productGrpData]);
+  }, [formType, productGrpData]);
 
-  const handleChange = (event: {target: { name: string, value: unknown, checked: boolean}}) => {
+  const handleChange = (event: { target: { name: string; value: unknown; checked: boolean } }) => {
     const { name, value, checked } = event.target;
     const newValue = name === 'active' ? checked : value;
 
@@ -63,10 +51,10 @@ const ProductGrpForm = ({ productGrpData, formType, submitHandler, displayProduc
     }));
   };
 
-  const handleSubmit = (event: { preventDefault: () => void; }) => {
+  const handleSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault();
-    const newProductGrp: NewProductGrp  = {
-      id: (typeof formValues.id === 'number') ? formValues.id : 0,
+    const newProductGrp: NewProductGrp = {
+      id: typeof formValues.id === 'number' ? formValues.id : 0,
       groupName: formValues.groupName,
       groupCode: formValues.groupCode,
       active: formValues.active,
@@ -74,56 +62,58 @@ const ProductGrpForm = ({ productGrpData, formType, submitHandler, displayProduc
     submitHandler(newProductGrp);
   };
 
-  return(
+  return (
     <Paper elevation={5} sx={{ borderRadius: 1 }}>
-      <Box display='flex' justifyContent='space-between' alignItems='center'
-        bgcolor={'#1976d270'}
-      >
-        <Typography variant='h6' marginLeft={2}  >{formTitle}</Typography>
-        <Button variant='contained'  size='small'  onClick={() => displayProductGrpForm({ show: false, formType: 'ADD' })}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" bgcolor={'#1976d270'}>
+        <Typography variant="h6" marginLeft={2}>
+          {formTitle}
+        </Typography>
+        <Button
+          variant="contained"
+          size="small"
+          onClick={() => displayProductGrpForm({ show: false, formType: 'ADD' })}
+        >
           close
         </Button>
       </Box>
-      <form onSubmit={handleSubmit} >
-        <Box display='flex'  margin={0} >
-          <Grid container flexDirection={'row'} >
+      <form onSubmit={handleSubmit}>
+        <Box display="flex" margin={0}>
+          <Grid container flexDirection={'row'}>
             <TextField
-              label='Group Name'
-              name='groupName'
+              label="Group Name"
+              name="groupName"
               sx={{ marginLeft: 2 }}
               value={formValues.groupName}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-              margin='dense'
-              variant='outlined'
-              size='small'
+              margin="dense"
+              variant="outlined"
+              size="small"
               required
             />
             <TextField
-              label='Group Code'
-              name='groupCode'
+              label="Group Code"
+              name="groupCode"
               sx={{ marginLeft: 2 }}
               value={formValues.groupCode}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-              margin='dense'
-              variant='outlined'
-              size='small'
+              margin="dense"
+              variant="outlined"
+              size="small"
               required
             />
             <FormControlLabel
               sx={{ marginLeft: 5 }}
-              control={
-                <Checkbox
-                  checked={formValues.active}
-                  onChange={handleChange}
-                  name='active'
-                  color='primary'
-                />
-              }
-              label='Active'
+              control={<Checkbox checked={formValues.active} onChange={handleChange} name="active" color="primary" />}
+              label="Active"
             />
           </Grid>
           <Grid>
-            <Button type='submit' variant='contained' color='primary' sx={{ margin: 1, minWidth: '200px' , width: 'auto' }}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={{ margin: 1, minWidth: '200px', width: 'auto' }}
+            >
               {submitTitle}
             </Button>
           </Grid>

@@ -1,17 +1,7 @@
 import React, { Fragment, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import {
-  AppBar,
-  Toolbar,
-  Divider,
-  Menu,
-  MenuItem,
-  Typography,
-  Grid,
-  Box,
-  ListItemIcon,
-  Stack } from '@mui/material';
+import { AppBar, Toolbar, Divider, Menu, MenuItem, Typography, Grid, Box, ListItemIcon, Stack } from '@mui/material';
 
 import HomeIcon from '@mui/icons-material/Home';
 import ConfigIcon from '@mui/icons-material/SettingsSuggest';
@@ -22,8 +12,7 @@ import { useUserSet } from '../../../contexts/userContext';
 
 import { Token } from '../../../types/UserAuthTypes';
 
-const Navigation = ({ signedUser } :{ signedUser: Token | null}) => {
-
+const Navigation = ({ signedUser }: { signedUser: Token | null }) => {
   const navigate = useNavigate();
   const setUser = useUserSet();
 
@@ -44,16 +33,16 @@ const Navigation = ({ signedUser } :{ signedUser: Token | null}) => {
   };
 
   return (
-    <AppBar position='sticky'>
+    <AppBar position="sticky">
       <Toolbar disableGutters>
-        <Grid container justifyContent='space-between'>
+        <Grid container justifyContent="space-between">
           <Grid item>
             <Stack direction={'row'} spacing={5} margin={2}>
               <Typography
                 variant="h6"
                 noWrap
                 component="a"
-                href= '/'
+                href="/"
                 sx={{
                   margin: 2,
                   display: { xs: 'none', md: 'flex' },
@@ -70,7 +59,7 @@ const Navigation = ({ signedUser } :{ signedUser: Token | null}) => {
                 variant="h6"
                 noWrap
                 component="a"
-                href= '/quality-setting'
+                href="/quality-setting"
                 sx={{
                   margin: 2,
                   display: { xs: 'none', md: 'flex' },
@@ -87,7 +76,7 @@ const Navigation = ({ signedUser } :{ signedUser: Token | null}) => {
                 variant="h6"
                 noWrap
                 component="a"
-                href= '/user_management'
+                href="/user_management"
                 sx={{
                   margin: 2,
                   display: { xs: 'none', md: 'flex' },
@@ -104,13 +93,11 @@ const Navigation = ({ signedUser } :{ signedUser: Token | null}) => {
           </Grid>
           <Grid item marginLeft={25}>
             <Box sx={{ flexGrow: 0 }}>
-              {signedUser ?
+              {signedUser ? (
                 <Fragment>
-                  <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}
-                    onClick={handleClick}
-                  >
+                  <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }} onClick={handleClick}>
                     <Typography
-                      variant='h6'
+                      variant="h6"
                       noWrap
                       sx={{
                         margin: 2,
@@ -120,35 +107,34 @@ const Navigation = ({ signedUser } :{ signedUser: Token | null}) => {
                         textDecoration: 'none',
                       }}
                     >
-                      { `${signedUser.firstName} ${signedUser.lastName}`}
+                      {`${signedUser.firstName} ${signedUser.lastName}`}
                     </Typography>
                   </Box>
                   <Menu
                     anchorEl={anchorEl}
-                    id='account-menu'
+                    id="account-menu"
                     open={open}
                     onClose={handleClose}
                     onClick={handleClose}
                     transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                     anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                   >
-                    <MenuItem onClick={handleClose}>
-                      Change Password
-                    </MenuItem>
+                    <MenuItem onClick={handleClose}>Change Password</MenuItem>
                     <Divider />
                     <MenuItem onClick={handleLogout}>
                       <ListItemIcon>
-                        <Logout fontSize='small' />
+                        <Logout fontSize="small" />
                       </ListItemIcon>
-                    Logout
+                      Logout
                     </MenuItem>
                   </Menu>
-                </Fragment>:
+                </Fragment>
+              ) : (
                 <Typography
                   variant="h6"
                   noWrap
                   component="a"
-                  href= 'signin'
+                  href="signin"
                   sx={{
                     mr: 2,
                     display: { xs: 'none', md: 'flex' },
@@ -158,9 +144,9 @@ const Navigation = ({ signedUser } :{ signedUser: Token | null}) => {
                     textDecoration: 'none',
                   }}
                 >
-                Sign In
+                  Sign In
                 </Typography>
-              }
+              )}
             </Box>
           </Grid>
         </Grid>

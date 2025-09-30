@@ -1,17 +1,7 @@
 import { useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
-import {
-  Grid,
-  Paper,
-  Box,
-  Typography,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  Divider,
-} from '@mui/material';
+import { Grid, Paper, Box, Typography, Button, List, ListItem, ListItemText, Divider } from '@mui/material';
 
 import NokGrps from './nokGroup/NokGrps';
 import NokCodes from './nokCode/NokCodes';
@@ -22,71 +12,81 @@ import WorkShifts from './workShift/WorkShifts';
 import ClassCodes from './classCode/ClassCodes';
 
 const SystemSetting = () => {
-
   const navigate = useNavigate();
 
-  type ShowListForm = 'NOK-CODE' | 'NOK-GRP' | 'RCA-CODE' | 'CLASS-CODE' | 'STATION' | 'DEVICE-TOOLS' | 'SHIFT' | 'NONE'
+  type ShowListForm =
+    | 'NOK-CODE'
+    | 'NOK-GRP'
+    | 'RCA-CODE'
+    | 'CLASS-CODE'
+    | 'STATION'
+    | 'DEVICE-TOOLS'
+    | 'SHIFT'
+    | 'NONE';
 
-  const [ showListForm, setShowListForm ] = useState<ShowListForm>('NONE');
+  const [showListForm, setShowListForm] = useState<ShowListForm>('NONE');
 
-  return(
-    <Paper sx={{ marginTop: 1, border: 'solid', borderRadius: 2, borderColor: '#1976d270', width: '99.7%', height: '100%' }}>
-      <Box display='flex' justifyContent='space-between' alignItems='center'
-        borderRadius={2} bgcolor={'#1976d270'}
-      >
+  return (
+    <Paper
+      sx={{ marginTop: 1, border: 'solid', borderRadius: 2, borderColor: '#1976d270', width: '99.7%', height: '100%' }}
+    >
+      <Box display="flex" justifyContent="space-between" alignItems="center" borderRadius={2} bgcolor={'#1976d270'}>
         <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'}>
           <Typography margin={1}>SYSTEM SETTINGS</Typography>
-          <Button onClick={() => navigate('/quality-setting')} variant='contained' sx={{ height: '39px' }}>
+          <Button onClick={() => navigate('/quality-setting')} variant="contained" sx={{ height: '39px' }}>
             close
           </Button>
         </Grid>
       </Box>
       <Grid container display={'flex'} direction={'row'} height={'750px'}>
-        <Grid item p={2}
+        <Grid
+          item
+          p={2}
           width={'180x'}
           bgcolor={'#E5E7E9'}
           color={'white'}
           flexDirection={'column'}
-          borderColor={'#1976d270'}>
+          borderColor={'#1976d270'}
+        >
           <List>
             <ListItem onClick={() => setShowListForm('NOK-CODE')}>
-              <ListItemText primary='NOK Code' sx={{ color: 'black' }} />
+              <ListItemText primary="NOK Code" sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
             <ListItem onClick={() => setShowListForm('NOK-GRP')}>
-              <ListItemText primary='NOK Groups' sx={{ color: 'black' }} />
+              <ListItemText primary="NOK Groups" sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
             <ListItem onClick={() => setShowListForm('RCA-CODE')}>
-              <ListItemText primary='RCA Code' sx={{ color: 'black' }} />
+              <ListItemText primary="RCA Code" sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
             <ListItem onClick={() => setShowListForm('CLASS-CODE')}>
-              <ListItemText primary='Defect Classification' sx={{ color: 'black' }} />
+              <ListItemText primary="Defect Classification" sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
             <ListItem onClick={() => setShowListForm('STATION')}>
-              <ListItemText primary='Stations' sx={{ color: 'black' }} />
+              <ListItemText primary="Stations" sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
             <ListItem onClick={() => setShowListForm('DEVICE-TOOLS')}>
-              <ListItemText primary='Device / Tools' sx={{ color: 'black' }} />
+              <ListItemText primary="Device / Tools" sx={{ color: 'black' }} />
             </ListItem>
             <Divider />
             <ListItem onClick={() => setShowListForm('SHIFT')}>
-              <ListItemText primary='Shifs' sx={{ color: 'black' }} />
+              <ListItemText primary="Shifs" sx={{ color: 'black' }} />
             </ListItem>
           </List>
         </Grid>
         <Grid item xs={10} p={2}>
           <Box>
-            {showListForm === 'NOK-CODE' && <NokCodes /> }
-            {showListForm === 'NOK-GRP' && <NokGrps /> }
-            {showListForm === 'RCA-CODE' && <RcaCodes /> }
-            {showListForm === 'CLASS-CODE' && <ClassCodes /> }
-            {showListForm === 'STATION' && <Station /> }
-            {showListForm === 'DEVICE-TOOLS' && <Machines />  }
-            {showListForm === 'SHIFT' && <WorkShifts />  }
+            {showListForm === 'NOK-CODE' && <NokCodes />}
+            {showListForm === 'NOK-GRP' && <NokGrps />}
+            {showListForm === 'RCA-CODE' && <RcaCodes />}
+            {showListForm === 'CLASS-CODE' && <ClassCodes />}
+            {showListForm === 'STATION' && <Station />}
+            {showListForm === 'DEVICE-TOOLS' && <Machines />}
+            {showListForm === 'SHIFT' && <WorkShifts />}
           </Box>
         </Grid>
       </Grid>

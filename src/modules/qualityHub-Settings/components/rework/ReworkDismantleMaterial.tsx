@@ -15,7 +15,7 @@ import {
   Grid,
   Button,
   Stack,
-  TextField
+  TextField,
 } from '@mui/material';
 
 import { visuallyHidden } from '@mui/utils';
@@ -32,57 +32,68 @@ interface EnhancedTableHeadProps {
 
 type DismantleMaterialListProps = {
   affectedMaterials: AffectedMaterial[];
-  rwDismantledMaterial? : RwDismantledMaterial[];
+  rwDismantledMaterial?: RwDismantledMaterial[];
   confirmSelection: (dismantledMaterial: RwDismantledMaterial[]) => void;
-  confirmChange: (value: boolean ) => void;
+  confirmChange: (value: boolean) => void;
   editable: boolean;
-}
+};
 
 interface FormData extends RwDismantledMaterial {
   isSelected: boolean;
 }
 
-const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, confirmSelection, confirmChange, editable } : DismantleMaterialListProps) => {
-
-  const [ selectedMaterials, setSelectedMaterials ] = useState<number[]>([]);
-  const [ formValues, setFormValues ] = useState<FormData[]>([]);
-  const [ confirmActive, setConfirmActive ] = useState<boolean>(false);
+const ReworkDismantledMaterial = ({
+  affectedMaterials,
+  rwDismantledMaterial,
+  confirmSelection,
+  confirmChange,
+  editable,
+}: DismantleMaterialListProps) => {
+  const [selectedMaterials, setSelectedMaterials] = useState<number[]>([]);
+  const [formValues, setFormValues] = useState<FormData[]>([]);
+  const [confirmActive, setConfirmActive] = useState<boolean>(false);
 
   const setNotification = useNotificationSet();
- 
-  useEffect(() => {
-    const initialFormValues = affectedMaterials.map(material => {
 
+  useEffect(() => {
+    const initialFormValues = affectedMaterials.map((material) => {
       // find the rwDismantled Material where id is equal to material id
-      const rwDismantled = rwDismantledMaterial?.find((rwm: { recipeBom: { id: number | undefined; }; }) => rwm.recipeBom.id === material.recipeBom?.id);
+      const rwDismantled = rwDismantledMaterial?.find(
+        (rwm: { recipeBom: { id: number | undefined } }) => rwm.recipeBom.id === material.recipeBom?.id,
+      );
       return {
         id: material.recipeBom?.id || 0,
-        isSelected: typeof material.recipeBom?.id === 'number' && rwDismantledMaterial?.map((dm: { recipeBom: { id: number; }; }) => dm.recipeBom.id).includes(material.recipeBom.id) || false,
+        isSelected:
+          (typeof material.recipeBom?.id === 'number' &&
+            rwDismantledMaterial
+              ?.map((dm: { recipeBom: { id: number } }) => dm.recipeBom.id)
+              .includes(material.recipeBom.id)) ||
+          false,
         //...(rwDismantled ? { rwDismantledMaterial: rwDismantled.rwDismantledMaterial } : {}),
         ...material,
         dismantledQty: rwDismantled ? rwDismantled.dismantledQty : 0,
         note: rwDismantled ? rwDismantled.note : '',
-        mandatoryRemove: rwDismantled ? rwDismantled.mandatoryRemove : false
+        mandatoryRemove: rwDismantled ? rwDismantled.mandatoryRemove : false,
       };
     });
 
-    const select : number[] = [];
-    initialFormValues.map(material => {
+    const select: number[] = [];
+    initialFormValues.map((material) => {
       if (material.isSelected && material.recipeBom) {
         select.push(material.recipeBom.id);
       }
     });
     setFormValues(initialFormValues);
     setSelectedMaterials(select);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [affectedMaterials]);
 
   // Sort Items
-  const [ sort, setSort ] = useState<{ sortItem: keyof FormData; sortOrder: number }>({ sortItem: 'id' , sortOrder: 1 });
-  const order : 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
-  const orderBy : keyof FormData = sort.sortItem;
+  const [sort, setSort] = useState<{ sortItem: keyof FormData; sortOrder: number }>({ sortItem: 'id', sortOrder: 1 });
+  const order: 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
+  const orderBy: keyof FormData = sort.sortItem;
 
-  const sortedMaterials: FormData[]  = formValues.sort((a, b) => {
+  const sortedMaterials: FormData[] = formValues.sort((a, b) => {
     const aValue = a[orderBy];
     const bValue = b[orderBy];
 
@@ -97,7 +108,6 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
     return 0;
   });
 
-
   const columnHeader = [
     { id: 'recipeCode', lable: 'Recipe', width: '7%', minWidth: 10, borderRight: true },
     { id: 'material', lable: 'Material', width: '25%', minWidth: 10, borderRight: true },
@@ -109,11 +119,7 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
     { id: 'mandatoryRemove', lable: 'Mandatory Remove', width: '3%', minWidth: 5, borderRight: false },
   ];
 
-  const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
-    order,
-    orderBy,
-    onRequestSort,
-  }) => {
+  const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({ order, orderBy, onRequestSort }) => {
     const createSortHandler = (property: string) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
@@ -123,27 +129,29 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
         <TableRow>
           <TableCell
             key={'select'}
-            align='right'
-            sx={{ backgroundColor: '#1976d2', color: 'white', maxWidth: '10px',  borderRight: '1px solid white' }}
+            align="right"
+            sx={{ backgroundColor: '#1976d2', color: 'white', maxWidth: '10px', borderRight: '1px solid white' }}
           />
           {columnHeader.map((column) => (
             <TableCell
               key={column.id}
-              align='center'
+              align="center"
               style={{ width: column.width ? column.width : undefined, minWidth: column.minWidth }}
-              sx={{ backgroundColor: '#1976d2', color: 'white' , borderRight: column.borderRight ? '1px solid white' : undefined }}
-              sortDirection={orderBy === column.id ? order : false }
+              sx={{
+                backgroundColor: '#1976d2',
+                color: 'white',
+                borderRight: column.borderRight ? '1px solid white' : undefined,
+              }}
+              sortDirection={orderBy === column.id ? order : false}
             >
               <TableSortLabel
                 active={orderBy === column.id}
-                direction={orderBy === column.id ? order : 'asc' }
+                direction={orderBy === column.id ? order : 'asc'}
                 onClick={createSortHandler(column.id)}
               >
                 {column.lable}
                 {orderBy === column.id ? (
-                  <Box  sx={visuallyHidden}>
-                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                  </Box>
+                  <Box sx={visuallyHidden}>{order === 'desc' ? 'sorted descending' : 'sorted ascending'}</Box>
                 ) : null}
               </TableSortLabel>
             </TableCell>
@@ -154,14 +162,13 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
   };
 
   const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof FormData) => {
-    const isAsc = orderBy === property && order ==='asc';
-    setSort({ sortItem: property, sortOrder:isAsc ? -1 : 1 });
+    const isAsc = orderBy === property && order === 'asc';
+    setSort({ sortItem: property, sortOrder: isAsc ? -1 : 1 });
   };
-
 
   const handleSelect = (_event: React.MouseEvent<unknown>, id: number) => {
     const selectedIndex = id;
-    if (selectedMaterials.includes(selectedIndex)){
+    if (selectedMaterials.includes(selectedIndex)) {
       const newSelected = selectedMaterials.filter((id) => id !== selectedIndex);
       setSelectedMaterials(newSelected);
       // remove dismantled data
@@ -188,7 +195,6 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
 
   // Set Dismantle Qty
   const handleDismantleQty = (value: number, index: number) => {
-
     const updateValue = formValues.filter((item) => item.id === index);
     if (value <= 0) {
       setNotification({ message: 'Dismantled Qty must be greater than 0', type: 'error', time: 5 });
@@ -231,28 +237,27 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
   };
 
   const handleConfirmSelection = () => {
-    const dismantledmaterials : RwDismantledMaterial[] = formValues.filter(material => material.isSelected);
-    const isDataCorrect = dismantledmaterials.every(item => item.dismantledQty > 0);
+    const dismantledmaterials: RwDismantledMaterial[] = formValues.filter((material) => material.isSelected);
+    const isDataCorrect = dismantledmaterials.every((item) => item.dismantledQty > 0);
     if (isDataCorrect) {
       confirmChange(true);
       setConfirmActive(false);
       confirmSelection(dismantledmaterials);
     }
-
   };
 
-  return(
+  return (
     <Paper sx={{ pointerEvents: editable ? 'all' : 'none' }}>
-      <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'} >
-        <Typography margin={1} >Material Dismantle (Material will be removed)</Typography>
-        <Typography margin={1} >{selectedMaterials.length} Items is Selected</Typography>
-        <Stack direction={'row'} spacing={1} margin={.5} >
-          <Button variant='contained' color='primary' sx={{ height: '30px' }} onClick={handleResetSelection} >
+      <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'}>
+        <Typography margin={1}>Material Dismantle (Material will be removed)</Typography>
+        <Typography margin={1}>{selectedMaterials.length} Items is Selected</Typography>
+        <Stack direction={'row'} spacing={1} margin={0.5}>
+          <Button variant="contained" color="primary" sx={{ height: '30px' }} onClick={handleResetSelection}>
             Clear Selection
           </Button>
           <Button
-            variant='contained'
-            color='primary'
+            variant="contained"
+            color="primary"
             sx={{ height: '30px' }}
             onClick={handleConfirmSelection}
             disabled={!confirmActive}
@@ -262,18 +267,18 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
         </Stack>
       </Grid>
       <TableContainer sx={{ maxHeight: '550Px' }}>
-        <Table stickyHeader aria-label='sticky table' size='small'>
+        <Table stickyHeader aria-label="sticky table" size="small">
           <EnhancedTableHead
             order={order}
             orderBy={orderBy}
             onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof FormData)}
           />
           <TableBody>
-            { sortedMaterials.map((material, index) => {
+            {sortedMaterials.map((material, index) => {
               const isItemSelected = isSelected(material.id);
               const labelId = `enhanced-table-checkbox-${index}`;
               //const formValue = formValues.filter((item) => item.id === material.id);
-              return(
+              return (
                 <React.Fragment key={material.id}>
                   <TableRow
                     role="checkbox"
@@ -283,10 +288,7 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
                     selected={isItemSelected}
                     sx={{ cursor: 'pointer' }}
                   >
-                    <TableCell
-                      padding="checkbox"
-                      onClick={(event) => handleSelect(event, material.id)}
-                    >
+                    <TableCell padding="checkbox" onClick={(event) => handleSelect(event, material.id)}>
                       <Checkbox
                         color="primary"
                         checked={isItemSelected}
@@ -295,47 +297,79 @@ const ReworkDismantledMaterial = ({ affectedMaterials, rwDismantledMaterial, con
                         }}
                       />
                     </TableCell>
-                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
+                    <TableCell align="center" sx={{ borderRight: '1px solid gray' }}>
                       {material.recipeBom.recipe.recipeCode}
                     </TableCell>
-                    <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
+                    <TableCell align="left" sx={{ borderRight: '1px solid gray' }}>
                       {material.recipeBom.material.itemShortName}
                     </TableCell>
-                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
+                    <TableCell align="center" sx={{ borderRight: '1px solid gray' }}>
                       {material.recipeBom.qty}
                     </TableCell>
-                    <TableCell align='center' sx={{ borderRight: '1px solid gray' , background: material.recipeBom.material.traceable ? '#FCFEA0' : '#A0F1FE' }} >
+                    <TableCell
+                      align="center"
+                      sx={{
+                        borderRight: '1px solid gray',
+                        background: material.recipeBom.material.traceable ? '#FCFEA0' : '#A0F1FE',
+                      }}
+                    >
                       {material.recipeBom.material.traceable ? 'Yes' : 'No'}
                     </TableCell>
-                    <TableCell align='center' sx={{ borderRight: '1px solid gray',
-                      backgroundColor: material.recipeBom.reusable === Reusable.YES ? '#A8F285' : material.recipeBom.reusable === Reusable.IQC ? '#FFFFAB' : '#F2A8A8' }} >
+                    <TableCell
+                      align="center"
+                      sx={{
+                        borderRight: '1px solid gray',
+                        backgroundColor:
+                          material.recipeBom.reusable === Reusable.YES
+                            ? '#A8F285'
+                            : material.recipeBom.reusable === Reusable.IQC
+                              ? '#FFFFAB'
+                              : '#F2A8A8',
+                      }}
+                    >
                       {material.recipeBom.reusable}
                     </TableCell>
-                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
-                      {material.isSelected ?
+                    <TableCell align="center" sx={{ borderRight: '1px solid gray' }}>
+                      {material.isSelected ? (
                         <TextField
-                          name='qty'
-                          sx={{ '& .MuiInputBase-input': { maxHeight: 'inherit', margin: 0, padding: '0px', textAlign: 'center' } , overflow: 'hidden' }}
-                          variant= 'filled'
+                          name="qty"
+                          sx={{
+                            '& .MuiInputBase-input': {
+                              maxHeight: 'inherit',
+                              margin: 0,
+                              padding: '0px',
+                              textAlign: 'center',
+                            },
+                            overflow: 'hidden',
+                          }}
+                          variant="filled"
                           value={material.dismantledQty || ''}
                           onChange={(event) => handleDismantleQty(parseInt(event.target.value), material.id)}
-                          InputProps={{ inputProps: { min: 1, max: material.recipeBom.qty, step: 1 } } }
-                          required /> :
-                        '' }
+                          InputProps={{ inputProps: { min: 1, max: material.recipeBom.qty, step: 1 } }}
+                          required
+                        />
+                      ) : (
+                        ''
+                      )}
                     </TableCell>
-                    <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
-                      {material.isSelected ?
+                    <TableCell align="left" sx={{ borderRight: '1px solid gray' }}>
+                      {material.isSelected ? (
                         <TextField
-                          name='note'
-                          sx={{ '& .MuiInputBase-input': { maxHeight: 'inherit', margin: 0, padding: '0px' } , overflow: 'hidden' }}
-                          variant= 'filled'
+                          name="note"
+                          sx={{
+                            '& .MuiInputBase-input': { maxHeight: 'inherit', margin: 0, padding: '0px' },
+                            overflow: 'hidden',
+                          }}
+                          variant="filled"
                           value={material.note || ''}
-                          onChange={(event) => handleDismantleNote((event.target.value), material.id)}
-                        /> :
-                        '' }
+                          onChange={(event) => handleDismantleNote(event.target.value, material.id)}
+                        />
+                      ) : (
+                        ''
+                      )}
                     </TableCell>
-                    <TableCell align='center' >
-                      <Box justifyContent={'space-between'} >
+                    <TableCell align="center">
+                      <Box justifyContent={'space-between'}>
                         <Checkbox
                           style={{ height: '16px', width: '16px' }}
                           checked={material.isSelected ? material.mandatoryRemove : false}

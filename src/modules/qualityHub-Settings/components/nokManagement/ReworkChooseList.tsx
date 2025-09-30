@@ -14,7 +14,7 @@ import {
   Typography,
   Grid,
   Button,
-  Stack
+  Stack,
 } from '@mui/material';
 
 import { visuallyHidden } from '@mui/utils';
@@ -34,16 +34,20 @@ interface EnhancedTableHeadProps {
 type RecipeListProps = {
   productId: number;
   selectedReworks: number[];
-  confirmSelection: (reworks : Rework[]) => void;
-  confirmChange: (value: boolean ) => void;
+  confirmSelection: (reworks: Rework[]) => void;
+  confirmChange: (value: boolean) => void;
   editable: boolean;
-}
+};
 
-
-const ReworkChooseList = ({ productId, selectedReworks, confirmSelection, confirmChange, editable } : RecipeListProps) => {
-
-  const [ selectedRw, setSelectedRw ] = useState<number[]>([]);
-  const [ confirmActive, setConfirmActive ] = useState<boolean>(false);
+const ReworkChooseList = ({
+  productId,
+  selectedReworks,
+  confirmSelection,
+  confirmChange,
+  editable,
+}: RecipeListProps) => {
+  const [selectedRw, setSelectedRw] = useState<number[]>([]);
+  const [confirmActive, setConfirmActive] = useState<boolean>(false);
 
   useEffect(() => {
     setSelectedRw(selectedReworks);
@@ -53,19 +57,26 @@ const ReworkChooseList = ({ productId, selectedReworks, confirmSelection, confir
     productId: productId,
   };
 
-  const reworkResults = useQuery(['reworks',filterParameters], async() => {
-    const response = await reworkServices.getFilteredRework(filterParameters);
-    return response;
-  },{ refetchOnWindowFocus: false, enabled: true });
+  const reworkResults = useQuery(
+    ['reworks', filterParameters],
+    async () => {
+      const response = await reworkServices.getFilteredRework(filterParameters);
+      return response;
+    },
+    { refetchOnWindowFocus: false, enabled: true },
+  );
 
   const reworks: Rework[] = reworkResults.data || [];
 
   // Sort Items
-  const [ sort, setSort ] = useState<{ sortItem: keyof Rework; sortOrder: number }>({ sortItem: 'reworkShortDesc' , sortOrder: 1 });
-  const order : 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
-  const orderBy : keyof Rework = sort.sortItem;
+  const [sort, setSort] = useState<{ sortItem: keyof Rework; sortOrder: number }>({
+    sortItem: 'reworkShortDesc',
+    sortOrder: 1,
+  });
+  const order: 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
+  const orderBy: keyof Rework = sort.sortItem;
 
-  const sortedReworks: Rework[]  = reworks.sort((a, b) => {
+  const sortedReworks: Rework[] = reworks.sort((a, b) => {
     const aValue = a[orderBy];
     const bValue = b[orderBy];
 
@@ -80,21 +91,23 @@ const ReworkChooseList = ({ productId, selectedReworks, confirmSelection, confir
     return 0;
   });
 
-
   const columnHeader = [
-    { id: 'reworkShortDesc', lable: 'Description', witdh: '27%', minWidth: '17px', maxWidth: '25px', borderRight: true },
+    {
+      id: 'reworkShortDesc',
+      lable: 'Description',
+      witdh: '27%',
+      minWidth: '17px',
+      maxWidth: '25px',
+      borderRight: true,
+    },
     { id: 'nokCode', lable: 'NOK Code', width: '12%', minWidth: '13px', maxWidth: '40px', borderRight: true },
     { id: 'station', lable: 'Station', width: '20%', minWidth: '15px', maxWidth: '30px', borderRight: true },
     { id: 'order', lable: 'order', width: '7%', minWidth: '20px', maxWidth: '30px', borderRight: true },
     { id: 'creationDate', lable: 'Creation Date', width: '10%', minWidth: '10px', maxWidth: '30px', borderRight: true },
-    { id: 'active', lable: 'Active', width:'20px', maxWidth: '35px' },
+    { id: 'active', lable: 'Active', width: '20px', maxWidth: '35px' },
   ];
 
-  const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
-    order,
-    orderBy,
-    onRequestSort,
-  }) => {
+  const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({ order, orderBy, onRequestSort }) => {
     const createSortHandler = (property: string) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
@@ -104,13 +117,19 @@ const ReworkChooseList = ({ productId, selectedReworks, confirmSelection, confir
         <TableRow>
           <TableCell
             key={'select'}
-            align='right'
-            sx={{ backgroundColor: '#1976d2', color: 'white', width: '40px', padding:'0px', borderRight: '1px solid white' }}
+            align="right"
+            sx={{
+              backgroundColor: '#1976d2',
+              color: 'white',
+              width: '40px',
+              padding: '0px',
+              borderRight: '1px solid white',
+            }}
           />
           {columnHeader.map((column) => (
             <TableCell
               key={column.id}
-              align='center'
+              align="center"
               sx={{
                 width: column.width ? column.width : undefined,
                 minWidth: column.minWidth,
@@ -119,20 +138,18 @@ const ReworkChooseList = ({ productId, selectedReworks, confirmSelection, confir
                 backgroundColor: '#1976d2',
                 color: 'white',
                 borderRight: column.borderRight ? '1px solid white' : undefined,
-                whiteSpace: 'wrap'
+                whiteSpace: 'wrap',
               }}
-              sortDirection={orderBy === column.id ? order : false }
+              sortDirection={orderBy === column.id ? order : false}
             >
               <TableSortLabel
                 active={orderBy === column.id}
-                direction={orderBy === column.id ? order : 'asc' }
+                direction={orderBy === column.id ? order : 'asc'}
                 onClick={createSortHandler(column.id)}
                 sx={{ padding: 0, margin: 0, display: 'contents', alignItems: 'center' }}
               >
                 {orderBy === column.id ? (
-                  <Box  sx={visuallyHidden}>
-                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                  </Box>
+                  <Box sx={visuallyHidden}>{order === 'desc' ? 'sorted descending' : 'sorted ascending'}</Box>
                 ) : null}
                 {column.lable}
               </TableSortLabel>
@@ -144,15 +161,14 @@ const ReworkChooseList = ({ productId, selectedReworks, confirmSelection, confir
   };
 
   const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Rework) => {
-    const isAsc = orderBy === property && order ==='asc';
-    setSort({ sortItem: property, sortOrder:isAsc ? -1 : 1 });
+    const isAsc = orderBy === property && order === 'asc';
+    setSort({ sortItem: property, sortOrder: isAsc ? -1 : 1 });
   };
-
 
   const handleSelect = (_event: React.MouseEvent<unknown>, id: number) => {
     const selectedIndex = id;
     setConfirmActive(true);
-    if (selectedRw.includes(selectedIndex)){
+    if (selectedRw.includes(selectedIndex)) {
       const newSelected = selectedRw.filter((id) => id !== selectedIndex);
       setSelectedRw(newSelected);
     } else {
@@ -173,36 +189,42 @@ const ReworkChooseList = ({ productId, selectedReworks, confirmSelection, confir
   const handleConfirmSelection = () => {
     confirmChange(true);
     setConfirmActive(false);
-    const selectedReworks = reworks.filter(rework => selectedRw.includes(rework.id));
+    const selectedReworks = reworks.filter((rework) => selectedRw.includes(rework.id));
     confirmSelection(selectedReworks);
   };
 
-  return(
+  return (
     <Paper sx={{ pointerEvents: editable ? 'all' : 'none' }}>
-      <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'} >
-        <Typography margin={1} >{selectedRw.length} Rework is Selected</Typography>
-        <Stack direction={'row'} spacing={1} margin={.5} >
-          <Button variant='contained' color='primary' sx={{ height: '30px' }} onClick={handleResetSelection} >
+      <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'}>
+        <Typography margin={1}>{selectedRw.length} Rework is Selected</Typography>
+        <Stack direction={'row'} spacing={1} margin={0.5}>
+          <Button variant="contained" color="primary" sx={{ height: '30px' }} onClick={handleResetSelection}>
             Clear Selection
           </Button>
-          <Button variant='contained' color='primary' disabled={!confirmActive} sx={{ height: '30px' }} onClick={handleConfirmSelection} >
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={!confirmActive}
+            sx={{ height: '30px' }}
+            onClick={handleConfirmSelection}
+          >
             Confirm
           </Button>
         </Stack>
       </Grid>
-      <TableContainer sx={{ maxHeight: '300px', width: '100%', overflow:'auto' }}  >
-        <Table stickyHeader aria-label='sticky table' size='small' sx={{ tableLayout:'auto' }} >
+      <TableContainer sx={{ maxHeight: '300px', width: '100%', overflow: 'auto' }}>
+        <Table stickyHeader aria-label="sticky table" size="small" sx={{ tableLayout: 'auto' }}>
           <EnhancedTableHead
             order={order}
             orderBy={orderBy}
             onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof Rework)}
           />
           <TableBody>
-            { sortedReworks.map((rework, index) => {
+            {sortedReworks.map((rework, index) => {
               const isItemSelected = isSelected(rework.id);
               const labelId = `enhanced-table-checkbox-${index}`;
 
-              return(
+              return (
                 <React.Fragment key={rework.id}>
                   <TableRow
                     hover
@@ -214,34 +236,34 @@ const ReworkChooseList = ({ productId, selectedReworks, confirmSelection, confir
                     selected={isItemSelected}
                     sx={{ cursor: 'pointer' }}
                   >
-                    <TableCell padding="none" sx={{ width:'22px', padding: '7px' }}>
+                    <TableCell padding="none" sx={{ width: '22px', padding: '7px' }}>
                       <Checkbox
                         color="primary"
                         checked={isItemSelected}
-                        sx={{  width: '20px', height: '20px', padding: '0px', margin: '0px' }}
+                        sx={{ width: '20px', height: '20px', padding: '0px', margin: '0px' }}
                         inputProps={{
                           'aria-labelledby': labelId,
                         }}
                       />
                     </TableCell>
-                    <TableCell align='left' sx={{ borderRight: '1px solid gray' }} >
+                    <TableCell align="left" sx={{ borderRight: '1px solid gray' }}>
                       {rework.reworkShortDesc}
                     </TableCell>
-                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
+                    <TableCell align="center" sx={{ borderRight: '1px solid gray' }}>
                       {rework.nokCode.nokCode}
                     </TableCell>
-                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
+                    <TableCell align="center" sx={{ borderRight: '1px solid gray' }}>
                       {rework.station.stationName}
                     </TableCell>
-                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
+                    <TableCell align="center" sx={{ borderRight: '1px solid gray' }}>
                       {rework.order}
                     </TableCell>
-                    <TableCell align='center' sx={{ borderRight: '1px solid gray' }} >
+                    <TableCell align="center" sx={{ borderRight: '1px solid gray' }}>
                       {dayjs(rework.creationDate).format('YYYY.MM.DD')}
                     </TableCell>
-                    <TableCell align='center' padding='none' sx={{ padding: '5px' }} >
-                      <Box justifyContent={'space-between'} >
-                        <Checkbox checked={rework.active} sx={{ height: '20px', width: '20px' }}/>
+                    <TableCell align="center" padding="none" sx={{ padding: '5px' }}>
+                      <Box justifyContent={'space-between'}>
+                        <Checkbox checked={rework.active} sx={{ height: '20px', width: '20px' }} />
                       </Box>
                     </TableCell>
                   </TableRow>

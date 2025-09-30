@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
-import {
-  Grid,
-  LinearProgress,
-} from '@mui/material';
+import { Grid, LinearProgress } from '@mui/material';
 
 import productServices from '../../services/productServices';
 import ProductList from './ProductList';
@@ -15,9 +12,11 @@ import { NewProduct, Product, UpdateProductData } from '../../../../types/Qualit
 import ProductForm from './ProductForm';
 
 const Products = () => {
-
-  const [ showProductForm, setShowProductForm ] = useState<{ show: boolean, formType: 'ADD' | 'EDIT' }>({ show: false, formType: 'ADD' });
-  const [ selectedProduct, setSelectedProduct ] = useState<Product | null>(null);
+  const [showProductForm, setShowProductForm] = useState<{ show: boolean; formType: 'ADD' | 'EDIT' }>({
+    show: false,
+    formType: 'ADD',
+  });
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const setNotification = useNotificationSet();
 
@@ -32,28 +31,26 @@ const Products = () => {
     },
     onError: (err) => {
       setNotification({ message: `${err}`, type: 'error', time: 8 });
-    }
+    },
   });
 
   // Edit Product
-  const editProductMutation = useMutation(productServices.editProduct,{
+  const editProductMutation = useMutation(productServices.editProduct, {
     onSuccess: () => {
       queryClient.invalidateQueries('products');
       setNotification({ message: 'Product updated successfully!', type: 'info', time: 3 });
     },
     onError: (err) => {
       setNotification({ message: `${err}`, type: 'error', time: 8 });
-    }
+    },
   });
 
-
   // Get Product List
-  const productResults = useQuery('products',productServices.getProduct, { refetchOnWindowFocus: false });
+  const productResults = useQuery('products', productServices.getProduct, { refetchOnWindowFocus: false });
 
   const products: Product[] = productResults.data || [];
 
-  const handleProductFormSubmit = (newUserData:  NewProduct | UpdateProductData) => {
-
+  const handleProductFormSubmit = (newUserData: NewProduct | UpdateProductData) => {
     if (showProductForm.formType === 'ADD') {
       newProductMutation.mutate(newUserData as NewProduct);
     }
@@ -62,14 +59,23 @@ const Products = () => {
       editProductMutation.mutate(newUserData as UpdateProductData);
     }
   };
-  return(
+  return (
     <Grid container direction={'column'} spacing={2}>
       <Grid item>
-        { productResults.isLoading && <LinearProgress sx={{ margin: 1 }}/> }
-        { showProductForm.show && <ProductForm productData={selectedProduct} formType={showProductForm.formType} submitHandler={handleProductFormSubmit} displayProductForm={setShowProductForm} />}
+        {productResults.isLoading && <LinearProgress sx={{ margin: 1 }} />}
+        {showProductForm.show && (
+          <ProductForm
+            productData={selectedProduct}
+            formType={showProductForm.formType}
+            submitHandler={handleProductFormSubmit}
+            displayProductForm={setShowProductForm}
+          />
+        )}
       </Grid>
       <Grid item>
-        { productResults.data && <ProductList products={products} selectProduct={setSelectedProduct} displayProductForm={setShowProductForm}/>}
+        {productResults.data && (
+          <ProductList products={products} selectProduct={setSelectedProduct} displayProductForm={setShowProductForm} />
+        )}
       </Grid>
     </Grid>
   );

@@ -2,11 +2,15 @@ import axios from 'axios';
 
 import { api_url } from '../../../configs/config';
 import setToken from '../../usersAndAuthentications/services/authentication';
-import { DashboardNokAnalysedData, DashboardTopNokData, DetectedNokData } from '../components/dashboard/DashBoardDataType';
+import {
+  DashboardNokAnalysedData,
+  DashboardTopNokData,
+  DetectedNokData,
+} from '../components/dashboard/DashBoardDataType';
 import { Product, WorkShift } from '../../../types/QualityHubTypes';
 
 // Get NOK Deteced Dashboard Data
-const getNokDashboardData = async () : Promise<DetectedNokData[]> => {
+const getNokDashboardData = async (): Promise<DetectedNokData[]> => {
   const token = setToken();
   const config = {
     headers: { Authorization: token },
@@ -19,14 +23,14 @@ const getNokDashboardData = async () : Promise<DetectedNokData[]> => {
   const shifts = filterData && filterData.shifts ? JSON.parse(filterData.shifts) : [];
 
   const parsmsData = {
-    'startDate' : filterData ? filterData.time_from : null,
-    'endDate' : filterData ? filterData.time_until : null,
-    'productId' : products.map((item : Product) => item.id),
-    'shiftId' : shifts.map((item: WorkShift) => item.id)
+    startDate: filterData ? filterData.time_from : null,
+    endDate: filterData ? filterData.time_until : null,
+    productId: products.map((item: Product) => item.id),
+    shiftId: shifts.map((item: WorkShift) => item.id),
   };
 
   try {
-    const res = await axios.post(`${api_url}/quality/dashboard/detected-nok`,parsmsData, config);
+    const res = await axios.post(`${api_url}/quality/dashboard/detected-nok`, parsmsData, config);
     console.log(' *** Service  *** NOK Dashboard Data:', res.data);
     return res.data;
   } catch (err: unknown) {
@@ -40,8 +44,7 @@ const getNokDashboardData = async () : Promise<DetectedNokData[]> => {
   }
 };
 
-
-const getNokAnanysedData = async () : Promise<DashboardNokAnalysedData> => {
+const getNokAnanysedData = async (): Promise<DashboardNokAnalysedData> => {
   const token = setToken();
   const config = {
     headers: { Authorization: token },
@@ -54,14 +57,14 @@ const getNokAnanysedData = async () : Promise<DashboardNokAnalysedData> => {
   const shifts = filterData && filterData.shifts ? JSON.parse(filterData.shifts) : [];
 
   const parsmsData = {
-    'startDate' : filterData ? filterData.time_from : null,
-    'endDate' : filterData ? filterData.time_until : null,
-    'productId' : products.map((item : Product) => item.id),
-    'shiftId' : shifts.map((item: WorkShift) => item.id)
+    startDate: filterData ? filterData.time_from : null,
+    endDate: filterData ? filterData.time_until : null,
+    productId: products.map((item: Product) => item.id),
+    shiftId: shifts.map((item: WorkShift) => item.id),
   };
 
   try {
-    const res = await axios.post(`${api_url}/quality/dashboard/analysed-nok`,parsmsData, config);
+    const res = await axios.post(`${api_url}/quality/dashboard/analysed-nok`, parsmsData, config);
     return res.data;
   } catch (err: unknown) {
     if (err instanceof Error) {
@@ -74,7 +77,7 @@ const getNokAnanysedData = async () : Promise<DashboardNokAnalysedData> => {
   }
 };
 
-const getTop_N_NokData = async () : Promise<DashboardTopNokData> => {
+const getTop_N_NokData = async (): Promise<DashboardTopNokData> => {
   const token = setToken();
   const config = {
     headers: { Authorization: token },
@@ -87,15 +90,15 @@ const getTop_N_NokData = async () : Promise<DashboardTopNokData> => {
   const shifts = filterData && filterData.shifts ? JSON.parse(filterData.shifts) : [];
 
   const parsmsData = {
-    'topN': filterData? filterData.topN : 10,
-    'startDate' : filterData ? filterData.time_from : null,
-    'endDate' : filterData ? filterData.time_until : null,
-    'productId' : products.map((item : Product) => item.id),
-    'shiftId' : shifts.map((item: WorkShift) => item.id)
+    topN: filterData ? filterData.topN : 10,
+    startDate: filterData ? filterData.time_from : null,
+    endDate: filterData ? filterData.time_until : null,
+    productId: products.map((item: Product) => item.id),
+    shiftId: shifts.map((item: WorkShift) => item.id),
   };
 
   try {
-    const res = await axios.post(`${api_url}/quality/dashboard/top-nok`,parsmsData, config);
+    const res = await axios.post(`${api_url}/quality/dashboard/top-nok`, parsmsData, config);
     return res.data;
   } catch (err: unknown) {
     if (err instanceof Error) {
@@ -111,5 +114,5 @@ const getTop_N_NokData = async () : Promise<DashboardTopNokData> => {
 export default {
   getNokDashboardData,
   getNokAnanysedData,
-  getTop_N_NokData
+  getTop_N_NokData,
 };

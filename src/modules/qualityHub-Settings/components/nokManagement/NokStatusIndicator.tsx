@@ -6,7 +6,7 @@ import TroubleshootTwoToneIcon from '@mui/icons-material/TroubleshootTwoTone';
 import { Box, colors, Stack, Typography } from '@mui/material';
 
 type NokStatusProps = {
-	status: {
+  status: {
     reworkStatus?: string;
     rcaStatus?: string;
     analyseStatus?: string;
@@ -18,7 +18,6 @@ type NokStatusProps = {
 
 const NokStatusIndicator = ({ status }: NokStatusProps) => {
   console.log(' Status ->', status);
-
 
   // Rework Status Color
   let reworkStatusColor;
@@ -98,22 +97,43 @@ const NokStatusIndicator = ({ status }: NokStatusProps) => {
 
   return (
     <Stack direction={'row'} spacing={0} marginTop={1} marginLeft={1}>
-      <BuildCircleTwoToneIcon titleAccess='Rework Status' sx={{ fontSize: '45px', color: reworkStatusColor }} />
-      <MonetizationOnTwoToneIcon titleAccess='Cost Status' sx={{ fontSize: '45px', color: costStatusColor }} />
-      <ContentPasteSearchTwoToneIcon titleAccess='Analyse Status' sx={{ fontSize: '45px', color: analyseSatusColor }} />
-      <TroubleshootTwoToneIcon titleAccess='RCA Status' sx={{ fontSize: '45px', color: rcaStatusColor }} />
-      <Box sx={{ width: '80px', height: '35px', borderRadius: '8px', border:'4px solid',  textAlign: 'center', paddingTop: '3px', borderColor: claimStatusColor }}>
+      <BuildCircleTwoToneIcon titleAccess="Rework Status" sx={{ fontSize: '45px', color: reworkStatusColor }} />
+      <MonetizationOnTwoToneIcon titleAccess="Cost Status" sx={{ fontSize: '45px', color: costStatusColor }} />
+      <ContentPasteSearchTwoToneIcon titleAccess="Analyse Status" sx={{ fontSize: '45px', color: analyseSatusColor }} />
+      <TroubleshootTwoToneIcon titleAccess="RCA Status" sx={{ fontSize: '45px', color: rcaStatusColor }} />
+      <Box
+        sx={{
+          width: '80px',
+          height: '35px',
+          borderRadius: '8px',
+          border: '4px solid',
+          textAlign: 'center',
+          paddingTop: '3px',
+          borderColor: claimStatusColor,
+        }}
+      >
         <Typography fontSize={22} sx={{ color: claimStatusColor }}>
           CLAIM
         </Typography>
       </Box>
-      {status.removedFromReport ?
-        <Box sx={{ width: '230px', height: '35px', borderRadius: '8px', border:'4px solid',  textAlign: 'center', paddingTop: '3px', marginLeft: 1, borderColor: colors.red[500] }}>
+      {status.removedFromReport ? (
+        <Box
+          sx={{
+            width: '230px',
+            height: '35px',
+            borderRadius: '8px',
+            border: '4px solid',
+            textAlign: 'center',
+            paddingTop: '3px',
+            marginLeft: 1,
+            borderColor: colors.red[500],
+          }}
+        >
           <Typography fontSize={22} sx={{ color: colors.red[500] }}>
-          Removed from Report
+            Removed from Report
           </Typography>
         </Box>
-        : null}
+      ) : null}
     </Stack>
   );
 };

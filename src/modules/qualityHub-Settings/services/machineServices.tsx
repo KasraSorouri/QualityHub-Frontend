@@ -2,16 +2,16 @@ import axios from 'axios';
 
 import { api_url } from '../../../configs/config';
 import setToken from '../../usersAndAuthentications/services/authentication';
-import { Machine, MachineData, } from '../../../types/QualityHubTypes';
+import { Machine, MachineData } from '../../../types/QualityHubTypes';
 
 // Get all Machine
-const getMachine = async() : Promise<Machine[]> => {
+const getMachine = async (): Promise<Machine[]> => {
   const res = await axios.get(`${api_url}/quality/machines`);
   return res.data;
 };
 
 // Craete machine
-const createMachine = async(machineData: MachineData) : Promise<Machine | unknown> => {
+const createMachine = async (machineData: MachineData): Promise<Machine | unknown> => {
   const token = setToken();
   const config = {
     headers: { Authorization: token },
@@ -20,8 +20,8 @@ const createMachine = async(machineData: MachineData) : Promise<Machine | unknow
   try {
     const res = await axios.post(`${api_url}/quality/machines`, machineData, config);
     return res.data;
-  } catch (err : unknown) {
-    if(err instanceof Error) {
+  } catch (err: unknown) {
+    if (err instanceof Error) {
       console.log('create machine fail =>', err.message);
       throw new Error(`${err.message}`);
     } else {
@@ -31,18 +31,18 @@ const createMachine = async(machineData: MachineData) : Promise<Machine | unknow
 };
 
 // Update an Machine
-const editMachine = async(machineData : MachineData) : Promise<Machine | unknown> => {
+const editMachine = async (machineData: MachineData): Promise<Machine | unknown> => {
   const token = setToken();
   const config = {
     headers: { Authorization: token },
   };
 
   const { id, ...machineEditedData } = machineData;
-  try{
+  try {
     const res = await axios.put(`${api_url}/quality/machines/${id}`, machineEditedData, config);
     return res.data;
-  } catch (err : unknown) {
-    if(err instanceof Error) {
+  } catch (err: unknown) {
+    if (err instanceof Error) {
       console.log('create machine fail =>', err.message);
       throw new Error(`${err.message}`);
     } else {

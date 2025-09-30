@@ -5,20 +5,19 @@ import setToken from '../../usersAndAuthentications/services/authentication';
 import { Recipe, RecipeData } from '../../../types/QualityHubTypes';
 
 // Get all Recipe
-const getRecipe = async() : Promise<Recipe[]> => {
+const getRecipe = async (): Promise<Recipe[]> => {
   const res = await axios.get(`${api_url}/quality/recipes`);
   return res.data;
 };
 
 // Get Recipe by Product
-const getRecipeByProduct = async( productId : number) : Promise<Recipe[]> => {
-
+const getRecipeByProduct = async (productId: number): Promise<Recipe[]> => {
   const res = await axios.get(`${api_url}/quality/recipes/product/${productId}`);
   return res.data;
 };
 
 // Craete recipe
-const createRecipe = async(recipeData: RecipeData) : Promise<Recipe | unknown> => {
+const createRecipe = async (recipeData: RecipeData): Promise<Recipe | unknown> => {
   const token = setToken();
   const config = {
     headers: { Authorization: token },
@@ -27,8 +26,8 @@ const createRecipe = async(recipeData: RecipeData) : Promise<Recipe | unknown> =
   try {
     const res = await axios.post(`${api_url}/quality/recipes`, recipeData, config);
     return res.data;
-  } catch (err : unknown) {
-    if(err instanceof Error) {
+  } catch (err: unknown) {
+    if (err instanceof Error) {
       console.log('create recipe fail =>', err.message);
       throw new Error(`${err.message}`);
     } else {
@@ -38,18 +37,18 @@ const createRecipe = async(recipeData: RecipeData) : Promise<Recipe | unknown> =
 };
 
 // Update an Recipe
-const editRecipe = async(recipeData : RecipeData) : Promise<Recipe | unknown> => {
+const editRecipe = async (recipeData: RecipeData): Promise<Recipe | unknown> => {
   const token = setToken();
   const config = {
     headers: { Authorization: token },
   };
 
   const { id, ...recipeEditedData } = recipeData;
-  try{
+  try {
     const res = await axios.put(`${api_url}/quality/recipes/${id}`, recipeEditedData, config);
     return res.data;
-  } catch (err : unknown) {
-    if(err instanceof Error) {
+  } catch (err: unknown) {
+    if (err instanceof Error) {
       console.log('create recipe fail =>', err.message);
       throw new Error(`${err.message}`);
     } else {

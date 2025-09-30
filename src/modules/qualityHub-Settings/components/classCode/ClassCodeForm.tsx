@@ -1,15 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import {
-  TextField,
-  Box,
-  Typography,
-  FormControlLabel,
-  Checkbox,
-  Button,
-  Paper,
-  Grid,
-} from '@mui/material';
+import { TextField, Box, Typography, FormControlLabel, Checkbox, Button, Paper, Grid } from '@mui/material';
 
 import { ClassCode, ClassCodeData } from '../../../../types/QualityHubTypes';
 
@@ -24,18 +15,15 @@ interface FormData {
 type ClassCodeFormProps = {
   classCodeData: ClassCode | null;
   formType: 'ADD' | 'EDIT';
-  submitHandler: (classCode: ClassCodeData ) => void;
-  displayClassCodeForm: ({ show, formType } : { show: boolean, formType: 'ADD' | 'EDIT' }) => void;
-}
+  submitHandler: (classCode: ClassCodeData) => void;
+  displayClassCodeForm: ({ show, formType }: { show: boolean; formType: 'ADD' | 'EDIT' }) => void;
+};
 
-
-
-const ClassCodeForm = ({ classCodeData, formType, submitHandler, displayClassCodeForm } : ClassCodeFormProps) => {
-
+const ClassCodeForm = ({ classCodeData, formType, submitHandler, displayClassCodeForm }: ClassCodeFormProps) => {
   const formTitle = formType === 'ADD' ? 'Add New Code' : 'Edit Code';
   const submitTitle = formType === 'ADD' ? 'Add' : 'Update';
 
-  const initialFormData : FormData = {
+  const initialFormData: FormData = {
     id: classCodeData ? classCodeData.id : '',
     className: classCodeData ? classCodeData.className : '',
     classCode: classCodeData ? classCodeData.classCode : '',
@@ -43,10 +31,10 @@ const ClassCodeForm = ({ classCodeData, formType, submitHandler, displayClassCod
     active: classCodeData ? classCodeData.active : false,
   };
 
-  const [ formValues, setFormValues ] = useState<FormData>(initialFormData);
+  const [formValues, setFormValues] = useState<FormData>(initialFormData);
 
   useEffect(() => {
-    const formData : FormData = {
+    const formData: FormData = {
       id: classCodeData ? classCodeData.id : '',
       className: classCodeData ? classCodeData.className : '',
       classCode: classCodeData ? classCodeData.classCode : '',
@@ -54,12 +42,11 @@ const ClassCodeForm = ({ classCodeData, formType, submitHandler, displayClassCod
       active: classCodeData ? classCodeData.active : false,
     };
     setFormValues(formData);
-  },[formType, classCodeData]);
+  }, [formType, classCodeData]);
 
-
-  const handleChange = (event: {target: { name: string, value: unknown, checked: boolean}}) => {
+  const handleChange = (event: { target: { name: string; value: unknown; checked: boolean } }) => {
     const { name, value, checked } = event.target;
-    const newValue = (name === 'active') ? checked : value;
+    const newValue = name === 'active' ? checked : value;
 
     setFormValues((prevValues: FormData) => ({
       ...prevValues,
@@ -67,10 +54,10 @@ const ClassCodeForm = ({ classCodeData, formType, submitHandler, displayClassCod
     }));
   };
 
-  const handleSubmit = (event: { preventDefault: () => void; }) => {
+  const handleSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault();
     const newClassCode: ClassCodeData = {
-      id: (typeof formValues.id === 'number') ? formValues.id : 0,
+      id: typeof formValues.id === 'number' ? formValues.id : 0,
       className: formValues.className,
       classCode: formValues.classCode,
       classDesc: formValues.classDesc,
@@ -79,69 +66,67 @@ const ClassCodeForm = ({ classCodeData, formType, submitHandler, displayClassCod
     submitHandler(newClassCode);
   };
 
-  return(
+  return (
     <Paper elevation={5} sx={{ borderRadius: 1 }}>
-      <Box display='flex' justifyContent='space-between' alignItems='center'
-        bgcolor={'#1976d270'}
-      >
-        <Typography variant='h6' marginLeft={2}  >{formTitle}</Typography>
-        <Button variant='contained'  size='small'  onClick={() => displayClassCodeForm({ show: false, formType: 'ADD' })}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" bgcolor={'#1976d270'}>
+        <Typography variant="h6" marginLeft={2}>
+          {formTitle}
+        </Typography>
+        <Button variant="contained" size="small" onClick={() => displayClassCodeForm({ show: false, formType: 'ADD' })}>
           close
         </Button>
       </Box>
-      <form onSubmit={handleSubmit} >
-        <Box display='flex'  margin={0} >
-          <Grid container flexDirection={'column'} >
-            <Grid container flexDirection={'row'} >
+      <form onSubmit={handleSubmit}>
+        <Box display="flex" margin={0}>
+          <Grid container flexDirection={'column'}>
+            <Grid container flexDirection={'row'}>
               <TextField
-                label='Class Name'
-                name='className'
-                sx={{ marginLeft: 2, width:'20%' }}
+                label="Class Name"
+                name="className"
+                sx={{ marginLeft: 2, width: '20%' }}
                 value={formValues.className}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-                margin='dense'
-                variant='outlined'
-                size='small'
+                margin="dense"
+                variant="outlined"
+                size="small"
                 required
               />
               <TextField
-                label='Code'
-                name='classCode'
-                sx={{ marginLeft: 2, width:'10%' }}
+                label="Code"
+                name="classCode"
+                sx={{ marginLeft: 2, width: '10%' }}
                 value={formValues.classCode}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-                margin='dense'
-                variant='outlined'
-                size='small'
+                margin="dense"
+                variant="outlined"
+                size="small"
                 required
               />
               <TextField
-                label='Description'
-                name='classDesc'
-                sx={{ marginLeft: 2, width:'55%' }}
+                label="Description"
+                name="classDesc"
+                sx={{ marginLeft: 2, width: '55%' }}
                 value={formValues.classDesc}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-                margin='dense'
-                variant='outlined'
-                size='small'
+                margin="dense"
+                variant="outlined"
+                size="small"
                 required
               />
               <FormControlLabel
                 sx={{ marginLeft: 2 }}
-                control={
-                  <Checkbox
-                    checked={formValues.active}
-                    onChange={handleChange}
-                    name='active'
-                    color='primary'
-                  />
-                }
-                label='Active'
+                control={<Checkbox checked={formValues.active} onChange={handleChange} name="active" color="primary" />}
+                label="Active"
               />
             </Grid>
           </Grid>
           <Grid>
-            <Button type='submit' variant='contained' color='primary' sx={{ margin: 1, minWidth: '120px' , width: 'auto' }}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={{ margin: 1, minWidth: '120px', width: 'auto' }}
+            >
               {submitTitle}
             </Button>
           </Grid>

@@ -17,5 +17,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         </QueryClientProvider>
       </UserContextProvider>
     </NotificationContextProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

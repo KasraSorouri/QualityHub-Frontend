@@ -34,18 +34,15 @@ interface FormData {
 type MaterialFormProps = {
   materialData: Material | null;
   formType: 'ADD' | 'EDIT';
-  submitHandler: (material: NewMaterial ) => void;
-  displayMaterialForm: ({ show, formType } : { show: boolean, formType: 'ADD' | 'EDIT' }) => void;
-}
+  submitHandler: (material: NewMaterial) => void;
+  displayMaterialForm: ({ show, formType }: { show: boolean; formType: 'ADD' | 'EDIT' }) => void;
+};
 
-
-
-const MaterialForm = ({ materialData, formType, submitHandler, displayMaterialForm } : MaterialFormProps) => {
-
+const MaterialForm = ({ materialData, formType, submitHandler, displayMaterialForm }: MaterialFormProps) => {
   const formTitle = formType === 'ADD' ? 'Add New Material' : 'Edit Material';
   const submitTitle = formType === 'ADD' ? 'Add Material' : 'Update Material';
 
-  const initialFormData : FormData = {
+  const initialFormData: FormData = {
     id: materialData ? materialData.id : '',
     itemShortName: materialData ? materialData.itemShortName : '',
     itemLongName: materialData ? materialData.itemLongName : '',
@@ -57,10 +54,10 @@ const MaterialForm = ({ materialData, formType, submitHandler, displayMaterialFo
     newUnit: materialData ? materialData.unit : undefined,
   };
 
-  const [ formValues, setFormValues ] = useState<FormData>(initialFormData);
+  const [formValues, setFormValues] = useState<FormData>(initialFormData);
 
   useEffect(() => {
-    const formData : FormData = {
+    const formData: FormData = {
       id: materialData ? materialData.id : '',
       itemShortName: materialData ? materialData.itemShortName : '',
       itemLongName: materialData ? materialData.itemLongName : '',
@@ -72,21 +69,21 @@ const MaterialForm = ({ materialData, formType, submitHandler, displayMaterialFo
       newUnit: materialData ? materialData.unit : undefined,
     };
     setFormValues(formData);
-  },[formType, materialData]);
+  }, [formType, materialData]);
 
-  const units : Unit[] = [
-    { id: 1, unitName:'No' },
-    { id: 2, unitName:'Set' },
-    { id: 3, unitName:'Kg' },
-    { id: 4, unitName:'gr' },
-    { id: 5, unitName:'m' },
-    { id: 6, unitName:'Litr' },
-    { id: 7, unitName:'cc' },
+  const units: Unit[] = [
+    { id: 1, unitName: 'No' },
+    { id: 2, unitName: 'Set' },
+    { id: 3, unitName: 'Kg' },
+    { id: 4, unitName: 'gr' },
+    { id: 5, unitName: 'm' },
+    { id: 6, unitName: 'Litr' },
+    { id: 7, unitName: 'cc' },
   ];
 
-  const handleChange = (event: {target: { name: string, value: unknown, checked: boolean}}) => {
+  const handleChange = (event: { target: { name: string; value: unknown; checked: boolean } }) => {
     const { name, value, checked } = event.target;
-    const newValue = (name === 'active' || name ==='traceable') ? checked : value;
+    const newValue = name === 'active' || name === 'traceable' ? checked : value;
 
     setFormValues((prevValues: FormData) => ({
       ...prevValues,
@@ -95,17 +92,16 @@ const MaterialForm = ({ materialData, formType, submitHandler, displayMaterialFo
   };
 
   const handleUnitChange = (newValue: string) => {
-
     setFormValues((prevValues: FormData) => ({
       ...prevValues,
       ['unit']: newValue,
     }));
   };
 
-  const handleSubmit = (event: { preventDefault: () => void; }) => {
+  const handleSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault();
     const newMaterial: NewMaterial = {
-      id: (typeof formValues.id === 'number') ? formValues.id : 0,
+      id: typeof formValues.id === 'number' ? formValues.id : 0,
       itemShortName: formValues.itemShortName,
       itemLongName: formValues.itemLongName,
       itemCode: formValues.itemCode,
@@ -117,84 +113,89 @@ const MaterialForm = ({ materialData, formType, submitHandler, displayMaterialFo
     submitHandler(newMaterial);
   };
 
-  return(
+  return (
     <Paper elevation={5} sx={{ borderRadius: 1 }}>
-      <Box display='flex' justifyContent='space-between' alignItems='center'
-        bgcolor={'#1976d270'}
-      >
-        <Typography variant='h6' marginLeft={2}  >{formTitle}</Typography>
-        <Button variant='contained'  size='small'  onClick={() => displayMaterialForm({ show: false, formType: 'ADD' })}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" bgcolor={'#1976d270'}>
+        <Typography variant="h6" marginLeft={2}>
+          {formTitle}
+        </Typography>
+        <Button variant="contained" size="small" onClick={() => displayMaterialForm({ show: false, formType: 'ADD' })}>
           close
         </Button>
       </Box>
-      <form onSubmit={handleSubmit} >
-        <Box display='flex'  margin={0} >
-          <Grid container flexDirection={'column'} >
-            <Grid container flexDirection={'row'} >
+      <form onSubmit={handleSubmit}>
+        <Box display="flex" margin={0}>
+          <Grid container flexDirection={'column'}>
+            <Grid container flexDirection={'row'}>
               <TextField
-                label='Short Name'
-                name='itemShortName'
+                label="Short Name"
+                name="itemShortName"
                 sx={{ marginLeft: 2 }}
                 value={formValues.itemShortName}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-                margin='dense'
-                variant='outlined'
-                size='small'
+                margin="dense"
+                variant="outlined"
+                size="small"
                 required
               />
               <TextField
-                label='Long Name'
-                name='itemLongName'
+                label="Long Name"
+                name="itemLongName"
                 sx={{ marginLeft: 2 }}
                 value={formValues.itemLongName}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-                margin='dense'
-                variant='outlined'
-                size='small'
+                margin="dense"
+                variant="outlined"
+                size="small"
                 required
               />
               <TextField
-                label='Item Code'
-                name='itemCode'
+                label="Item Code"
+                name="itemCode"
                 sx={{ marginLeft: 2 }}
                 value={formValues.itemCode}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-                margin='dense'
-                variant='outlined'
-                size='small'
+                margin="dense"
+                variant="outlined"
+                size="small"
                 required
               />
             </Grid>
             <Stack direction={'row'}>
               <TextField
-                label='Price'
-                name='price'
+                label="Price"
+                name="price"
                 sx={{ marginLeft: 2 }}
                 value={formValues.price}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-                margin='dense'
-                variant='outlined'
-                size='small'
+                margin="dense"
+                variant="outlined"
+                size="small"
               />
               <Autocomplete
-                id='unit'
+                id="unit"
                 sx={{ marginTop: 1, marginLeft: 2, width: '150px' }}
-                size='small'
+                size="small"
                 aria-required
-                options={units.map(u => (u.unitName))}
-                defaultValue={ 'No' }
+                options={units.map((u) => u.unitName)}
+                defaultValue={'No'}
                 //isOptionEqualToValue={
                 //  (option: string, value: string) => option. === value.unitName
                 //}
                 value={formValues.unit}
                 onChange={(_event, newValue) => newValue && handleUnitChange(newValue)}
                 //getOptionLabel={(option: { unitName: string; }) => option}
-                renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
+                renderInput={(
+                  params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined } & Omit<
+                      OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps,
+                      'variant'
+                    >,
+                ) => (
                   <TextField
                     {...params}
-                    label='Unit'
-                    placeholder='Add unit'
-                    size='small'
+                    label="Unit"
+                    placeholder="Add unit"
+                    size="small"
                     sx={{ width: '180px', margin: '2' }}
                     required
                   />
@@ -203,31 +204,24 @@ const MaterialForm = ({ materialData, formType, submitHandler, displayMaterialFo
               <FormControlLabel
                 sx={{ marginLeft: 5 }}
                 control={
-                  <Checkbox
-                    checked={formValues.traceable}
-                    onChange={handleChange}
-                    name='traceable'
-                    color='primary'
-                  />
+                  <Checkbox checked={formValues.traceable} onChange={handleChange} name="traceable" color="primary" />
                 }
-                label='Traceable'
+                label="Traceable"
               />
               <FormControlLabel
                 sx={{ marginLeft: 5 }}
-                control={
-                  <Checkbox
-                    checked={formValues.active}
-                    onChange={handleChange}
-                    name='active'
-                    color='primary'
-                  />
-                }
-                label='Active'
+                control={<Checkbox checked={formValues.active} onChange={handleChange} name="active" color="primary" />}
+                label="Active"
               />
             </Stack>
           </Grid>
           <Grid>
-            <Button type='submit' variant='contained' color='primary' sx={{ margin: 1, minWidth: '200px' , width: 'auto' }}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={{ margin: 1, minWidth: '200px', width: 'auto' }}
+            >
               {submitTitle}
             </Button>
           </Grid>

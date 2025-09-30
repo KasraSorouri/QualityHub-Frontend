@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
-import {
-  Grid,
-  LinearProgress,
-} from '@mui/material';
+import { Grid, LinearProgress } from '@mui/material';
 
 import materialServices from '../../services/materialServices';
 import MaterialList from './MaterialList';
@@ -15,9 +12,11 @@ import { NewMaterial, Material } from '../../../../types/QualityHubTypes';
 import MaterialForm from './MaterialForm';
 
 const Materials = () => {
-
-  const [ showMaterialForm, setShowMaterialForm ] = useState<{ show: boolean, formType: 'ADD' | 'EDIT' }>({ show: false, formType: 'ADD' });
-  const [ selectedMaterial, setSelectedMaterial ] = useState<Material | null>(null);
+  const [showMaterialForm, setShowMaterialForm] = useState<{ show: boolean; formType: 'ADD' | 'EDIT' }>({
+    show: false,
+    formType: 'ADD',
+  });
+  const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
 
   const setNotification = useNotificationSet();
 
@@ -32,31 +31,28 @@ const Materials = () => {
     },
     onError: (err) => {
       setNotification({ message: `${err}`, type: 'error', time: 8 });
-    }
+    },
   });
 
   // Edit Material
-  const editMaterialMutation = useMutation(materialServices.editMaterial,{
+  const editMaterialMutation = useMutation(materialServices.editMaterial, {
     onSuccess: () => {
       queryClient.invalidateQueries('materials');
       setNotification({ message: 'Material updated successfully!', type: 'info', time: 3 });
     },
     onError: (err) => {
       setNotification({ message: `${err}`, type: 'error', time: 8 });
-    }
+    },
   });
 
-
   // Get Material List
-  const materialResults = useQuery('materials',materialServices.getMaterial, { refetchOnWindowFocus: false });
+  const materialResults = useQuery('materials', materialServices.getMaterial, { refetchOnWindowFocus: false });
 
   const materials: Material[] = materialResults.data || [];
 
   console.log('materilas  ->', materials);
 
-
-  const handleMaterialFormSubmit = (newUserData:  NewMaterial) => {
-
+  const handleMaterialFormSubmit = (newUserData: NewMaterial) => {
     if (showMaterialForm.formType === 'ADD') {
       newMaterialMutation.mutate(newUserData);
     }
@@ -65,14 +61,27 @@ const Materials = () => {
       editMaterialMutation.mutate(newUserData);
     }
   };
-  return(
+  return (
     <Grid container direction={'column'} spacing={2}>
       <Grid item>
-        { materialResults.isLoading && <LinearProgress sx={{ margin: 1 }}/> }
-        { showMaterialForm.show && <MaterialForm materialData={selectedMaterial} formType={showMaterialForm.formType} submitHandler={handleMaterialFormSubmit} displayMaterialForm={setShowMaterialForm} />}
+        {materialResults.isLoading && <LinearProgress sx={{ margin: 1 }} />}
+        {showMaterialForm.show && (
+          <MaterialForm
+            materialData={selectedMaterial}
+            formType={showMaterialForm.formType}
+            submitHandler={handleMaterialFormSubmit}
+            displayMaterialForm={setShowMaterialForm}
+          />
+        )}
       </Grid>
       <Grid item>
-        { materialResults.data && <MaterialList materials={materials} selectMaterial={setSelectedMaterial} displayMaterialForm={setShowMaterialForm}/>}
+        {materialResults.data && (
+          <MaterialList
+            materials={materials}
+            selectMaterial={setSelectedMaterial}
+            displayMaterialForm={setShowMaterialForm}
+          />
+        )}
       </Grid>
     </Grid>
   );

@@ -23,15 +23,14 @@ import { useNotificationSet } from '../../../contexts/NotificationContext';
 const defaultTheme = createTheme();
 
 const SignIn = () => {
-
   const navigate = useNavigate();
   const setUser = useUserSet();
   const setNotification = useNotificationSet();
 
-  const handleSubmit = async(event: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined }) => {
+  const handleSubmit = async (event: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined }) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const credentials : Credentials = {
+    const credentials: Credentials = {
       username: data.get('username') as string,
       password: data.get('password') as string,
     };
@@ -40,13 +39,13 @@ const SignIn = () => {
       const response = await loginServices.login(credentials);
       const user = response
         ? {
-            firstName: response.firstName,
-            lastName: response.lastName,
-            username: response.username,
-            token: response.token,
-            roles: response.roles,
-            rights: response.rights,
-          }
+          firstName: response.firstName,
+          lastName: response.lastName,
+          username: response.username,
+          token: response.token,
+          roles: response.roles,
+          rights: response.rights,
+        }
         : null;
 
       window.localStorage.setItem('QualityHub_SignedUser', JSON.stringify(user));
@@ -54,9 +53,9 @@ const SignIn = () => {
       setUser(user);
       setNotification({ message: 'Login Successfully!', type: 'info', time: 3 });
       navigate('/');
-    } catch (err : unknown) {
+    } catch (err: unknown) {
       if (err instanceof Error) {
-        console.log('log in fail =>',err.message);
+        console.log('log in fail =>', err.message);
         setNotification({ message: err.message, type: 'error', time: 5 });
       }
     }
@@ -64,7 +63,7 @@ const SignIn = () => {
 
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Container component='main' maxWidth='xs'>
+      <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
           sx={{
@@ -77,43 +76,35 @@ const SignIn = () => {
           <Avatar sx={{ m: 1, bgcolor: '#1976d2' }}>
             <LockOutlinedIcon />
           </Avatar>
-          <Typography component='h1' variant='h5'>
+          <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <Box component='form' onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
-              margin='normal'
+              margin="normal"
               fullWidth
-              id='username'
-              label='username'
-              name='username'
-              autoComplete='username'
+              id="username"
+              label="username"
+              name="username"
+              autoComplete="username"
               autoFocus
             />
             <TextField
-              margin='normal'
+              margin="normal"
               fullWidth
-              name='password'
-              label='Password'
-              type='password'
-              id='password'
-              autoComplete='current-password'
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
             />
-            <FormControlLabel
-              control={<Checkbox value='remember' color='primary' />}
-              label='Remember me'
-            />
-            <Button
-              type='submit'
-              fullWidth
-              variant='contained'
-              sx={{ mt: 3, mb: 2 }}
-            >
+            <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me" />
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
               Sign In
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href='#' variant='body2'>
+                <Link href="#" variant="body2">
                   Forgot password?
                 </Link>
               </Grid>

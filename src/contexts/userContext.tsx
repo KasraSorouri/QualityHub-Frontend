@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import { Token } from '../types/UserAuthTypes';
 
-
 // Define Types
 interface UserContextValue {
   user: Token | null;
@@ -20,11 +19,7 @@ export const UserContextProvider = ({ children }: UserContextProviderProps) => {
   const [user, setUser] = useState<Token | null>(null);
 
   const value: UserContextValue = { user, setUser };
-  return (
-    <UserContext.Provider value={value}>
-      {children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components

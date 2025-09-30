@@ -22,7 +22,7 @@ import {
   TableRow,
   TextField,
   TextFieldVariants,
-  Typography
+  Typography,
 } from '@mui/material';
 
 import NOK_Reg_Form from './NOK_Reg_Form';
@@ -41,34 +41,47 @@ import nokRcaServices from '../../services/nokRcaServices';
 import nokAnalyseServices from '../../services/nokAnalyseServices';
 import classCodeServices from '../../services/classCodeServices';
 
-import { NokCode, Station, WorkShift, Product, NokAnalyseData, NewNokAnalyseData, NokData, RCA, NewRca, NokCodeS, ClassCode, NokStatus } from '../../../../types/QualityHubTypes';
+import {
+  NokCode,
+  Station,
+  WorkShift,
+  Product,
+  NokAnalyseData,
+  NewNokAnalyseData,
+  NokData,
+  RCA,
+  NewRca,
+  NokCodeS,
+  ClassCode,
+  NokStatus,
+} from '../../../../types/QualityHubTypes';
 
 import CloseIcon from '@mui/icons-material/Close';
 
 type NokFromProps = {
-	nokId: number,
-	formType: 'ADD' | 'EDIT' | 'VIEW';
-	nokAnalyseData?: NokAnalyseData | null;
-	removeNok: (nok: null) => void;
-}
+  nokId: number;
+  formType: 'ADD' | 'EDIT' | 'VIEW';
+  nokAnalyseData?: NokAnalyseData | null;
+  removeNok: (nok: null) => void;
+};
 
 type AnalyzeStatus = {
-	analyseStatus: NokStatus;
-	removeFromReportStatus: boolean;
-}
+  analyseStatus: NokStatus;
+  removeFromReportStatus: boolean;
+};
 
 type FormData = {
-	nokCode: NokCodeS | null;
-	causeStation: Station | null;
-	causeShift: WorkShift | null;
-	classCode: ClassCode | null;
-	description: string;
-	timeWaste?: number;
-	materialWaste?: number;
-	closed: boolean;
-	costData?: {[key: string]: number }
-	reworkStatus?: string;
-}
+  nokCode: NokCodeS | null;
+  causeStation: Station | null;
+  causeShift: WorkShift | null;
+  classCode: ClassCode | null;
+  description: string;
+  timeWaste?: number;
+  materialWaste?: number;
+  closed: boolean;
+  costData?: { [key: string]: number };
+  reworkStatus?: string;
+};
 
 const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromProps) => {
   console.log('nok ID ->', nokId);
@@ -85,26 +98,23 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
     classCode: nokAnalyseData?.classCode || null,
     description: nokAnalyseData ? nokAnalyseData.description : '',
     closed: nokAnalyseData ? nokAnalyseData.closed : false,
-    costData: nokAnalyseData?.costResult
+    costData: nokAnalyseData?.costResult,
   };
 
   const initAnalyseStatus: AnalyzeStatus = {
     analyseStatus: NokStatus.PENDING,
-    removeFromReportStatus: false
+    removeFromReportStatus: false,
   };
 
-  const [ formValues, setFormValues ] = useState<FormData>(initFormValues);
-  const [ nok, setNok ] = useState<NokData | null>(null);
-  const [ showReworkForm, setShowReworkForm ] = useState<boolean>(false);
-  const [ showCostForm, setShowCostForm ] = useState<boolean>(false);
-  const [ status, setStatus] = useState<AnalyzeStatus>(initAnalyseStatus);
-
-
+  const [formValues, setFormValues] = useState<FormData>(initFormValues);
+  const [nok, setNok] = useState<NokData | null>(null);
+  const [showReworkForm, setShowReworkForm] = useState<boolean>(false);
+  const [showCostForm, setShowCostForm] = useState<boolean>(false);
+  const [status, setStatus] = useState<AnalyzeStatus>(initAnalyseStatus);
 
   console.log('NOK Analyse * NOK Data ->', nok);
   console.log('NOK Analyse * showReworkForm Data ->', showReworkForm);
   console.log('NOK Analyse * show Form Value ->', formValues);
-
 
   useEffect(() => {
     const getInitData = async () => {
@@ -120,30 +130,30 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
         description: analyseResults.description,
         closed: analyseResults.closed,
         costData: analyseResults.costResult,
-        reworkStatus: nokResult.productStatus
+        reworkStatus: nokResult.productStatus,
       };
       console.log('* Nok Analize Form * newFormValue ->', newFormValue);
 
       setFormValues(newFormValue);
-      console.log('$$$$ Nok Analize Form * form value * effect ->', formValues);
 
       setStatus({
         analyseStatus: nokResult.nokStatus,
-        removeFromReportStatus: nokResult.removeReport ? nokResult.removeReport : false
+        removeFromReportStatus: nokResult.removeReport ? nokResult.removeReport : false,
       });
-
     };
     getInitData();
-  },[nokId]);
+  }, [nokId]);
 
   // Get RCAs for NOK ID
-  const rcaResults = useQuery(['rcas', nokId], () => nokrcaServices.getNokRcaByNokId(nokId), { refetchOnWindowFocus: false });
+  const rcaResults = useQuery(['rcas', nokId], () => nokrcaServices.getNokRcaByNokId(nokId), {
+    refetchOnWindowFocus: false,
+  });
   let rcaList: RCA[] = rcaResults.data || [];
 
   console.log('* Nok Analize Form * RCA List ->', rcaList);
 
   // get Station List
-  const stationResults = useQuery('stations',stationServices.getStation, { refetchOnWindowFocus: false });
+  const stationResults = useQuery('stations', stationServices.getStation, { refetchOnWindowFocus: false });
   const stationList: Station[] = stationResults.data || [];
 
   // Get NOK Code List
@@ -155,12 +165,13 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
   const workShiftList: WorkShift[] = workShiftResults.data || [];
 
   // Get Nok Class Code List
-  const nokClassCodeResults = useQuery('nokClassCodes', classCodeServices.getClassCode, { refetchOnWindowFocus: false });
-  const nokClassCodeList: ClassCode [] = nokClassCodeResults.data || [];
-
+  const nokClassCodeResults = useQuery('nokClassCodes', classCodeServices.getClassCode, {
+    refetchOnWindowFocus: false,
+  });
+  const nokClassCodeList: ClassCode[] = nokClassCodeResults.data || [];
 
   // handle Changes
-  const handleChange = (event: {target: { name: string, value: unknown, checked: boolean}}) => {
+  const handleChange = (event: { target: { name: string; value: unknown; checked: boolean } }) => {
     const { name, value, checked } = event.target;
     const newValue = name === 'active' ? checked : value;
 
@@ -170,15 +181,17 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
     }));
   };
 
-  const handleAutoCompeletChange = (parameter: string, newValue: Product | Station | WorkShift | NokCodeS | ClassCode) => {
-
+  const handleAutoCompeletChange = (
+    parameter: string,
+    newValue: Product | Station | WorkShift | NokCodeS | ClassCode,
+  ) => {
     setFormValues((prevValues: FormData) => ({
       ...prevValues,
       [`${parameter}`]: newValue,
     }));
   };
 
-  const handleUpdateRCA = async(rca: NewRca) : Promise<boolean> => {
+  const handleUpdateRCA = async (rca: NewRca): Promise<boolean> => {
     console.log(' *** NOK registeration * Update RCA * rcas -> ', rca);
     try {
       const result = await nokRcaServices.createNokRca(rca);
@@ -192,15 +205,18 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
   };
 
   // Update Analyse Status
-  const analyseStatusHandler = async () => {await nokAnalyseServices.updateStatus(nokId, status);};
+  const analyseStatusHandler = async () => {
+    await nokAnalyseServices.updateStatus(nokId, status);
+  };
 
-  const handleSubmit = async (event: {preventDefault: () => void}) => {
+  const handleSubmit = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
-    if (formType === 'ADD' &&
-			formValues.nokCode &&
-			formValues.causeStation &&
-			formValues.causeShift &&
-			formValues.classCode
+    if (
+      formType === 'ADD' &&
+      formValues.nokCode &&
+      formValues.causeStation &&
+      formValues.causeShift &&
+      formValues.classCode
     ) {
       const newNokAnalyse: NewNokAnalyseData = {
         id: nokAnalyseData?.id,
@@ -216,123 +232,119 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
     }
   };
 
-  const nokStatus  = {
+  const nokStatus = {
     rcaStatus: rcaList.length > 0 ? 'OK' : undefined,
-    costStatus: formValues.costData && (formValues.costData.issue === 1 ? 'SomeIssues' : formValues.costData.IQC > 0 ? 'IQC' : 'OK'),
+    costStatus:
+      formValues.costData &&
+      (formValues.costData.issue === 1 ? 'SomeIssues' : formValues.costData.IQC > 0 ? 'IQC' : 'OK'),
     reworkStatus: formValues.reworkStatus,
     analyseStatus: formValues.nokCode ? 'OK' : undefined,
-    claimStatus:  formValues.costData && (formValues.costData.approved > 0 ? 'Accepted' : formValues.costData.pendding > 0 ? 'Pending' : formValues.costData.rejected > 0 ? 'Rejected' : undefined ),
-    removedFromReport: status.removeFromReportStatus
+    claimStatus:
+      formValues.costData &&
+      (formValues.costData.approved > 0
+        ? 'Accepted'
+        : formValues.costData.pendding > 0
+          ? 'Pending'
+          : formValues.costData.rejected > 0
+            ? 'Rejected'
+            : undefined),
+    removedFromReport: status.removeFromReportStatus,
   };
 
-  const closeAnalysePermision = nokStatus.rcaStatus === 'OK' && nokStatus.analyseStatus === 'OK' ;
+  const closeAnalysePermision = nokStatus.rcaStatus === 'OK' && nokStatus.analyseStatus === 'OK';
 
   return (
     <Grid container direction={'column'}>
-      <Grid container direction={'row'} >
+      <Grid container direction={'row'}>
         <Grid direction={'column'} xs={6}>
           <Grid item>
-            <Typography variant='h5' marginLeft={2}>
-						Detect Information
+            <Typography variant="h5" marginLeft={2}>
+              Detect Information
             </Typography>
             <NOK_Reg_Form formType={'VIEW'} nokData={nok} />
           </Grid>
-          <Divider sx={{ margin:1 }}/>
+          <Divider sx={{ margin: 1 }} />
           <Grid item>
-            <Typography variant='h5' marginLeft={2}>
+            <Typography variant="h5" marginLeft={2}>
               Origin of NOK
             </Typography>
             <Box>
-              <form onSubmit={handleSubmit} >
+              <form onSubmit={handleSubmit}>
                 <Grid container direction={'column'} sx={{ background: '#FEC0D4' }}>
-                  <Grid container width={'100%'} flexDirection={'row'} >
+                  <Grid container width={'100%'} flexDirection={'row'}>
                     <Autocomplete
-                      id='causeStation'
+                      id="causeStation"
                       sx={{ marginLeft: 2, marginTop: 1, width: '25%', minWidth: '200px' }}
-                      size='small'
+                      size="small"
                       aria-required
                       options={stationList}
-                      isOptionEqualToValue={
-                        (option: Station, value: Station) => option.stationName === value.stationName
+                      isOptionEqualToValue={(option: Station, value: Station) =>
+                        option.stationName === value.stationName
                       }
                       value={formValues.causeStation ? formValues.causeStation : null}
                       onChange={(_event, newValue) => newValue && handleAutoCompeletChange('causeStation', newValue)}
-                      getOptionLabel={(option: { stationName: string; }) => option.stationName}
-                      renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
-                        <TextField
-                          {...params}
-                          label='Station'
-                          placeholder='Add Station'
-                          size='small'
-                          required
-                        />
-                      )}
+                      getOptionLabel={(option: { stationName: string }) => option.stationName}
+                      renderInput={(
+                        params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined } & Omit<
+                            OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps,
+                            'variant'
+                          >,
+                      ) => <TextField {...params} label="Station" placeholder="Add Station" size="small" required />}
                     />
                     <Autocomplete
-                      id='nokCode'
+                      id="nokCode"
                       sx={{ marginLeft: 2, marginTop: 1, width: '15%', minWidth: '150px' }}
-                      size='small'
+                      size="small"
                       aria-required
                       options={nokCodeList}
-                      isOptionEqualToValue={
-                        (option: NokCodeS, value: NokCodeS) => option.nokCode === value.nokCode
-                      }
+                      isOptionEqualToValue={(option: NokCodeS, value: NokCodeS) => option.nokCode === value.nokCode}
                       value={formValues.nokCode ? formValues.nokCode : null}
                       onChange={(_event, newValue) => newValue && handleAutoCompeletChange('nokCode', newValue)}
-                      getOptionLabel={(option: { nokCode: string; }) => option.nokCode}
-                      renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
-                        <TextField
-                          {...params}
-                          label='NOK Code'
-                          placeholder='NOK Code'
-                          size='small'
-                          required
-                        />
-                      )}
+                      getOptionLabel={(option: { nokCode: string }) => option.nokCode}
+                      renderInput={(
+                        params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined } & Omit<
+                            OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps,
+                            'variant'
+                          >,
+                      ) => <TextField {...params} label="NOK Code" placeholder="NOK Code" size="small" required />}
                     />
                     <Autocomplete
-                      id='causeShift'
-                      sx={{ marginLeft: 2, marginTop: 1, width: '15%', minWidth:'140px' }}
-                      size='small'
+                      id="causeShift"
+                      sx={{ marginLeft: 2, marginTop: 1, width: '15%', minWidth: '140px' }}
+                      size="small"
                       aria-required
                       options={workShiftList}
-                      isOptionEqualToValue={
-                        (option: WorkShift, value: WorkShift) => option.shiftName === value.shiftName
+                      isOptionEqualToValue={(option: WorkShift, value: WorkShift) =>
+                        option.shiftName === value.shiftName
                       }
                       value={formValues.causeShift ? formValues.causeShift : null}
                       onChange={(_event, newValue) => newValue && handleAutoCompeletChange('causeShift', newValue)}
-                      getOptionLabel={(option: { shiftName: string; }) => option.shiftName}
-                      renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
-                        <TextField
-                          {...params}
-                          label='Shift'
-                          placeholder='Shift'
-                          size='small'
-                          required
-                        />
-                      )}
+                      getOptionLabel={(option: { shiftName: string }) => option.shiftName}
+                      renderInput={(
+                        params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined } & Omit<
+                            OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps,
+                            'variant'
+                          >,
+                      ) => <TextField {...params} label="Shift" placeholder="Shift" size="small" required />}
                     />
                     <Autocomplete
-                      id='classCode'
-                      sx={{ marginLeft: 2, marginTop: 1, width: '20%', minWidth:'140px' }}
-                      size='small'
+                      id="classCode"
+                      sx={{ marginLeft: 2, marginTop: 1, width: '20%', minWidth: '140px' }}
+                      size="small"
                       aria-required
                       options={nokClassCodeList}
-                      isOptionEqualToValue={
-                        (option: ClassCode, value: ClassCode) => option.classCode === value.classCode
+                      isOptionEqualToValue={(option: ClassCode, value: ClassCode) =>
+                        option.classCode === value.classCode
                       }
                       value={formValues.classCode ? formValues.classCode : null}
                       onChange={(_event, newValue) => newValue && handleAutoCompeletChange('classCode', newValue)}
-                      getOptionLabel={(option: { className: string; }) => option.className}
-                      renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
-                        <TextField
-                          {...params}
-                          label='Class Code'
-                          placeholder='Class Code'
-                          size='small'
-                          required
-                        />
-                      )}
+                      getOptionLabel={(option: { className: string }) => option.className}
+                      renderInput={(
+                        params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined } & Omit<
+                            OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps,
+                            'variant'
+                          >,
+                      ) => <TextField {...params} label="Class Code" placeholder="Class Code" size="small" required />}
                     />
                   </Grid>
                   <Grid display={'flex'}>
@@ -340,13 +352,19 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
                       id="description"
                       name="description"
                       label="Description"
-                      sx={{ marginLeft: 2, marginTop: 1 , width:'85%' }}
+                      sx={{ marginLeft: 2, marginTop: 1, width: '85%' }}
                       value={formValues.description}
                       onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
                       fullWidth
-                      size='small'
+                      size="small"
                     />
-                    <Button type='submit' variant='contained' color='primary' size='small' sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      sx={{ margin: 1, marginLeft: 1, width: 'auto', height: '38px' }}
+                    >
                       {submitTitle}
                     </Button>
                   </Grid>
@@ -355,30 +373,38 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
             </Box>
           </Grid>
         </Grid>
-        <Grid  direction={'row'}xs={6} >
+        <Grid direction={'row'} xs={6}>
           <Grid item marginTop={5}>
-            <Button variant='contained' sx={{ marginLeft: 2 }} onClick={() => setShowReworkForm(true)}>
+            <Button variant="contained" sx={{ marginLeft: 2 }} onClick={() => setShowReworkForm(true)}>
               Rework
             </Button>
-            <Button variant='contained' sx={{ marginLeft: 2 }} onClick={() => setShowCostForm(true)}>
+            <Button variant="contained" sx={{ marginLeft: 2 }} onClick={() => setShowCostForm(true)}>
               Calculate Cost
             </Button>
-            <Button variant='contained' sx={{ marginLeft: 2 }} onClick={() => analyseStatusHandler()}>
+            <Button variant="contained" sx={{ marginLeft: 2 }} onClick={() => analyseStatusHandler()}>
               Update Status
             </Button>
-            <Button onClick={() => removeNok(null)} variant='contained' color='primary' size='small' sx={{ margin: 1,  marginLeft: 1, width: 'auto', height: '38px' }}>
+            <Button
+              onClick={() => removeNok(null)}
+              variant="contained"
+              color="primary"
+              size="small"
+              sx={{ margin: 1, marginLeft: 1, width: 'auto', height: '38px' }}
+            >
               Back
             </Button>
             <Box>
               <NokStatusIndicator status={nokStatus} />
             </Box>
             <Stack direction={'row'} spacing={0} marginTop={1} marginLeft={1}>
-              <NokAnalyseStatusForm status={status} closeAnalysePermision={closeAnalysePermision} updateStatus={setStatus} />
+              <NokAnalyseStatusForm
+                status={status}
+                closeAnalysePermision={closeAnalysePermision}
+                updateStatus={setStatus}
+              />
               <Box marginLeft={2}>
-                <Table size='small' sx={{ maxWidth: '250px', marginTop: 1 }}>
-                  <TableHead sx={{ fontSize: 18,  fontWeight: 'bold' }}>
-                    Dismantled Material Cost
-                  </TableHead>
+                <Table size="small" sx={{ maxWidth: '250px', marginTop: 1 }}>
+                  <TableHead sx={{ fontSize: 18, fontWeight: 'bold' }}>Dismantled Material Cost</TableHead>
                   <TableBody>
                     <TableRow>
                       <TableCell sx={{ color: 'red' }}>SCRAPPED</TableCell>
@@ -403,14 +429,15 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
           </Grid>
         </Grid>
       </Grid>
-      <Divider sx={{ margin:1 }}/>
-      <Typography variant='h5' marginLeft={2} >
-			Root Cause Analysis
+      <Divider sx={{ margin: 1 }} />
+      <Typography variant="h5" marginLeft={2}>
+        Root Cause Analysis
       </Typography>
-      <Grid >
+      <Grid>
         <RCAs_Form nokId={nokId} formType={'ADD'} rcas={rcaList} updateRCA={handleUpdateRCA} />
       </Grid>
-      <Dialog open={showReworkForm}
+      <Dialog
+        open={showReworkForm}
         fullWidth
         maxWidth="xl"
         sx={{
@@ -421,10 +448,10 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
         }}
       >
         <DialogTitle>
-					Rework Form
+          Rework Form
           <IconButton
             aria-label="close"
-            onClick={ () => setShowReworkForm(false)}
+            onClick={() => setShowReworkForm(false)}
             style={{
               position: 'absolute',
               right: 8,
@@ -435,10 +462,11 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <NokReworkForm nokId={nokId} formType={'ADD'} removeNok={() => console.log() } />
+          <NokReworkForm nokId={nokId} formType={'ADD'} removeNok={() => console.log()} />
         </DialogContent>
       </Dialog>
-      <Dialog open={showCostForm}
+      <Dialog
+        open={showCostForm}
         fullWidth
         maxWidth="xl"
         sx={{
@@ -449,10 +477,10 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
         }}
       >
         <DialogTitle>
-					Cost Form
+          Cost Form
           <IconButton
             aria-label="close"
-            onClick={ () => setShowCostForm(false)}
+            onClick={() => setShowCostForm(false)}
             style={{
               position: 'absolute',
               right: 8,

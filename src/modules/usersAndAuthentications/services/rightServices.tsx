@@ -5,13 +5,13 @@ import setToken from './authentication';
 import { NewRight, Right } from '../../../types/UserAuthTypes';
 
 // Get all Rights
-const getRights = async() : Promise<Right[]> => {
+const getRights = async (): Promise<Right[]> => {
   const res = await axios.get(`${api_url}/auth/rights`);
   return res.data;
 };
 
 // Create Right
-const createRight = async(rightData : NewRight) : Promise<Right | unknown> => {
+const createRight = async (rightData: NewRight): Promise<Right | unknown> => {
   const token = setToken();
   const config = {
     headers: { Authorization: token },
@@ -20,7 +20,7 @@ const createRight = async(rightData : NewRight) : Promise<Right | unknown> => {
   try {
     const res = await axios.post(`${api_url}/auth/rights`, rightData, config);
     return res.data;
-  } catch (err : unknown) {
+  } catch (err: unknown) {
     if (err instanceof Error) {
       throw new Error(`${err.message}`);
     }
@@ -28,17 +28,17 @@ const createRight = async(rightData : NewRight) : Promise<Right | unknown> => {
 };
 
 // Update a Right
-const editRight = async(rightData : Right) : Promise<Right | unknown> => {
+const editRight = async (rightData: Right): Promise<Right | unknown> => {
   const token = setToken();
   const config = {
     headers: { Authorization: token },
   };
 
   const { id, ...rightEditedData } = rightData;
-  try{
+  try {
     const res = await axios.put(`${api_url}/auth/rights/${id}`, rightEditedData, config);
     return res.data;
-  } catch (err : unknown) {
+  } catch (err: unknown) {
     if (err instanceof Error) {
       console.log('update role fail =>', err.message);
       throw new Error(`${err.message}`);
@@ -49,5 +49,5 @@ const editRight = async(rightData : Right) : Promise<Right | unknown> => {
 export default {
   getRights,
   createRight,
-  editRight
+  editRight,
 };

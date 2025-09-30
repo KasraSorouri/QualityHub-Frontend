@@ -46,7 +46,7 @@ type RecipeBomProps = {
   bom: ConsumingMaterial[];
   updateBOM: (bom: ConsumingMaterial[]) => void;
   readonly: boolean;
-}
+};
 
 interface BomData extends Omit<ConsumingMaterialData, 'materialId'> {
   material?: Material;
@@ -54,41 +54,45 @@ interface BomData extends Omit<ConsumingMaterialData, 'materialId'> {
   bomIndex: number;
 }
 
-const RecipeBOM = ({ bom, updateBOM, readonly } : RecipeBomProps) => {
-
+const RecipeBOM = ({ bom, updateBOM, readonly }: RecipeBomProps) => {
   const setNotification = useNotificationSet();
 
-  const blankItem : BomData = {
+  const blankItem: BomData = {
     bomIndex: bom.length,
     qty: 0,
     reusable: Reusable.NO,
     material: undefined,
     itemEditable: true,
-    id: 0
+    id: 0,
   };
 
-  const [ bomData, setBomData ] = useState<BomData[]>([blankItem]);
+  const [bomData, setBomData] = useState<BomData[]>([blankItem]);
 
   useEffect(() => {
-    return setBomData(bom.map((item, index) => ({
-      id: item.id,
-      bomIndex: index,
-      material: item.material,
-      qty: item.qty,
-      reusable: item.reusable
-    })));
+    return setBomData(
+      bom.map((item, index) => ({
+        id: item.id,
+        bomIndex: index,
+        material: item.material,
+        qty: item.qty,
+        reusable: item.reusable,
+      })),
+    );
   }, [bom]);
 
   // Get Material List
-  const materialResults = useQuery('materials',materialServices.getMaterial, { refetchOnWindowFocus: false });
+  const materialResults = useQuery('materials', materialServices.getMaterial, { refetchOnWindowFocus: false });
   const materials: Material[] = materialResults.data || [];
 
   // Sort Items
-  const [ sort, setSort ] = useState<{ sortItem: keyof BomData; sortOrder: number }>({ sortItem: 'material' , sortOrder: 1 });
-  const order : 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
-  const orderBy : keyof BomData = sort.sortItem;
+  const [sort, setSort] = useState<{ sortItem: keyof BomData; sortOrder: number }>({
+    sortItem: 'material',
+    sortOrder: 1,
+  });
+  const order: 'asc' | 'desc' = sort.sortOrder === 1 ? 'asc' : 'desc';
+  const orderBy: keyof BomData = sort.sortItem;
 
-  const sortedBom: BomData[]  = bomData.sort((a, b) => {
+  const sortedBom: BomData[] = bomData.sort((a, b) => {
     const aValue = a[orderBy];
     const bValue = b[orderBy];
 
@@ -103,18 +107,13 @@ const RecipeBOM = ({ bom, updateBOM, readonly } : RecipeBomProps) => {
     return 0;
   });
 
-
   const columnHeader = [
     { id: 'material', lable: 'Material', minWidth: 300, borderRight: true },
     { id: 'qty', lable: 'Qty', width: 'auto', borderRight: true },
     { id: 'reuseable', lable: 'Reusable', width: 'auto', borderRight: true },
   ];
 
-  const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
-    order,
-    orderBy,
-    onRequestSort,
-  }) => {
+  const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({ order, orderBy, onRequestSort }) => {
     const createSortHandler = (property: string) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
@@ -125,47 +124,54 @@ const RecipeBOM = ({ bom, updateBOM, readonly } : RecipeBomProps) => {
           {columnHeader.map((column) => (
             <TableCell
               key={column.id}
-              align='center'
+              align="center"
               style={{ width: column.width ? column.width : undefined, minWidth: column.minWidth }}
-              sx={{ backgroundColor: '#1976d2', color: 'white' , borderRight: column.borderRight ? '1px solid white' : undefined }}
-              sortDirection={orderBy === column.id ? order : false }
+              sx={{
+                backgroundColor: '#1976d2',
+                color: 'white',
+                borderRight: column.borderRight ? '1px solid white' : undefined,
+              }}
+              sortDirection={orderBy === column.id ? order : false}
             >
               <TableSortLabel
                 active={orderBy === column.id}
-                direction={orderBy === column.id ? order : 'asc' }
+                direction={orderBy === column.id ? order : 'asc'}
                 onClick={createSortHandler(column.id)}
               >
                 {column.lable}
                 {orderBy === column.id ? (
-                  <Box  sx={visuallyHidden}>
-                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                  </Box>
+                  <Box sx={visuallyHidden}>{order === 'desc' ? 'sorted descending' : 'sorted ascending'}</Box>
                 ) : null}
               </TableSortLabel>
             </TableCell>
           ))}
-          { !readonly ?
+          {!readonly ? (
             <TableCell
-              key='edit'
-              align= 'center'
+              key="edit"
+              align="center"
               style={{ width: '60px' }}
               sx={{ backgroundColor: '#1976d2', color: 'white' }}
             >
-              <div style={{ margin: '10px' }} >
-                <IconButton title='Add New Material' onClick={addNewItem} style={{ height: '16px', width: '16px', color:'white' }}>
+              <div style={{ margin: '10px' }}>
+                <IconButton
+                  title="Add New Material"
+                  onClick={addNewItem}
+                  style={{ height: '16px', width: '16px', color: 'white' }}
+                >
                   {'Add'}
                   <AddIcon />
                 </IconButton>
               </div>
-            </TableCell> : null}
+            </TableCell>
+          ) : null}
         </TableRow>
       </TableHead>
     );
   };
 
   const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof BomData) => {
-    const isAsc = orderBy === property && order ==='asc';
-    setSort({ sortItem: property, sortOrder:isAsc ? -1 : 1 });
+    const isAsc = orderBy === property && order === 'asc';
+    setSort({ sortItem: property, sortOrder: isAsc ? -1 : 1 });
   };
 
   const addNewItem = () => {
@@ -187,20 +193,22 @@ const RecipeBOM = ({ bom, updateBOM, readonly } : RecipeBomProps) => {
   };
 
   const removeBomItem = (index: number) => {
-    const newBom = bomData.filter(bomData => bomData.bomIndex !== index);
-    const updatedBom = newBom.map((item) => {
-      if (!item.material) {
-        return undefined;
-      } else {
-        const bomItem: ConsumingMaterial = {
-          material: item.material,
-          qty: item.qty,
-          reusable: item.reusable,
-          id: item.id
-        };
-        return bomItem;
-      }
-    }).filter((item) => item !== undefined) as ConsumingMaterial[];
+    const newBom = bomData.filter((bomData) => bomData.bomIndex !== index);
+    const updatedBom = newBom
+      .map((item) => {
+        if (!item.material) {
+          return undefined;
+        } else {
+          const bomItem: ConsumingMaterial = {
+            material: item.material,
+            qty: item.qty,
+            reusable: item.reusable,
+            id: item.id,
+          };
+          return bomItem;
+        }
+      })
+      .filter((item) => item !== undefined) as ConsumingMaterial[];
     updateBOM(updatedBom);
   };
 
@@ -217,8 +225,8 @@ const RecipeBOM = ({ bom, updateBOM, readonly } : RecipeBomProps) => {
     setBomData(updatedBom);
   };
 
-  const handleChange = (newValue: number, index: number ) => {
-    const newBom : BomData[] = bomData.map((item, i) => {
+  const handleChange = (newValue: number, index: number) => {
+    const newBom: BomData[] = bomData.map((item, i) => {
       if (i === index) {
         return {
           ...item,
@@ -231,7 +239,7 @@ const RecipeBOM = ({ bom, updateBOM, readonly } : RecipeBomProps) => {
   };
 
   const handleReusableChange = (newValue: Reusable, index: number) => {
-    const newBom : BomData[] = bomData.map((item, i) => {
+    const newBom: BomData[] = bomData.map((item, i) => {
       if (i === index) {
         return {
           ...item,
@@ -244,111 +252,140 @@ const RecipeBOM = ({ bom, updateBOM, readonly } : RecipeBomProps) => {
   };
 
   const handleUpdateBOM = () => {
-    const updatedBom = bomData.map((item) => {
-      if (!item.material) {
-        setNotification({ message: 'Please choose a Material !', type: 'error', time: 8 });
-        return undefined;
-      } else {
-        const bomItem: ConsumingMaterial = {
-          id: item.id,
-          material: item.material,
-          qty: item.qty,
-          reusable: item.reusable,
-        };
-        return bomItem;
-      }
-    }).filter((item) => item !== undefined) as ConsumingMaterial[];
+    const updatedBom = bomData
+      .map((item) => {
+        if (!item.material) {
+          setNotification({ message: 'Please choose a Material !', type: 'error', time: 8 });
+          return undefined;
+        } else {
+          const bomItem: ConsumingMaterial = {
+            id: item.id,
+            material: item.material,
+            qty: item.qty,
+            reusable: item.reusable,
+          };
+          return bomItem;
+        }
+      })
+      .filter((item) => item !== undefined) as ConsumingMaterial[];
     updateBOM(updatedBom);
   };
 
-  return(
+  return (
     <Paper>
       <TableContainer sx={{ maxHeight: '550Px' }}>
-        <Table stickyHeader aria-label='sticky table' size='small'>
+        <Table stickyHeader aria-label="sticky table" size="small">
           <EnhancedTableHead
             order={order}
             orderBy={orderBy}
             onRequestSort={(_event, property) => handleRequestSort(_event, property as keyof BomData)}
           />
           <TableBody>
-            { sortedBom.map((bom, index) => {
-              return(
-                <TableRow hover role='checkbox' tabIndex={-1} key={index}>
-                  <TableCell align='left' sx={{ borderRight: '1px solid gray' }}>
-                    {bom.itemEditable ?
+            {sortedBom.map((bom, index) => {
+              return (
+                <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                  <TableCell align="left" sx={{ borderRight: '1px solid gray' }}>
+                    {bom.itemEditable ? (
                       <Autocomplete
-                        id='materilas'
+                        id="materilas"
                         sx={{ margin: 1, width: '100%' }}
-                        size='small'
+                        size="small"
                         aria-required
                         options={materials}
                         isOptionEqualToValue={(option: Material, value: Material) => option.id === value.id}
                         value={bom.material ? bom.material : null}
                         onChange={(_event, newValue) => newValue && handleMaterialChange(newValue, index)}
-                        getOptionLabel={(option: { itemShortName: string; }) => option.itemShortName}
-                        renderInput={(params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, 'variant'>) => (
+                        getOptionLabel={(option: { itemShortName: string }) => option.itemShortName}
+                        renderInput={(
+                          params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined } & Omit<
+                              OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps,
+                              'variant'
+                            >,
+                        ) => (
                           <TextField
                             {...params}
-                            placeholder='Add Material'
-                            size='small'
+                            placeholder="Add Material"
+                            size="small"
                             sx={{ width: '98%', margin: '2' }}
-                            required />
-                        )} /> :
-                      bom.material?.itemShortName}
+                            required
+                          />
+                        )}
+                      />
+                    ) : (
+                      bom.material?.itemShortName
+                    )}
                   </TableCell>
-                  <TableCell align='center' sx={{ borderRight: '1px solid gray' }}>
-                    {bom.itemEditable ?
+                  <TableCell align="center" sx={{ borderRight: '1px solid gray' }}>
+                    {bom.itemEditable ? (
                       <TextField
-                        name='qty'
+                        name="qty"
                         sx={{ width: '98%' }}
                         value={bom.qty}
                         onChange={(event) => handleChange(parseInt(event.target.value), index)}
-                        margin='dense'
-                        variant='outlined'
-                        size='small'
-                        required /> :
-                      bom.qty}
+                        margin="dense"
+                        variant="outlined"
+                        size="small"
+                        required
+                      />
+                    ) : (
+                      bom.qty
+                    )}
                   </TableCell>
-                  <TableCell align='center'
-                    sx={{ borderRight: '1px solid gray',
-                      backgroundColor: bom.reusable === Reusable.YES ? '#A8F285' :
-                        bom.reusable === Reusable.IQC ? '#FFFFAB' : '#F2A8A8' }}>
-                    {bom.itemEditable ?
+                  <TableCell
+                    align="center"
+                    sx={{
+                      borderRight: '1px solid gray',
+                      backgroundColor:
+                        bom.reusable === Reusable.YES
+                          ? '#A8F285'
+                          : bom.reusable === Reusable.IQC
+                            ? '#FFFFAB'
+                            : '#F2A8A8',
+                    }}
+                  >
+                    {bom.itemEditable ? (
                       <ToggleButtonGroup
-                        color='primary'
+                        color="primary"
                         value={bom.reusable}
                         exclusive
                         onChange={(_event, target) => handleReusableChange(target, index)}
-                        aria-label='Platform'
+                        aria-label="Platform"
                       >
-                        <ToggleButton value='NO'>No</ToggleButton>
-                        <ToggleButton value='YES'>Yes</ToggleButton>
-                        <ToggleButton value='IQC'>IQC</ToggleButton>
+                        <ToggleButton value="NO">No</ToggleButton>
+                        <ToggleButton value="YES">Yes</ToggleButton>
+                        <ToggleButton value="IQC">IQC</ToggleButton>
                       </ToggleButtonGroup>
-                      :
-                      bom.reusable}
+                    ) : (
+                      bom.reusable
+                    )}
                   </TableCell>
-                  { !readonly ?
-                    <TableCell align='justify'>
+                  {!readonly ? (
+                    <TableCell align="justify">
                       <Stack direction={'row'} alignContent={'space-between'}>
-                        <IconButton onClick={() => editBomItem(bom.bomIndex)}
-                          title='Edit'
-                          style={{ height: '12px', width: '12px', margin: 5, color: '#1976d2d9' }}>
+                        <IconButton
+                          onClick={() => editBomItem(bom.bomIndex)}
+                          title="Edit"
+                          style={{ height: '12px', width: '12px', margin: 5, color: '#1976d2d9' }}
+                        >
                           <EditIcon />
                         </IconButton>
-                        <IconButton onClick={() => removeBomItem(bom.bomIndex)}
-                          title='Delete'
-                          style={{ height: '12px', width: '12px', margin: 5, color: '#1976d2d9' }}>
+                        <IconButton
+                          onClick={() => removeBomItem(bom.bomIndex)}
+                          title="Delete"
+                          style={{ height: '12px', width: '12px', margin: 5, color: '#1976d2d9' }}
+                        >
                           <RemoveCircleOutlineIcon />
                         </IconButton>
-                        <IconButton onClick={handleUpdateBOM}
-                          title='Save'
-                          style={{ height: '12px', width: '12px', margin: 5, color: '#1976d2d9' }}>
+                        <IconButton
+                          onClick={handleUpdateBOM}
+                          title="Save"
+                          style={{ height: '12px', width: '12px', margin: 5, color: '#1976d2d9' }}
+                        >
                           <CheckCircleOutlineIcon />
                         </IconButton>
                       </Stack>
                     </TableCell>
-                    : null }
+                  ) : null}
                 </TableRow>
               );
             })}

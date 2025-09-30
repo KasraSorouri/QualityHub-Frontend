@@ -7,21 +7,19 @@ import NokList from './NOK_List';
 
 import { NokData } from '../../../../types/QualityHubTypes';
 
-
-
 const NokAnalysis = () => {
-
-  const [ selectedNok, setSelectedNok ] = useState<NokData | null>(null);
+  const [selectedNok, setSelectedNok] = useState<NokData | null>(null);
 
   return (
     <Paper>
       <h1>Nok Analysis</h1>
-      { selectedNok ? <NokAnalyseForm nokId={selectedNok.id} formType='ADD'  removeNok={setSelectedNok} /> :
-        <NokList listType='ANALYSE' selectNok={setSelectedNok} />
-      }
+      {selectedNok ? (
+        <NokAnalyseForm nokId={selectedNok.id} formType="ADD" removeNok={setSelectedNok} />
+      ) : (
+        <NokList listType="ANALYSE" selectNok={setSelectedNok} />
+      )}
     </Paper>
   );
-
 };
 
 export default NokAnalysis;

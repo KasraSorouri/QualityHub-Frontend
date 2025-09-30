@@ -1,15 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import {
-  TextField,
-  Box,
-  Typography,
-  FormControlLabel,
-  Checkbox,
-  Button,
-  Paper,
-  Grid,
-} from '@mui/material';
+import { TextField, Box, Typography, FormControlLabel, Checkbox, Button, Paper, Grid } from '@mui/material';
 
 import { WorkShift, WorkShiftData } from '../../../../types/QualityHubTypes';
 
@@ -23,40 +14,36 @@ interface FormData {
 type ShiftFormProps = {
   shiftData: WorkShift | null;
   formType: 'ADD' | 'EDIT';
-  submitHandler: (shift: WorkShiftData ) => void;
-  displayShiftForm: ({ show, formType } : { show: boolean, formType: 'ADD' | 'EDIT' }) => void;
-}
+  submitHandler: (shift: WorkShiftData) => void;
+  displayShiftForm: ({ show, formType }: { show: boolean; formType: 'ADD' | 'EDIT' }) => void;
+};
 
-
-
-const ShiftForm = ({ shiftData, formType, submitHandler, displayShiftForm } : ShiftFormProps) => {
-
+const ShiftForm = ({ shiftData, formType, submitHandler, displayShiftForm }: ShiftFormProps) => {
   const formTitle = formType === 'ADD' ? 'Add Shift' : 'Edit Shift';
   const submitTitle = formType === 'ADD' ? 'Add Shift' : 'Update Shift';
 
-  const initialFormData : FormData = {
+  const initialFormData: FormData = {
     id: shiftData ? shiftData.id : '',
     shiftName: shiftData ? shiftData.shiftName : '',
     shiftCode: shiftData ? shiftData.shiftCode : '',
     active: shiftData ? shiftData.active : false,
   };
 
-  const [ formValues, setFormValues ] = useState<FormData>(initialFormData);
+  const [formValues, setFormValues] = useState<FormData>(initialFormData);
 
   useEffect(() => {
-    const formData : FormData = {
+    const formData: FormData = {
       id: shiftData ? shiftData.id : '',
       shiftName: shiftData ? shiftData.shiftName : '',
       shiftCode: shiftData ? shiftData.shiftCode : '',
       active: shiftData ? shiftData.active : false,
     };
     setFormValues(formData);
-  },[formType, shiftData]);
+  }, [formType, shiftData]);
 
-
-  const handleChange = (event: {target: { name: string, value: unknown, checked: boolean}}) => {
+  const handleChange = (event: { target: { name: string; value: unknown; checked: boolean } }) => {
     const { name, value, checked } = event.target;
-    const newValue = (name === 'active' || name ==='traceable') ? checked : value;
+    const newValue = name === 'active' || name === 'traceable' ? checked : value;
 
     setFormValues((prevValues: FormData) => ({
       ...prevValues,
@@ -64,10 +51,10 @@ const ShiftForm = ({ shiftData, formType, submitHandler, displayShiftForm } : Sh
     }));
   };
 
-  const handleSubmit = (event: { preventDefault: () => void; }) => {
+  const handleSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault();
     const newShift: WorkShiftData = {
-      id: (typeof formValues.id === 'number') ? formValues.id : 0,
+      id: typeof formValues.id === 'number' ? formValues.id : 0,
       shiftName: formValues.shiftName,
       shiftCode: formValues.shiftCode,
       active: formValues.active,
@@ -75,58 +62,56 @@ const ShiftForm = ({ shiftData, formType, submitHandler, displayShiftForm } : Sh
     submitHandler(newShift);
   };
 
-  return(
+  return (
     <Paper elevation={5} sx={{ borderRadius: 1 }}>
-      <Box display='flex' justifyContent='space-between' alignItems='center'
-        bgcolor={'#1976d270'}
-      >
-        <Typography variant='h6' marginLeft={2}  >{formTitle}</Typography>
-        <Button variant='contained'  size='small'  onClick={() => displayShiftForm({ show: false, formType: 'ADD' })}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" bgcolor={'#1976d270'}>
+        <Typography variant="h6" marginLeft={2}>
+          {formTitle}
+        </Typography>
+        <Button variant="contained" size="small" onClick={() => displayShiftForm({ show: false, formType: 'ADD' })}>
           close
         </Button>
       </Box>
-      <form onSubmit={handleSubmit} >
-        <Box display='flex'  margin={0} >
-          <Grid container flexDirection={'column'} >
-            <Grid container flexDirection={'row'} >
+      <form onSubmit={handleSubmit}>
+        <Box display="flex" margin={0}>
+          <Grid container flexDirection={'column'}>
+            <Grid container flexDirection={'row'}>
               <TextField
-                label='Shift Name'
-                name='shiftName'
-                sx={{ marginLeft: 2, width:'15%' }}
+                label="Shift Name"
+                name="shiftName"
+                sx={{ marginLeft: 2, width: '15%' }}
                 value={formValues.shiftName}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-                margin='dense'
-                variant='outlined'
-                size='small'
+                margin="dense"
+                variant="outlined"
+                size="small"
                 required
               />
               <TextField
-                label='Shift Code'
-                name='shiftCode'
-                sx={{ marginLeft: 2, width:'65%' }}
+                label="Shift Code"
+                name="shiftCode"
+                sx={{ marginLeft: 2, width: '65%' }}
                 value={formValues.shiftCode}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-                margin='dense'
-                variant='outlined'
-                size='small'
+                margin="dense"
+                variant="outlined"
+                size="small"
                 required
               />
               <FormControlLabel
                 sx={{ marginLeft: 2 }}
-                control={
-                  <Checkbox
-                    checked={formValues.active}
-                    onChange={handleChange}
-                    name='active'
-                    color='primary'
-                  />
-                }
-                label='Active'
+                control={<Checkbox checked={formValues.active} onChange={handleChange} name="active" color="primary" />}
+                label="Active"
               />
             </Grid>
           </Grid>
           <Grid>
-            <Button type='submit' variant='contained' color='primary' sx={{ margin: 1, minWidth: '120px' , width: 'auto' }}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={{ margin: 1, minWidth: '120px', width: 'auto' }}
+            >
               {submitTitle}
             </Button>
           </Grid>

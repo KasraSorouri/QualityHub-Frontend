@@ -14,7 +14,6 @@ import SystemSetting from './modules/qualityHub-Settings/components/SystemSettin
 import NokManagementMenu from './modules/qualityHub-Settings/components/nokManagement/NokManagementMenu';
 
 function App() {
-
   // User management
   const setUser = useUserSet();
   const user = useUserValue();
@@ -22,21 +21,21 @@ function App() {
   useEffect(() => {
     const signedUser = window.localStorage.getItem('QualityHub_SignedUser');
     signedUser && setUser(JSON.parse(signedUser));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div style={{ width: '98vw', minHeight: '90vh', margin: 10 }}>
       <Router>
         <Navigation signedUser={user} />
-        <Notification  />
+        <Notification />
         <Routes>
-          <Route path='/' element={<NokManagementMenu />} />
-          <Route path='/signin' element={<SignIn />} />
-          <Route path='/user_management' element={<UserManagement />} />
-          <Route path='/quality-setting/' element={<ConfigurationPage signedUser={user} />} />
-          <Route path='/quality-setting/product-management' element={<ProductsManagement />} />
-          <Route path='/quality-setting/system-setting' element={<SystemSetting />} />
+          <Route path="/" element={<NokManagementMenu />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/user_management" element={<UserManagement />} />
+          <Route path="/quality-setting/" element={<ConfigurationPage signedUser={user} />} />
+          <Route path="/quality-setting/product-management" element={<ProductsManagement />} />
+          <Route path="/quality-setting/system-setting" element={<SystemSetting />} />
         </Routes>
       </Router>
       <footer>

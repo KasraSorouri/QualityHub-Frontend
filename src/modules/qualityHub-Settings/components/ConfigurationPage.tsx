@@ -1,17 +1,12 @@
 import { Link } from 'react-router-dom';
 
-import {
-  Grid,
-  Button,
-  Stack
-} from '@mui/material';
+import { Grid, Button, Stack } from '@mui/material';
 
 import HardwareIcon from '@mui/icons-material/Hardware';
 import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing';
 import { Token } from '../../../types/UserAuthTypes';
 
-
-const ConfigurationPage = ({ signedUser } :{ signedUser: Token | null}) => {
+const ConfigurationPage = ({ signedUser }: { signedUser: Token | null }) => {
   const buttonStyle = {
     width: 500,
     height: 150,
@@ -23,28 +18,30 @@ const ConfigurationPage = ({ signedUser } :{ signedUser: Token | null}) => {
   const showConfigUser = signedUser && signedUser.roles?.includes('Admin');
   const ShowConfigBom = signedUser && signedUser.roles?.includes('Admin');
 
-  return(
-    <Grid container justifyContent='space-between' height={800} >
+  return (
+    <Grid container justifyContent="space-between" height={800}>
       <Grid item margin={5}>
-        { showConfigUser &&
+        {showConfigUser && (
           <Button
-            component={Link} to='/quality-setting/product-management'
+            component={Link}
+            to="/quality-setting/product-management"
             style={buttonStyle}
-            startIcon={<HardwareIcon style={{ fontSize: '80px' }}/>}
+            startIcon={<HardwareIcon style={{ fontSize: '80px' }} />}
           >
             Product Management
           </Button>
-        }
+        )}
         <Stack margin={2}></Stack>
-        { ShowConfigBom &&
+        {ShowConfigBom && (
           <Button
-            component={Link} to='/quality-setting/system-setting'
+            component={Link}
+            to="/quality-setting/system-setting"
             style={buttonStyle}
-            startIcon={<PrecisionManufacturingIcon style={{ fontSize: '80px' }}/>}
+            startIcon={<PrecisionManufacturingIcon style={{ fontSize: '80px' }} />}
           >
             System Settings
           </Button>
-        }
+        )}
       </Grid>
     </Grid>
   );
