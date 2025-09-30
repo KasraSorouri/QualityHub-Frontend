@@ -2,7 +2,7 @@ name: CI/CD to Render
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build-and-deploy:
@@ -28,7 +28,7 @@ jobs:
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
-          curl -X POST "https://api.render.com/deploy/srv-d38qds1r0fns738700ng" \
+          curl -X POST "https://api.render.com/deploy/srv-d3ds13be5dus73bumo1g" \
             -H "Accept: application/json" \
             -H "Authorization: Bearer $RENDER_API_KEY" \
             -H "Content-Type: application/json" \
