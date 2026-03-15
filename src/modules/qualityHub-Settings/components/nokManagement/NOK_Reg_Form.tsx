@@ -3,6 +3,10 @@ import {
   Autocomplete,
   Box,
   Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Divider,
   FilledTextFieldProps,
   Grid,
   OutlinedTextFieldProps,
@@ -31,6 +35,7 @@ import stationServices from '../../services/stationServices';
 import nokCodeServices from '../../services/nokCodeServices';
 import workShiftServices from '../../services/workShiftServices';
 import nokDetectServices from '../../services/nokDetectServices';
+import ImageFileUploader from './NOK_Images_Upload_Form';
 
 type NokFromProps = {
   formType: 'ADD' | 'EDIT' | 'VIEW';
@@ -49,6 +54,7 @@ type FormData = {
 
 const NokForm = ({ nokData, formType }: NokFromProps) => {
   const submitTitle = formType === 'ADD' ? 'Add NOK' : 'Update NOK';
+  const [openfileUpload, setOpenFileUpload] = useState<boolean>(false);
 
   const initFormValues: FormData = {
     product: nokData?.product ? nokData.product : null,
@@ -247,6 +253,14 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
                   >,
               ) => <TextField {...params} label="Shift" placeholder="Shift" size="small" required />}
             />
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              onClick={() => setOpenFileUpload(true)}
+              sx={{ margin: 1, marginLeft: 1, width: 'auto', height: '38px', alignSelf: 'flex-end' }}
+              disabled={formType === 'VIEW'}
+            >ADD Picture</Button>
           </Grid>
           <Grid display={'flex'} marginBottom={1}>
             <TextField
@@ -254,10 +268,10 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
               name="description"
               label="Description"
               disabled={formType === 'VIEW'}
-              sx={{ marginLeft: 2, marginTop: 1, width: '85%' }}
+              sx={{ marginLeft: 2, marginTop: 1, width: '55%' }}
+              multiline
               value={formValues.description}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-              fullWidth
               size="small"
             />
             {formType !== 'VIEW' && (
@@ -266,7 +280,7 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
                 variant="contained"
                 color="primary"
                 size="small"
-                sx={{ margin: 1, marginLeft: 1, width: 'auto', height: '38px' }}
+                sx={{ margin: 1, marginLeft: 1, width: 'auto', height: '38px', alignSelf: 'flex-end' }}
               >
                 {submitTitle}
               </Button>
@@ -274,6 +288,13 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
           </Grid>
         </Grid>
       </form>
+      <Dialog open={openfileUpload} onClose={() => setOpenFileUpload(false)} fullWidth maxWidth='md'>
+        <DialogTitle>Upload Images</DialogTitle>
+        <Divider />
+        <DialogContent>
+          <ImageFileUploader closeForm={setOpenFileUpload} />
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };
