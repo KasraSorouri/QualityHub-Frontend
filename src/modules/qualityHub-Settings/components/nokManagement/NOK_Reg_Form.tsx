@@ -27,6 +27,7 @@ import {
   Product,
   NokStatus,
   ProductStatus,
+  IImageData,
 } from '../../../../types/QualityHubTypes';
 import { useEffect, useState } from 'react';
 import productServices from '../../services/productServices';
@@ -36,6 +37,7 @@ import nokCodeServices from '../../services/nokCodeServices';
 import workShiftServices from '../../services/workShiftServices';
 import nokDetectServices from '../../services/nokDetectServices';
 import ImageFileUploader from './NOK_Images_Upload_Form';
+import ImageListView from './ImageListView';
 
 type NokFromProps = {
   formType: 'ADD' | 'EDIT' | 'VIEW';
@@ -43,6 +45,7 @@ type NokFromProps = {
 };
 
 type FormData = {
+  nokId: number | undefined;
   product: Product | null;
   productSN: string;
   initNokCode: NokCode | null;
@@ -55,8 +58,10 @@ type FormData = {
 const NokForm = ({ nokData, formType }: NokFromProps) => {
   const submitTitle = formType === 'ADD' ? 'Add NOK' : 'Update NOK';
   const [openfileUpload, setOpenFileUpload] = useState<boolean>(false);
+  const [nokImages, setNokImages] = useState<IImageData[]>([]);
 
   const initFormValues: FormData = {
+    nokId: nokData?.id,
     product: nokData?.product ? nokData.product : null,
     productSN: nokData ? nokData.productSN : '',
     initNokCode: nokData?.initNokCode ? nokData.initNokCode : null,
@@ -116,33 +121,52 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
     }
   };
 
-  const handleSubmit = async (event: { preventDefault: () => void }) => {
-    event.preventDefault();
-    if (formType === 'ADD') {
-      if (
-        formValues.product &&
+  // Register NOK
+  const registerNok = async() : Promise<NokData> => {
+    if (
+      formValues.product &&
         formValues.initNokCode &&
         formValues.detectedStation &&
         formValues.detectedShift &&
         formValues.detectTime
-      ) {
-        const newNokData: NewNokData = {
-          productId: formValues.product.id,
-          productSN: formValues.productSN,
-          initNokCodeId: formValues.initNokCode.id,
-          detectStationId: formValues.detectedStation.id,
-          detectShiftId: formValues.detectedShift.id,
-          detectTime: new Date(formValues.detectTime.toISOString()),
-          description: formValues.description,
-          nokStatus: NokStatus.PENDING,
-          productStatus: ProductStatus.NOK,
-          removeReport: false,
-        };
+    ) {
+      const newNokData: NewNokData = {
+        productId: formValues.product.id,
+        productSN: formValues.productSN,
+        initNokCodeId: formValues.initNokCode.id,
+        detectStationId: formValues.detectedStation.id,
+        detectShiftId: formValues.detectedShift.id,
+        detectTime: new Date(formValues.detectTime.toISOString()),
+        description: formValues.description,
+        nokStatus: NokStatus.PENDING,
+        productStatus: ProductStatus.NOK,
+        removeReport: false,
+      };
 
-        const result = await nokDetectServices.createNokDetect(newNokData);
-        console.log(' *** NOK registeration * Submit form * result -> ', result);
-      } else {
-        console.log(' *** NOK registeration * Submit form * Error -> ', 'Missing data');
+      const result = await nokDetectServices.createNokDetect(newNokData);
+      return result;
+    } else {
+      throw new Error('Missing data');
+    }
+  };
+
+  const handleSubmit = async (event: { preventDefault: () => void }) => {
+    event.preventDefault();
+    await registerNok();
+  };
+
+  // Handle Upload Images
+  const handleFileUpload = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (!formValues.nokId) {
+      // Check for Required Field
+      const form = event.currentTarget.form;
+      if (form && form.reportValidity()) {
+        const result = await registerNok();
+        setFormValues(prevValues => ({
+          ...prevValues,
+          nokId: result.id
+        }));
+        setOpenFileUpload(true);
       }
     }
   };
@@ -255,9 +279,10 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
             />
             <Button
               variant="contained"
+              type='button'
               color="primary"
               size="small"
-              onClick={() => setOpenFileUpload(true)}
+              onClick={(event) => handleFileUpload(event)}
               sx={{ margin: 1, marginLeft: 1, width: 'auto', height: '38px', alignSelf: 'flex-end' }}
               disabled={formType === 'VIEW'}
             >ADD Picture</Button>
@@ -288,11 +313,13 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
           </Grid>
         </Grid>
       </form>
+      <Divider />
+      <ImageListView imagesData={nokImages} />
       <Dialog open={openfileUpload} onClose={() => setOpenFileUpload(false)} fullWidth maxWidth='md'>
         <DialogTitle>Upload Images</DialogTitle>
         <Divider />
         <DialogContent>
-          <ImageFileUploader closeForm={setOpenFileUpload} />
+          <ImageFileUploader  nokId={nokData?.id||0} closeForm={setOpenFileUpload}  setNokImages={setNokImages} />
         </DialogContent>
       </Dialog>
     </Box>

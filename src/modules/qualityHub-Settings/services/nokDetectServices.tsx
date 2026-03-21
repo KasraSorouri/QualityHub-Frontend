@@ -23,7 +23,7 @@ const getNokDetectByProduct = async (productId: number): Promise<NokData[]> => {
 };
 
 // Craete nokDetect
-const createNokDetect = async (nokDetectData: NewNokData): Promise<NokData | unknown> => {
+const createNokDetect = async (nokDetectData: NewNokData): Promise<NokData> => {
   const token = setToken();
   const config = {
     headers: { Authorization: token },
@@ -31,13 +31,14 @@ const createNokDetect = async (nokDetectData: NewNokData): Promise<NokData | unk
 
   try {
     const res = await axios.post(`${api_url}/quality/nok_detect`, nokDetectData, config);
-    return res.data;
+    return res.data as NokData;
   } catch (err: unknown) {
     if (err instanceof Error) {
       console.log('create nokDetect fail =>', err.message);
       throw new Error(`${err.message}`);
     } else {
       console.log('An unexpected error occurred:', err);
+      throw new Error('An unexpected error occurred');
     }
   }
 };

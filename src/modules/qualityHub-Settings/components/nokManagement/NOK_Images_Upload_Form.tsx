@@ -9,14 +9,20 @@ import {
   ListItemText,
   ListItemIcon,
   Button,
+  Stack,
+  IconButton,
 } from '@mui/material';
-import { CloudUpload, InsertDriveFile } from '@mui/icons-material';
+import { CloudUpload, Delete, InsertDriveFile } from '@mui/icons-material';
+import nokImageService from '../../services/nokImageService';
+import { IImageData } from '../../../../types/QualityHubTypes';
 
 interface IProps {
-  closeForm : (x:boolean) => void
+  nokId : number;
+  closeForm : (x:boolean) => void;
+  setNokImages : (imagesData: IImageData[]) => void;
 }
 
-const ImageFileUploader = ({ closeForm } : IProps) => {
+const ImageFileUploader = ({ nokId, closeForm, setNokImages } : IProps) => {
   const [files, setFiles] = useState<File[]>([]);
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const newFiles = acceptedFiles.map(file => Object.assign(file, {
@@ -26,6 +32,26 @@ const ImageFileUploader = ({ closeForm } : IProps) => {
     setFiles((prev: File[]) => [ ...prev, ...newFiles ]);
   }, []);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+
+  const handleUploadFiles = async() => {
+    try {
+      const formData = new FormData();
+      files.forEach((file) => {
+        formData.append('images', file);
+      });
+      formData.append('nokId', nokId.toString() );
+      const response = await nokImageService.uploadImage(formData);
+      console.log('uploading images response ...', response);
+      setNokImages(response);
+      closeForm(false);
+    } catch (error) {
+      console.error('Error uploading files:', error);
+    }
+  };
+
+  const removeFile = (fileName: string) => {
+    setFiles(files.filter(file => file.name !== fileName));
+  };
 
   return (
     <Box sx={{ width: '100%', height: 'auto', margin: 'auto', overflow: 'hidden' }}>
@@ -56,7 +82,13 @@ const ImageFileUploader = ({ closeForm } : IProps) => {
       {/* File List*/}
       <List>
         {files.map((file, index) => (
-          <ListItem key={index} sx={{ py: 1 }}>
+          <ListItem key={index} sx={{ py: 1 }}
+            secondaryAction={
+              <IconButton edge="end" onClick={() => removeFile(file.name)}>
+                <Delete color="error" />
+              </IconButton>
+            }
+          >
             <ListItemIcon>
               <InsertDriveFile color='primary' />
             </ListItemIcon>
@@ -67,13 +99,25 @@ const ImageFileUploader = ({ closeForm } : IProps) => {
           </ListItem>
         ))}
       </List>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => closeForm(false)}
-      >
+      <Stack direction="row" justifyContent={'flex-end'} spacing={2} sx={{ mt: 2 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ ml: 2, alignSelf: 'flex-end'  }}
+          onClick={() => closeForm(false)}
+        >
         cancel
-      </Button>
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ ml: 2, alignSelf: 'flex-end' }}
+          onClick={() => handleUploadFiles()}
+          disabled={files.length === 0}
+        >
+        Upload
+        </Button>
+      </Stack>
     </Box>
   );
 };

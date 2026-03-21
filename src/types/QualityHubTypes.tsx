@@ -476,3 +476,14 @@ export interface IQCData {
   reference?: string;
   description?: string;
 }
+
+export interface IImageData {
+  contentType: string;
+  createdAt: string;
+  fileName: string;
+  filePath: string;
+  id: number;
+  nokId: number;
+  updatedAt: string;
+  uploadedBy: string;
+}
