@@ -484,6 +484,7 @@ export interface IImageData {
   filePath: string;
   id: number;
   nokId: number;
+  qualityStatus: string;
   updatedAt: string;
   uploadedBy: string;
 }

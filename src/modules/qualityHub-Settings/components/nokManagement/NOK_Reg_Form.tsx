@@ -319,7 +319,7 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
         <DialogTitle>Upload Images</DialogTitle>
         <Divider />
         <DialogContent>
-          <ImageFileUploader  nokId={nokData?.id||0} closeForm={setOpenFileUpload}  setNokImages={setNokImages} />
+          <ImageFileUploader  nokId={nokData?.id||0} qualityStatus='NOK' nokCode={nokData?.initNokCode?.id || 0} station={nokData?.detectedStation?.id || 0} closeForm={setOpenFileUpload}  setNokImages={setNokImages} />
         </DialogContent>
       </Dialog>
     </Box>

@@ -18,11 +18,14 @@ import { IImageData } from '../../../../types/QualityHubTypes';
 
 interface IProps {
   nokId : number;
+  qualityStatus: 'NOK' | 'OK';
+  nokCode : number;
+  station : number;
   closeForm : (x:boolean) => void;
   setNokImages : (imagesData: IImageData[]) => void;
 }
 
-const ImageFileUploader = ({ nokId, closeForm, setNokImages } : IProps) => {
+const ImageFileUploader = ({ nokId, qualityStatus, nokCode, station, closeForm, setNokImages } : IProps) => {
   const [files, setFiles] = useState<File[]>([]);
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const newFiles = acceptedFiles.map(file => Object.assign(file, {
@@ -40,6 +43,9 @@ const ImageFileUploader = ({ nokId, closeForm, setNokImages } : IProps) => {
         formData.append('images', file);
       });
       formData.append('nokId', nokId.toString() );
+      formData.append('qualityStatus', qualityStatus);
+      formData.append('nokCode', nokCode.toString());
+      formData.append('station', station.toString());
       const response = await nokImageService.uploadImage(formData);
       console.log('uploading images response ...', response);
       setNokImages(response);

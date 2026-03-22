@@ -23,7 +23,8 @@
     "react-dom": "^18.2.0",
     "react-dropzone": "^15.0.0",
     "react-query": "^3.39.3",
-    "react-router-dom": "^6.21.1"
+    "react-router-dom": "^6.21.1",
+    "yet-another-react-lightbox": "^3.29.1"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
