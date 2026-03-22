@@ -9,7 +9,6 @@ import { Token } from '../../../types/UserAuthTypes';
 const ConfigurationPage = ({ signedUser }: { signedUser: Token | null }) => {
   const buttonStyle = {
     width: 500,
-    height: 150,
     fontSize: '1.75rem',
     backgroundColor: '#1976d2',
     color: '#FFFFFF',
@@ -19,7 +18,7 @@ const ConfigurationPage = ({ signedUser }: { signedUser: Token | null }) => {
   const ShowConfigBom = signedUser && signedUser.roles?.includes('Admin');
 
   return (
-    <Grid container justifyContent="space-between" height={800}>
+    <Grid container justifyContent="space-between" flexGrow={1} >
       <Grid item margin={5}>
         {showConfigUser && (
           <Button

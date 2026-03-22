@@ -25,18 +25,20 @@ function App() {
   }, []);
 
   return (
-    <div style={{ width: '98vw', minHeight: '90vh', margin: 10 }}>
+    <div style={{ width: '99vw', display: 'flex', height:'98vh', flexDirection: 'column' }}>
       <Router>
         <Navigation signedUser={user} />
         <Notification />
-        <Routes>
-          <Route path="/" element={<NokManagementMenu />} />
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/user_management" element={<UserManagement />} />
-          <Route path="/quality-setting/" element={<ConfigurationPage signedUser={user} />} />
-          <Route path="/quality-setting/product-management" element={<ProductsManagement />} />
-          <Route path="/quality-setting/system-setting" element={<SystemSetting />} />
-        </Routes>
+        <div style={{ flexGrow: 1, padding: 2 }}>
+          <Routes>
+            <Route path="/" element={<NokManagementMenu />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/user_management" element={<UserManagement />} />
+            <Route path="/quality-setting/" element={<ConfigurationPage signedUser={user} />} />
+            <Route path="/quality-setting/product-management" element={<ProductsManagement />} />
+            <Route path="/quality-setting/system-setting" element={<SystemSetting />} />
+          </Routes>
+        </div>
       </Router>
       <footer>
         <SoftwareCompany />

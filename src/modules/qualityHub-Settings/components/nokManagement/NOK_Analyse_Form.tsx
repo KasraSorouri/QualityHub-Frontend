@@ -257,15 +257,15 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
     <Grid container direction={'column'}>
       <Grid container direction={'row'}>
         <Grid direction={'column'} xs={6}>
-          <Grid item>
-            <Typography variant="h5" marginLeft={2}>
+          <Grid item marginLeft={1}>
+            <Typography variant="h5">
               Detect Information
             </Typography>
             <NOK_Reg_Form formType={'VIEW'} nokData={nok} />
           </Grid>
           <Divider sx={{ margin: 1 }} />
-          <Grid item>
-            <Typography variant="h5" marginLeft={2}>
+          <Grid item marginLeft={1}>
+            <Typography variant="h5">
               Origin of NOK
             </Typography>
             <Box>
@@ -433,7 +433,7 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
       <Typography variant="h5" marginLeft={2}>
         Root Cause Analysis
       </Typography>
-      <Grid>
+      <Grid marginLeft={1}>
         <RCAs_Form nokId={nokId} formType={'ADD'} rcas={rcaList} updateRCA={handleUpdateRCA} />
       </Grid>
       <Dialog
@@ -442,7 +442,6 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
         maxWidth="xl"
         sx={{
           '& .MuiDialog-paper': {
-            minHeight: '400px',
             maxHeight: '80vh',
           },
         }}
@@ -471,7 +470,6 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
         maxWidth="xl"
         sx={{
           '& .MuiDialog-paper': {
-            minHeight: '400px',
             maxHeight: '80vh',
           },
         }}

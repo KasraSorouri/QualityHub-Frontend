@@ -268,7 +268,7 @@ const RCAsForm = ({ nokId, rcas, updateRCA, formType }: RCAsProps) => {
   };
 
   return (
-    <Paper sx={{ marginLeft: 2 }}>
+    <Paper>
       <TableContainer sx={{ maxHeight: '180px', overflow: 'auto' }}>
         <Table stickyHeader aria-label="sticky table" size="small">
           <EnhancedTableHead

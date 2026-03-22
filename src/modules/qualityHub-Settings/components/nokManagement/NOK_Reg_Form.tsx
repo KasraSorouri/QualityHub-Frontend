@@ -277,6 +277,7 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
                   >,
               ) => <TextField {...params} label="Shift" placeholder="Shift" size="small" required />}
             />
+            { formType !== 'VIEW' &&
             <Button
               variant="contained"
               type='button'
@@ -284,8 +285,9 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
               size="small"
               onClick={(event) => handleFileUpload(event)}
               sx={{ margin: 1, marginLeft: 1, width: 'auto', height: '38px', alignSelf: 'flex-end' }}
-              disabled={formType === 'VIEW'}
+              //disabled={formType === 'VIEW'}
             >ADD Picture</Button>
+            }
           </Grid>
           <Grid display={'flex'} marginBottom={1}>
             <TextField
@@ -314,7 +316,7 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
         </Grid>
       </form>
       <Divider />
-      <ImageListView imagesData={nokImages} />
+      { formType === 'EDIT' && <ImageListView imagesData={nokImages} /> }
       <Dialog open={openfileUpload} onClose={() => setOpenFileUpload(false)} fullWidth maxWidth='md'>
         <DialogTitle>Upload Images</DialogTitle>
         <Divider />

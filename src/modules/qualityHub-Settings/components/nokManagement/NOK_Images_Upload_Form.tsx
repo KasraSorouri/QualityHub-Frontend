@@ -60,7 +60,7 @@ const ImageFileUploader = ({ nokId, qualityStatus, nokCode, station, closeForm, 
   };
 
   return (
-    <Box sx={{ width: '100%', height: 'auto', margin: 'auto', overflow: 'hidden' }}>
+    <Box sx={{ width: '100%', margin: 'auto', overflow: 'hidden' }}>
       <Paper
         {...getRootProps()}
         sx={{

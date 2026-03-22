@@ -229,7 +229,7 @@ const UserManagement = () => {
 
   return (
     <Paper
-      sx={{ marginTop: 1, border: 'solid', borderRadius: 2, borderColor: '#1976d270', width: '100%', height: '100%' }}
+      sx={{ border: 'solid', borderRadius: 2, borderColor: '#1976d270', width: '100%', marginTop: 1, marginRight: '2px' , height: '98%' }}
     >
       <Box display="flex" justifyContent="space-between" alignItems="center" borderRadius={2} bgcolor={'#1976d270'}>
         <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'}>
@@ -243,7 +243,7 @@ const UserManagement = () => {
         <Grid item xs={7}>
           <Paper>
             <Filter HandleFilter={handleFilter} />
-            <Grid container spacing={1} height={'600px'}>
+            <Grid container spacing={1}>
               <Grid item xs={7}>
                 {userResults.isLoading && <LinearProgress sx={{ margin: 1 }} />}
                 {filteredUsers && (

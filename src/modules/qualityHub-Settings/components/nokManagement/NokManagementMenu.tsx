@@ -28,11 +28,12 @@ const HomePageSubMenu = () => {
         borderRadius: 2,
         borderColor: '#1976d270',
         width: '99.7%',
-        height: '100%',
-        minHeight: '70Vh',
+        height: '98.5%',
+        display: 'flex',
+        flexGrow: 1
       }}
     >
-      <Stack direction={'row'} height={'650px'} width={'100%'} flexDirection={'row'}>
+      <Stack direction={'row'} width={'100%'} flexDirection={'row'} flexGrow={1}>
         <Grid minWidth={'180px'} bgcolor={'#E5E7E9'} color={'white'} flexDirection={'column'} borderColor={'#1976d270'}>
           <List>
             <ListItem onClick={() => setShowListForm('NEW-NOK')}>
