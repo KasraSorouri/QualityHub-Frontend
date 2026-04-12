@@ -12,7 +12,6 @@ const NokAnalysis = () => {
 
   return (
     <Paper>
-      <h1>Nok Analysis</h1>
       {selectedNok ? (
         <NokAnalyseForm nokId={selectedNok.id} formType="ADD" removeNok={setSelectedNok} />
       ) : (

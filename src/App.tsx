@@ -12,6 +12,7 @@ import ConfigurationPage from './modules/qualityHub-Settings/components/Configur
 import ProductsManagement from './modules/qualityHub-Settings/components/ProductsManagement';
 import SystemSetting from './modules/qualityHub-Settings/components/SystemSetting';
 import NokManagementMenu from './modules/qualityHub-Settings/components/nokManagement/NokManagementMenu';
+import ImageViewer from './modules/qualityHub-Settings/components/imageView/ImageViewer';
 
 function App() {
   // User management
@@ -37,6 +38,7 @@ function App() {
             <Route path="/quality-setting/" element={<ConfigurationPage signedUser={user} />} />
             <Route path="/quality-setting/product-management" element={<ProductsManagement />} />
             <Route path="/quality-setting/system-setting" element={<SystemSetting />} />
+            <Route path="/image" element={<ImageViewer />} />
           </Routes>
         </div>
       </Router>

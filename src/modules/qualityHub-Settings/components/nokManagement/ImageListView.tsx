@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react';
 import {
   Box,
   IconButton,
@@ -9,12 +10,11 @@ import {
 } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 
-import Lightbox from 'yet-another-react-lightbox';
+import Lightbox, { ZoomRef } from 'yet-another-react-lightbox';
 import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import 'yet-another-react-lightbox/styles.css';
 
 import { IImageData } from '../../../../types/QualityHubTypes';
-import { useState } from 'react';
 
 interface ImageListViewProps {
   imagesData: IImageData[];
@@ -23,6 +23,8 @@ interface ImageListViewProps {
 const ImageListView = ({ imagesData } :ImageListViewProps) => {
   const [photoIndex, setPhotoIndex] = useState<number>(-1);
   const theme = useTheme();
+
+  const zoomRef = useRef<ZoomRef>(null);
   // 1. Listen for screen size
   const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Under 600px
   const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
@@ -83,13 +85,16 @@ const ImageListView = ({ imagesData } :ImageListViewProps) => {
         slides={slides}
         plugins={[Zoom]}
         zoom={{
+          ref: zoomRef,
+          zoomInMultiplier: 2,
           maxZoomPixelRatio: 5, // Allows very deep zoom for inspections 🔍
           scrollToZoom: true,   // Enables mouse-wheel/touchpad zoom
+          pinchZoomV4: true,
         }}
+        animation={{ fade: 300 }}
       />
     </Box>
   );
 };
 
 export default ImageListView;
-

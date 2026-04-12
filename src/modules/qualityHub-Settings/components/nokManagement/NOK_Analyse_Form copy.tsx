@@ -257,6 +257,29 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
     <Grid container direction={'column'}>
       <Grid container direction={'row'}>
         <Grid direction={'column'} xs={6}>
+          <Grid item marginTop={5}>
+            <Button variant="contained" sx={{ marginLeft: 2 }} onClick={() => setShowReworkForm(true)}>
+              Rework
+            </Button>
+            <Button variant="contained" sx={{ marginLeft: 2 }} onClick={() => setShowCostForm(true)}>
+              Calculate Cost
+            </Button>
+            <Button variant="contained" sx={{ marginLeft: 2 }} onClick={() => analyseStatusHandler()}>
+              Update Status
+            </Button>
+            <Button
+              onClick={() => removeNok(null)}
+              variant="contained"
+              color="primary"
+              size="small"
+              sx={{ margin: 1, marginLeft: 1, width: 'auto', height: '38px' }}
+            >
+              Back
+            </Button>
+            <Box>
+              <NokStatusIndicator status={nokStatus} />
+            </Box>
+          </Grid>
           <Grid item marginLeft={1}>
             <Typography variant="h5">
               Detect Information
@@ -403,34 +426,8 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
                 </TableBody>
               </Table>
             </Box>
-            <Box>
-              <NokStatusIndicator status={nokStatus} />
-            </Box>
-            <Stack direction={'column'} spacing={2} marginLeft={2}>
-              <Button variant="contained" sx={{ marginLeft: 2 }} onClick={() => setShowReworkForm(true)}>
-              Rework
-              </Button>
-              <Button variant="contained" sx={{ marginLeft: 2 }} onClick={() => setShowCostForm(true)}>
-              Calculate Cost
-              </Button>
-              <Button variant="contained" sx={{ marginLeft: 2 }} onClick={() => analyseStatusHandler()}>
-              Update Status
-              </Button>
-              <Button
-                onClick={() => removeNok(null)}
-                variant="contained"
-                color="primary"
-                size="small"
-                sx={{ margin: 1, marginLeft: 1, width: 'auto', height: '38px' }}
-              >
-              Back
-              </Button>
-            </Stack>
           </Stack>
         </Grid>
-        <Button
-          onClick={() => navigation.navigate('/image')}
-        >Images</Button>
       </Grid>
       <Divider sx={{ margin: 1 }} />
       <Typography variant="h5" marginLeft={2}>

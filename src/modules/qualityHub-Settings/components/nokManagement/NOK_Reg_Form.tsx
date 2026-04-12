@@ -316,7 +316,7 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
         </Grid>
       </form>
       <Divider />
-      { formType === 'EDIT' && <ImageListView imagesData={nokImages} /> }
+      { formType === 'ADD' && <ImageListView imagesData={nokImages} /> }
       <Dialog open={openfileUpload} onClose={() => setOpenFileUpload(false)} fullWidth maxWidth='md'>
         <DialogTitle>Upload Images</DialogTitle>
         <Divider />

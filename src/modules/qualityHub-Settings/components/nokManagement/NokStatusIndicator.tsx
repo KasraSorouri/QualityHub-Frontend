@@ -96,23 +96,23 @@ const NokStatusIndicator = ({ status }: NokStatusProps) => {
   }
 
   return (
-    <Stack direction={'row'} spacing={0} marginTop={1} marginLeft={1}>
-      <BuildCircleTwoToneIcon titleAccess="Rework Status" sx={{ fontSize: '45px', color: reworkStatusColor }} />
-      <MonetizationOnTwoToneIcon titleAccess="Cost Status" sx={{ fontSize: '45px', color: costStatusColor }} />
-      <ContentPasteSearchTwoToneIcon titleAccess="Analyse Status" sx={{ fontSize: '45px', color: analyseSatusColor }} />
-      <TroubleshootTwoToneIcon titleAccess="RCA Status" sx={{ fontSize: '45px', color: rcaStatusColor }} />
+    <Stack direction={'column'} spacing={0} marginTop={1} marginLeft={1}>
+      <BuildCircleTwoToneIcon titleAccess="Rework Status" sx={{ fontSize: '30px', color: reworkStatusColor, marginLeft: 2 }} />
+      <MonetizationOnTwoToneIcon titleAccess="Cost Status" sx={{ fontSize: '30px', color: costStatusColor, marginLeft: 2 }} />
+      <ContentPasteSearchTwoToneIcon titleAccess="Analyse Status" sx={{ fontSize: '30px', color: analyseSatusColor, marginLeft: 2 }} />
+      <TroubleshootTwoToneIcon titleAccess="RCA Status" sx={{ fontSize: '30px', color: rcaStatusColor, marginLeft: 2 }} />
       <Box
         sx={{
-          width: '80px',
-          height: '35px',
-          borderRadius: '8px',
-          border: '4px solid',
+          width: '60px',
+          height: '23px',
+          borderRadius: '5px',
+          border: '2px solid',
           textAlign: 'center',
-          paddingTop: '3px',
+          padding: '2px',
           borderColor: claimStatusColor,
         }}
       >
-        <Typography fontSize={22} sx={{ color: claimStatusColor }}>
+        <Typography fontSize={18} sx={{ color: claimStatusColor }}>
           CLAIM
         </Typography>
       </Box>
