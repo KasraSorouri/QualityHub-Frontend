@@ -71,7 +71,6 @@ const ClaimStatusUpdateForm = ({ materialId, onSubmit }: FormProps) => {
 
   const updateStatus = () => {
     // Handle form submission logic here
-    console.log('Form submitted:', formData);
     const newClaimData: Claim = {
       dismantledMaterialId: materialId,
       date: new Date(formData.date.toISOString()),

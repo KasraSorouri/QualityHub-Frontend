@@ -7,7 +7,6 @@ import { NokGroup, NokGrpData } from '../../../types/QualityHubTypes';
 // Get all NokGrp
 const getNokGrp = async (): Promise<NokGroup[]> => {
   const res = await axios.get(`${api_url}/quality/nok_grps`);
-  console.log(' * Nok group *servise * test ->', res.data);
 
   return res.data;
 };

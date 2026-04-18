@@ -71,8 +71,6 @@ const NokDismantledMaterialForm = ({
   confirmChange,
   editable,
 }: DismantleMaterialListProps) => {
-  console.log('## Dismantled Matrail Form ** Nok DismantledMaterial -> ', nokDismantledMaterials);
-  //console.log('** Dismantled Matrail Form **  Affected DismantledMaterial -> ', affectedMaterials);
 
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
   const [formValues, setFormValues] = useState<FormDismantledMaterialData[]>([]);
@@ -123,16 +121,11 @@ const NokDismantledMaterialForm = ({
     });
 
     const allMaterialsData = [...affectedMaterialsData, ...(dismantledMaterialsData || [])];
-    console.log('$1 Dismantled Matrail Form ** affectedMaterialsData -> ', affectedMaterialsData);
-    console.log('$2 Dismantled Matrail Form ** dismantledMaterialsData -> ', dismantledMaterialsData);
-    console.log('$3 Dismantled Matrail Form ** allMaterialsData -> ', allMaterialsData);
-    console.log('$4 Dismantled Matrail Form ** extraAffectedMaterials -> ', extraAffectedMaterials);
+
     // Remove duplicates Items
     const initialFormValues = allMaterialsData.filter(
       (item, index, self) => index === self.findIndex((t) => t.index === item.index),
     );
-
-    console.log('$$ Dismantled Matrail Form ** initialFormValues -> ', initialFormValues);
 
     const select: string[] = [];
     initialFormValues.map((material) => {
@@ -282,8 +275,6 @@ const NokDismantledMaterialForm = ({
 
   // Set Dismantle Qty
   const handleActualDismantleQty = (value: number, index: string) => {
-    console.log('## Dismantled Matrail Form ** handleActualDismantleQty * params -> ', value, index);
-
     const updateValue = formValues.find((item) => item.index2 === index);
     if (value <= 0) {
       setNotification({ message: 'Dismantled Qty must be greater than 0', type: 'error', time: 5 });
@@ -293,7 +284,6 @@ const NokDismantledMaterialForm = ({
       setFormValues([...formValues]);
       setConfirmActive(true);
       confirmChange(false);
-      console.log('## Dismantled Matrail Form ** handleActualDismantleQty * update  -> ', updateValue);
     }
     if (updateValue && updateValue.recipeCode !== 'extra' && value > updateValue.recipeQty) {
       setOpenDialog(true);

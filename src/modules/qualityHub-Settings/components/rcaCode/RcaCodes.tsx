@@ -50,8 +50,6 @@ const RcaCodes = () => {
 
   const rcaCodes: RcaCode[] = rcaCodeResults.data || [];
 
-  console.log('materilas  ->', rcaCodes);
-
   const handleRcaCodeFormSubmit = (newUserData: RcaCodeData) => {
     if (showRcaCodeForm.formType === 'ADD') {
       newRcaCodeMutation.mutate(newUserData);

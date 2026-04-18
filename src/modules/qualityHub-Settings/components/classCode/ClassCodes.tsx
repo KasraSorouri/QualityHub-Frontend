@@ -50,8 +50,6 @@ const ClassCodes = () => {
 
   const classCodes: ClassCode[] = classCodeResults.data || [];
 
-  console.log('materilas  ->', classCodes);
-
   const handleClassCodeFormSubmit = (newUserData: ClassCodeData) => {
     if (showClassCodeForm.formType === 'ADD') {
       newClassCodeMutation.mutate(newUserData);

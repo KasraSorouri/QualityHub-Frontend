@@ -23,7 +23,6 @@ const Top_N_NOK_Dashbord = () => {
   const topN = filterData?.topN || 10;
 
   const dashboardData = queryResult.data;
-  console.log('* TOP NOK * dashboardData', dashboardData);
 
   if (queryResult.isLoading) {
     return <div>Loading...</div>;
@@ -34,7 +33,6 @@ const Top_N_NOK_Dashbord = () => {
   };
 
   const applyFilter = (apply: boolean) => {
-    console.log('apply filter', apply);
     if (apply) {
       queryClient.invalidateQueries('top_N_Nok');
     }

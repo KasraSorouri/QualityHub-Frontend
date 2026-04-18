@@ -55,7 +55,6 @@ const SignIn = () => {
       navigate('/');
     } catch (err: unknown) {
       if (err instanceof Error) {
-        console.log('log in fail =>', err.message);
         setNotification({ message: err.message, type: 'error', time: 5 });
       }
     }

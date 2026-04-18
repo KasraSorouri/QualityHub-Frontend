@@ -29,8 +29,6 @@ const createNokCost = async (nokCostData: NewNokCostData): Promise<NokRework | u
     headers: { Authorization: token },
   };
 
-  console.log('#Nok Cost Service * nok cost data-> ', nokCostData);
-
   try {
     const res = await axios.post(`${api_url}/quality/nok_costs`, nokCostData, config);
     return res.data;

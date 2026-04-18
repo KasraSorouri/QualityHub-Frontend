@@ -26,7 +26,6 @@ const getReworkByProduct = async (productId: number): Promise<Rework[]> => {
 
 // Get Reworks * Filtered
 const getFilteredRework = async (filterParameter: FilterParameter): Promise<Rework[]> => {
-  console.log('fileter parameter ->', filterParameter);
   const res = await axios.get(`${api_url}/quality/reworks/product/${filterParameter.productId}`);
   return res.data;
 };

@@ -31,11 +31,9 @@ const getNokDashboardData = async (): Promise<DetectedNokData[]> => {
 
   try {
     const res = await axios.post(`${api_url}/quality/dashboard/detected-nok`, parsmsData, config);
-    console.log(' *** Service  *** NOK Dashboard Data:', res.data);
     return res.data;
   } catch (err: unknown) {
     if (err instanceof Error) {
-      console.log('get NOK Dashboard Data fail =>', err.message);
       throw new Error(`${err.message}`);
     } else {
       console.log('An unexpected error occurred:', err);
@@ -68,7 +66,6 @@ const getNokAnanysedData = async (): Promise<DashboardNokAnalysedData> => {
     return res.data;
   } catch (err: unknown) {
     if (err instanceof Error) {
-      console.log('get NOK Dashboard Data fail =>', err.message);
       throw new Error(`${err.message}`);
     } else {
       console.log('An unexpected error occurred:', err);

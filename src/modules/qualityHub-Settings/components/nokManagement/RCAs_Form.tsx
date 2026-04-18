@@ -87,12 +87,9 @@ const RCAsForm = ({ nokId, rcas, updateRCA, formType }: RCAsProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rcas]);
 
-  console.log(' RCA form * RCA List -> ', rcas);
-
   // Get RCA Code List
   const rcaCodeResults = useQuery('rcaCode', rcaCodeServices.getRcaCode, { refetchOnWindowFocus: false });
   const rcaCodeList: RcaCode[] = rcaCodeResults.data || [];
-  console.log(' RCA form * RCA Codes -> ', rcaCodeList);
 
   // Sort Items
   const [sort, setSort] = useState<{ sortItem: keyof RCA_Data; sortOrder: number }>({
@@ -258,7 +255,6 @@ const RCAsForm = ({ nokId, rcas, updateRCA, formType }: RCAsProps) => {
         id: rcaData[index].id || undefined,
         nokId: nokId,
       };
-      console.log('RCA form * Update RCA * index : ', index, ' -> ', newNokRca);
 
       const result = await updateRCA(newNokRca);
       if (result) {

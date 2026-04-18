@@ -22,7 +22,6 @@ const createClassCode = async (classCodeData: ClassCodeData): Promise<ClassCode 
     return res.data;
   } catch (err: unknown) {
     if (err instanceof Error) {
-      console.log('create classCode fail =>', err.message);
       throw new Error(`${err.message}`);
     } else {
       console.log('An unexpected error occurred:', err);
@@ -43,7 +42,6 @@ const editClassCode = async (classCodeData: ClassCodeData): Promise<ClassCode | 
     return res.data;
   } catch (err: unknown) {
     if (err instanceof Error) {
-      console.log('create classCode fail =>', err.message);
       throw new Error(`${err.message}`);
     } else {
       console.log('An unexpected error occurred:', err);

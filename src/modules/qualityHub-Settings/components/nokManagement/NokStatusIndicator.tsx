@@ -17,8 +17,6 @@ type NokStatusProps = {
 };
 
 const NokStatusIndicator = ({ status }: NokStatusProps) => {
-  console.log(' Status ->', status);
-
   // Rework Status Color
   let reworkStatusColor;
   switch (status.reworkStatus) {

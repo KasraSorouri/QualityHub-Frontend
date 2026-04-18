@@ -50,8 +50,6 @@ const NokCodes = () => {
 
   const nokCodes: NokCode[] = nokCodeResults.data || [];
 
-  console.log('* NOK CODES ->', nokCodes);
-
   const handleNokCodeFormSubmit = (newUserData: NokCodeData) => {
     if (showNokCodeForm.formType === 'ADD') {
       newNokCodeMutation.mutate(newUserData);

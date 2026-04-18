@@ -50,8 +50,6 @@ const Shifts = () => {
 
   const shifts: WorkShift[] = shiftResults.data || [];
 
-  console.log('materilas  ->', shifts);
-
   const handleShiftFormSubmit = (newShiftData: WorkShiftData) => {
     if (showShiftForm.formType === 'ADD') {
       newShiftMutation.mutate(newShiftData);

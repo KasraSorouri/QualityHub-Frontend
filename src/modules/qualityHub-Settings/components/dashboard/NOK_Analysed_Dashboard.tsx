@@ -18,7 +18,6 @@ const NokAnalysedDashboard = () => {
   });
 
   const dashboardData = queryResult.data;
-  console.log('* Analysed NOK * dashboardData', dashboardData);
 
   if (queryResult.isLoading) {
     return <div>Loading...</div>;
@@ -29,7 +28,6 @@ const NokAnalysedDashboard = () => {
   };
 
   const applyFilter = (apply: boolean) => {
-    console.log('apply filter', apply);
 
     if (apply) {
       queryClient.invalidateQueries('nokAnalysedDashboard');

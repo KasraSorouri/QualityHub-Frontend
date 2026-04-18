@@ -43,8 +43,6 @@ interface EnhancedTableHeadProps {
 }
 
 const NokCostForm = ({ nokId, formType, readonly }: NokCostProps) => {
-  console.log('Form prop * nokId -> ', nokId);
-  console.log('Form prop * formType -> ', formType);
 
   const blankMaterialData: MaterialData = {
     materialId: 0,
@@ -69,8 +67,6 @@ const NokCostForm = ({ nokId, formType, readonly }: NokCostProps) => {
   });
 
   const materialList: DismanteledMaterialData[] = useMemo(() => result.data || [], [result.data]);
-
-  console.log('Form prop * Material List -> ', materialList);
 
   useEffect(() => {
     return setMaterialData(

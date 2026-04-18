@@ -36,7 +36,6 @@ type NokCodeListProps = {
 };
 
 const NokCodeList = ({ nokCodes, displayNokCodeForm, selectNokCode }: NokCodeListProps) => {
-  console.log(' Nok code list * nok codes ->', nokCodes);
 
   // Sort Items
   const [sort, setSort] = useState<{ sortItem: keyof NokCode; sortOrder: number }>({

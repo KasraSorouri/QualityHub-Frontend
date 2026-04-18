@@ -15,7 +15,7 @@ const login = async (credentials: Credentials) => {
       if (err.message.includes('401')) {
         throw new Error('The Username Or Password is incorrect!');
       }
-      console.log('Error ->', err.message);
+      ('Error ->', err.message);
       throw new Error(`${err.message}`);
     }
   }

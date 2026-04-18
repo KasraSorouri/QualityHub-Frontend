@@ -69,7 +69,6 @@ const MaterialStatusUpdateForm = ({ materialId, onSubmit }: FormProps) => {
 
   const updateStatus = () => {
     // Handle form submission logic here
-    console.log('Form submitted:', formData);
     const newClaimData: IQCData = {
       dismantledMaterialId: materialId,
       date: new Date(formData.date.toISOString()),

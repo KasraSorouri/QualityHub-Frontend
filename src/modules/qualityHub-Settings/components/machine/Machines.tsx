@@ -50,8 +50,6 @@ const Machines = () => {
 
   const machines: Machine[] = machineResults.data || [];
 
-  console.log('materilas  ->', machines);
-
   const handleMachineFormSubmit = (newUserData: MachineData) => {
     if (showMachineForm.formType === 'ADD') {
       newMachineMutation.mutate(newUserData);

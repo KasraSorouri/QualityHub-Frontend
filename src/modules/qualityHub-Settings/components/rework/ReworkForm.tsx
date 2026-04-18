@@ -61,8 +61,6 @@ type FormData = {
 const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRequest }: ReworkFromProps) => {
   const submitTitle = formType === 'ADD' ? 'Add' : 'Update';
 
-  console.log(' **-** rework Data ->', reworkData);
-
   // convert rwDismanled Material
   const rwDismantledMaterials = reworkData?.rwDismantledMaterials?.map((material) => {
     return {
@@ -94,8 +92,6 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
     affectedRecipes: boolean;
     dismantledMaterials: boolean;
   }>({ reworkRecipes: false, affectedRecipes: false, dismantledMaterials: false });
-
-  console.log('formValues ->', formValues);
 
   // get Station List
   const stationResults = useQuery('stations', stationServices.getStation, { refetchOnWindowFocus: false });
@@ -250,10 +246,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
           affectedRecipes: formValues.affectedRecipes,
           rwDismantledMaterials: formValues.rwDismantledMaterials ? formValues.rwDismantledMaterials : [],
         };
-        const result = await reworkServices.createRework(newReworkData);
-        console.log(' *** NOK registeration * Submit form * result -> ', result);
-      } else {
-        console.log(' *** Rework * Submit form * Error -> ', 'Missing data');
+        await reworkServices.createRework(newReworkData);
       }
     }
 
@@ -274,11 +267,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
           affectedRecipes: formValues.affectedRecipes,
           rwDismantledMaterials: formValues.rwDismantledMaterials ? formValues.rwDismantledMaterials : [],
         };
-        const result = await reworkServices.editRework(newReworkData);
-        console.log(' *** NOK registeration * Submit form * result -> ', result);
-      } else {
-        console.log(' *** Rework * Submit form * Error -> ', 'Missing data');
-      }
+        await reworkServices.editRework(newReworkData);
     }
     updateRequest();
   };

@@ -50,8 +50,6 @@ const Materials = () => {
 
   const materials: Material[] = materialResults.data || [];
 
-  console.log('materilas  ->', materials);
-
   const handleMaterialFormSubmit = (newUserData: NewMaterial) => {
     if (showMaterialForm.formType === 'ADD') {
       newMaterialMutation.mutate(newUserData);

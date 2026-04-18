@@ -21,7 +21,6 @@ const createRole = async (roleData: NewRole): Promise<Role | unknown> => {
     return res.data;
   } catch (err: unknown) {
     if (err instanceof Error) {
-      console.log('create role fail =>', err.message);
       throw new Error(`${err.message}`);
     }
   }
@@ -36,7 +35,6 @@ const editRole = async (roleData: RoleUpdate): Promise<Role | unknown> => {
 
   const { id, ...roleEditedData } = roleData;
 
-  console.log('** role service * update role * role data ->', roleData);
 
   try {
     const res = await axios.put(`${api_url}/auth/roles/${id}`, roleEditedData, config);

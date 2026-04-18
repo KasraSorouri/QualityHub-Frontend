@@ -46,7 +46,6 @@ const ClaimManagement = () => {
   useEffect(() => {
     const getClaims = async () => {
       const claims = listType === 'all' ? await claimServices.getAllClaims() : await claimServices.getPendingClaims();
-      console.log('ClaimManagement * Claims -> ', claims);
       setClaimList(claims);
     };
     getClaims();

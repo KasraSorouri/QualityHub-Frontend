@@ -84,10 +84,6 @@ type FormData = {
 };
 
 const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromProps) => {
-  console.log('nok ID ->', nokId);
-  console.log('** nok anaylzie DATA->', nokAnalyseData);
-
-  //const fakeRCA : RCA[] | undefined = nokAnalyseData?.rcas
 
   const submitTitle = formType === 'ADD' ? 'Add' : 'Update';
 
@@ -112,16 +108,11 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
   const [showCostForm, setShowCostForm] = useState<boolean>(false);
   const [status, setStatus] = useState<AnalyzeStatus>(initAnalyseStatus);
 
-  console.log('NOK Analyse * NOK Data ->', nok);
-  console.log('NOK Analyse * showReworkForm Data ->', showReworkForm);
-  console.log('NOK Analyse * show Form Value ->', formValues);
-
   useEffect(() => {
     const getInitData = async () => {
       const nokResult = await nokDetectServices.getNokDetectById(nokId);
       setNok(nokResult);
       const analyseResults = await nokAnalyseServices.getNokAnalyseByNokId(nokId);
-      console.log('* Nok Analize Form * Analyse ->', analyseResults);
       const newFormValue: FormData = {
         nokCode: analyseResults.nokCode,
         causeStation: analyseResults.causeStation,
@@ -132,7 +123,6 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
         costData: analyseResults.costResult,
         reworkStatus: nokResult.productStatus,
       };
-      console.log('* Nok Analize Form * newFormValue ->', newFormValue);
 
       setFormValues(newFormValue);
 
@@ -149,8 +139,6 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
     refetchOnWindowFocus: false,
   });
   let rcaList: RCA[] = rcaResults.data || [];
-
-  console.log('* Nok Analize Form * RCA List ->', rcaList);
 
   // get Station List
   const stationResults = useQuery('stations', stationServices.getStation, { refetchOnWindowFocus: false });
@@ -192,14 +180,11 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
   };
 
   const handleUpdateRCA = async (rca: NewRca): Promise<boolean> => {
-    console.log(' *** NOK registeration * Update RCA * rcas -> ', rca);
     try {
       const result = await nokRcaServices.createNokRca(rca);
-      console.log(' * Nok Analyze form * Updated RCA ->', result);
       rcaList = rcaList.concat(result);
       return true;
     } catch (error) {
-      console.log(' * Nok Analyze form * Updated RCA ->', error);
       return false;
     }
   };

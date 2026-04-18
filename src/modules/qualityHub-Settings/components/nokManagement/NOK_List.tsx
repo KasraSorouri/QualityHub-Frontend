@@ -36,8 +36,6 @@ const NokList = ({ listType, selectNok }: NokListProps) => {
   const nokResults = useQuery('noks', nokDetectServices.getNokDetect, { refetchOnWindowFocus: false });
   const noks = nokResults.data ? nokResults.data : [];
 
-  console.log('** NOK List * NOKs ->', noks);
-
   // Sort Items
   const [sort, setSort] = useState<{ sortItem: keyof NokData; sortOrder: number }>({
     sortItem: 'detectTime',
@@ -118,8 +116,6 @@ const NokList = ({ listType, selectNok }: NokListProps) => {
     const nokData: NokData = noks.filter((u) => u.id === id)[0];
 
     selectNok(nokData);
-
-    console.log('list type ->', listType);
   };
 
   return (

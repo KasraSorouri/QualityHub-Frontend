@@ -80,8 +80,6 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
     dismantledMaterials: false,
   });
 
-  console.log('Nok Rework fprm ** formValues -> ', formValues);
-
   const convertDismanltedMaterial = (dismantledMaterials: NokDismantledMaterial[]) => {
     const dismantledMaterialsData = dismantledMaterials?.map((dmMaterial) => {
       const data: DismantledMaterialData = {
@@ -111,7 +109,6 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
       const nokResult = await nokDetectServices.getNokDetectById(nokId);
       setNok(nokResult);
       const reworkResults = await nokReworkServices.getNokReworkByNokId(nokId);
-      console.log('* Nok Rework Form * Rework ->', reworkResults);
       const newFormValue: FormData = {
         id: reworkResults.id || undefined,
         operator: reworkResults.reworkOperator,
@@ -126,10 +123,8 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
           ? convertDismanltedMaterial(reworkResults.nokDismantleMaterials)
           : [],
       };
-      console.log('* Nok Rework Form * newFormValue ->', newFormValue);
 
       setFormValues(newFormValue);
-      console.log('$$$$ Nok Rework Form * form value * effect ->', formValues);
       setConfirmation({
         chooseReworks: (reworkResults.reworkActionsId && reworkResults.reworkActionsId.length > 0) || false,
         dismantledMaterials: true,
@@ -172,7 +167,6 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
 
   // Handle Select Rework
   const handleSelectRework = (reworks: Rework[]) => {
-    console.log('Nok Rework Form * handleSelectRework * reworks ->', reworks);
 
     const affectedMaterials: AffectedMaterial[] = [];
     let affectedReciepies: number[] = [];
@@ -203,10 +197,6 @@ const NokReworkForm = ({ nokId, formType, removeNok }: NokFromProps) => {
   };
 
   const handleDismantledMaterial = (dismantledMaterials: DismantledMaterialData[]) => {
-    console.log(' here ***********');
-
-    console.log('Nok Rework Form * handleDismantledMaterial * dismantledMaterials ->', dismantledMaterials);
-
     setFormValues({ ...formValues, dismantledMaterials: dismantledMaterials });
     setConfirmation({ ...confirmation, dismantledMaterials: true });
   };

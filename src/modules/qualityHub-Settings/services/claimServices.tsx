@@ -23,14 +23,11 @@ const editClaimStatus = async (id: number, claimData: Claim): Promise<ClaimListD
     headers: { Authorization: token },
   };
 
-  console.log(' calim service * claim data ->', claimData);
-
   try {
     const res = await axios.put(`${api_url}/quality/claims/${id}`, claimData, config);
     return res.data;
   } catch (err: unknown) {
     if (err instanceof Error) {
-      console.log('update Claim Status fail =>', err.message);
       throw new Error(`${err.message}`);
     } else {
       console.log('An unexpected error occurred:', err);

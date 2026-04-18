@@ -42,7 +42,6 @@ const IqcManagement = () => {
   useEffect(() => {
     const getIqcs = async () => {
       const iqcs = listType === 'all' ? await iqcServices.getAllIqcs() : await iqcServices.getPendingIqcs();
-      console.log('IqcManagement * Iqcs -> ', iqcs);
       setIqcList(iqcs);
     };
     getIqcs();

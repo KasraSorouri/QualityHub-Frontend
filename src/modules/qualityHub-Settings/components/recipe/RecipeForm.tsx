@@ -131,7 +131,6 @@ const RecipeForm = ({ recipeData, productId, formType, submitHandler, displayRec
   };
 
   const handleRecipeType = (newValue: RecipeType) => {
-    console.log('** new walue -> ', newValue);
 
     if (newValue !== null) {
       setFormValues((prevValues: FormData) => ({
@@ -139,7 +138,6 @@ const RecipeForm = ({ recipeData, productId, formType, submitHandler, displayRec
         ['recipeType']: newValue === RecipeType.REWORK ? RecipeType.REWORK : RecipeType.PRODUCTION,
       }));
     }
-    console.log('** recipeType -> ', formValues.recipeType);
   };
 
   const handleSubmit = (event: { preventDefault: () => void }) => {
