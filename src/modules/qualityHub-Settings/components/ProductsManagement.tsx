@@ -18,7 +18,7 @@ const ProductsManagement = () => {
 
   return (
     <Paper
-      sx={{ marginTop: 1, border: 'solid', borderRadius: 2, borderColor: '#1976d270', width: '99.7%' }}
+      sx={{ marginTop: 1, border: 'solid', borderRadius: 2, borderColor: '#1976d270', width: '99.7%' , height: '88vh', overflow: 'hidden' }}
     >
       <Box display="flex" justifyContent="space-between" alignItems="center" borderRadius={2} bgcolor={'#1976d270'}>
         <Grid container bgcolor={'#1976d2d9'} color={'white'} justifyContent={'space-between'} flexDirection={'row'}>
@@ -37,6 +37,7 @@ const ProductsManagement = () => {
           color={'white'}
           flexDirection={'column'}
           borderColor={'#1976d270'}
+          height={'100vh'}
         >
           <List>
             <ListItem onClick={() => setShowListForm('PRODUCT_GRP')}>

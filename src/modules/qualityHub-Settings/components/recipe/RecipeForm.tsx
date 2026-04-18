@@ -66,6 +66,7 @@ const RecipeForm = ({ recipeData, productId, formType, submitHandler, displayRec
     description: recipeData ? recipeData.description : '',
     station: recipeData ? recipeData.station : null,
     order: recipeData ? recipeData.order : 1,
+    
     timeDuration: recipeData ? recipeData.timeDuration : 0,
     manpower: recipeData ? recipeData.manpower : 0,
     recipeType: recipeData ? recipeData.recipeType : RecipeType.PRODUCTION,
@@ -169,7 +170,7 @@ const RecipeForm = ({ recipeData, productId, formType, submitHandler, displayRec
         stationId: formValues.station.id,
         order: formValues.order,
         timeDuration: Number(formValues.timeDuration),
-        manpower: typeof formValues.manpower === 'number' ? Number(formValues.manpower) : 0,
+        manpower: Number(formValues.manpower || 0),
         recipeType: formValues.recipeType !== RecipeType.REWORK ? RecipeType.PRODUCTION : RecipeType.REWORK,
         active: formValues.active,
         materialsData: materialsData,

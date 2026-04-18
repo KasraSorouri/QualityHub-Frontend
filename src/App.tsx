@@ -27,7 +27,7 @@ function App() {
 
   return (
     <div style={{ width: '99vw', display: 'flex', height:'98vh', flexDirection: 'column' }}>
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Navigation signedUser={user} />
         <Notification />
         <div style={{ flexGrow: 1, padding: 2 }}>

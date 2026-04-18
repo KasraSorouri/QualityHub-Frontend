@@ -306,7 +306,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
                   sx={{ marginLeft: 2, marginTop: 1, width: '18%', minWidth: '200px' }}
                   size="small"
                   aria-required
-                  disabled={!(formType === 'ADD')}
+                  disabled={(formType === 'VIEW')}
                   options={stationList}
                   isOptionEqualToValue={(option: Station, value: Station) => option.stationName === value.stationName}
                   value={formValues.station ? formValues.station : null}
@@ -324,7 +324,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
                   sx={{ marginLeft: 2, marginTop: 1, width: '12%', minWidth: '130px' }}
                   size="small"
                   aria-required
-                  disabled={!(formType === 'ADD')}
+                  disabled={(formType === 'VIEW')}
                   options={nokCodeList}
                   isOptionEqualToValue={(option: NokCode, value: NokCode) => option.nokCode === value.nokCode}
                   value={formValues.nokCode ? formValues.nokCode : null}
@@ -430,7 +430,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
             confirmSelection={selectReworkRecipes}
             confirmChange={(value) => handleConfirmChange('reworkRecipes', value)}
             title="Rework Recipes (Recipes used for rework)"
-            editable={formType === 'ADD' ? true : false}
+            editable={formType === 'ADD' || formType === 'EDIT' ? true : false}
           />
           <Divider sx={{ margin: 1 }} />
           <ReworkRecipeList
@@ -439,7 +439,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
             confirmSelection={selectAffectedRecipes}
             confirmChange={(value) => handleConfirmChange('affectedRecipes', value)}
             title="Affected Recipes (Recipes affected by rework)"
-            editable={formType === 'ADD' ? true : false}
+            editable={formType === 'ADD' || formType === 'EDIT' ? true : false}
           />
           <Divider sx={{ margin: 1 }} />
           <ReworkRwDismantledMaterial
@@ -447,7 +447,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
             rwDismantledMaterial={reworkData?.rwDismantledMaterials}
             confirmSelection={selectRwDismantledMaterials}
             confirmChange={(value) => handleConfirmChange('dismantledMaterials', value)}
-            editable={formType === 'ADD' ? true : false}
+            editable={formType === 'ADD' || formType === 'EDIT' ? true : false}
           />
         </form>
       </Box>
