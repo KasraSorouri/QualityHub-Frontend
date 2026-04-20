@@ -17,7 +17,7 @@ const uploadImage  = async(formData: FormData): Promise< IImageData[]> => {
   };
 
   try {
-    const res = await axios.post(`${api_url}/quality/fileUpload/nok_images`, formData, config);
+    const res = await axios.post(`${api_url}/quality/files/nok_images`, formData, config);
     return res.data.data;
   } catch (err: unknown) {
     if (err instanceof Error) {
@@ -30,6 +30,27 @@ const uploadImage  = async(formData: FormData): Promise< IImageData[]> => {
   }
 };
 
+// Get NOK Images
+const getNokImages = async (nokId: number): Promise<IImageData[]> => {
+  const token = setToken();
+  const config = {
+    headers: { Authorization: token },
+  };
+  try {
+    const res = await axios.get(`${api_url}/quality/files/nok_images/${nokId}`, config);
+    return res.data.data;
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.log('get nokImages fail =>', err.message);
+      throw new Error(`${err.message}`);
+    } else {
+      console.log('An unexpected error occurred:', err);
+      throw new Error('An unexpected error occurred');
+    }
+  }
+};
+
 export default {
   uploadImage,
+  getNokImages,
 };

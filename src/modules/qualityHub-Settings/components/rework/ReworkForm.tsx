@@ -268,6 +268,7 @@ const ReworkForm = ({ reworkData, formType, product, displayReworkForm, updateRe
           rwDismantledMaterials: formValues.rwDismantledMaterials ? formValues.rwDismantledMaterials : [],
         };
         await reworkServices.editRework(newReworkData);
+      }
     }
     updateRequest();
   };

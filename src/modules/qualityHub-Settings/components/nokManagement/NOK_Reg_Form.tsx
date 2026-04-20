@@ -36,8 +36,8 @@ import stationServices from '../../services/stationServices';
 import nokCodeServices from '../../services/nokCodeServices';
 import workShiftServices from '../../services/workShiftServices';
 import nokDetectServices from '../../services/nokDetectServices';
-import ImageFileUploader from './NOK_Images_Upload_Form';
-import ImageListView from './ImageListView';
+import ImageFileUploader from '../imageView/NOK_Images_Upload_Form';
+import ImageListView from '../imageView/ImageListView';
 
 type NokFromProps = {
   formType: 'ADD' | 'EDIT' | 'VIEW';
@@ -53,6 +53,40 @@ type FormData = {
   detectedShift: WorkShift | null;
   detectTime: Dayjs;
   description: string;
+};
+
+const compactTextFieldSx = {
+  '& .MuiInputBase-root': {
+    minHeight: 36,
+  },
+  '& .MuiOutlinedInput-input': {
+    padding: '8px 10px',
+  },
+};
+
+const compactAutocompleteSx = {
+  ...compactTextFieldSx,
+  '& .MuiAutocomplete-inputRoot': {
+    paddingTop: '1px !important',
+    paddingBottom: '1px !important',
+    paddingRight: '36px !important',
+  },
+  '& .MuiAutocomplete-input': {
+    padding: '6px 4px !important',
+  },
+  '& .MuiAutocomplete-endAdornment': {
+    right: 6,
+  },
+};
+
+const compactAutocompleteListboxSx = {
+  '& .MuiAutocomplete-option': {
+    minHeight: 34,
+    paddingTop: 4,
+    paddingBottom: 4,
+    paddingLeft: 8,
+    paddingRight: 8,
+  },
 };
 
 const NokForm = ({ nokData, formType }: NokFromProps) => {
@@ -174,145 +208,192 @@ const NokForm = ({ nokData, formType }: NokFromProps) => {
   return (
     <Box>
       <form onSubmit={handleSubmit}>
-        <Grid container direction={'column'} sx={{ background: '#9FEAF7' }}>
-          <Grid container width={'100%'} flexDirection={'row'} marginTop={1}>
-            <Autocomplete
-              id="product"
-              sx={{ marginLeft: 2, marginTop: 1, width: '20%', minWidth: '180px' }}
-              size="small"
-              disabled={formType === 'VIEW'}
-              aria-required
-              options={productList}
-              isOptionEqualToValue={(option: Product, value: Product) => option.id === value.id}
-              value={formValues.product ? formValues.product : null}
-              onChange={(_event, newValue) => newValue && handleAutoCompeletChange('product', newValue)}
-              getOptionLabel={(option: { productName: string }) => option.productName}
-              renderInput={(
-                params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined } & Omit<
-                    OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps,
-                    'variant'
-                  >,
-              ) => <TextField {...params} label="Product" placeholder="Product" size="small" required />}
-            />
-            <TextField
-              id="productSN"
-              name="productSN"
-              label="Product SN"
-              disabled={formType === 'VIEW'}
-              sx={{ marginLeft: 2, marginTop: 1, width: '20%', minWidth: '180px' }}
-              value={formValues.productSN}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-              size="small"
-              required
-            />
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DateTimePicker
-                name="detectedTime"
-                label="Detect Time"
-                disabled={formType === 'VIEW'}
-                viewRenderers={{
-                  seconds: null,
-                }}
-                value={formValues.detectTime}
-                onChange={(newValue) => timeHandler(newValue)}
-                sx={{ marginLeft: 2, marginTop: 1, width: '210px', '& .MuiInputBase-root': { height: '40px' } }}
-                disableFuture
-                format="YYYY.MM.DD    HH:mm"
-                maxDate={dayjs(new Date())}
-              />
-            </LocalizationProvider>
-          </Grid>
-          <Grid container width={'100%'} flexDirection={'row'}>
-            <Autocomplete
-              id="detectedStation"
-              sx={{ marginLeft: 2, marginTop: 1, width: '20%', minWidth: '200px' }}
-              size="small"
-              aria-required
-              disabled={formType === 'VIEW'}
-              options={stationList}
-              isOptionEqualToValue={(option: Station, value: Station) => option.stationName === value.stationName}
-              value={formValues.detectedStation ? formValues.detectedStation : null}
-              onChange={(_event, newValue) => newValue && handleAutoCompeletChange('detectedStation', newValue)}
-              getOptionLabel={(option: { stationName: string }) => option.stationName}
-              renderInput={(
-                params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined } & Omit<
-                    OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps,
-                    'variant'
-                  >,
-              ) => <TextField {...params} label="Station" placeholder="Add Station" size="small" required />}
-            />
-            <Autocomplete
-              id="initNokCode"
-              sx={{ marginLeft: 2, marginTop: 1, width: '15%', minWidth: '150px' }}
-              size="small"
-              aria-required
-              disabled={formType === 'VIEW'}
-              options={nokCodeList}
-              isOptionEqualToValue={(option: NokCode, value: NokCode) => option.nokCode === value.nokCode}
-              value={formValues.initNokCode ? formValues.initNokCode : null}
-              onChange={(_event, newValue) => newValue && handleAutoCompeletChange('initNokCode', newValue)}
-              getOptionLabel={(option: { nokCode: string }) => option.nokCode}
-              renderInput={(
-                params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined } & Omit<
-                    OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps,
-                    'variant'
-                  >,
-              ) => <TextField {...params} label="NOK Code" placeholder="NOK Code" size="small" required />}
-            />
-            <Autocomplete
-              id="detectedShift"
-              sx={{ marginLeft: 2, marginTop: 1, width: '15%', minWidth: '140px' }}
-              size="small"
-              aria-required
-              disabled={formType === 'VIEW'}
-              options={workShiftList}
-              isOptionEqualToValue={(option: WorkShift, value: WorkShift) => option.shiftName === value.shiftName}
-              value={formValues.detectedShift ? formValues.detectedShift : null}
-              onChange={(_event, newValue) => newValue && handleAutoCompeletChange('detectedShift', newValue)}
-              getOptionLabel={(option: { shiftName: string }) => option.shiftName}
-              renderInput={(
-                params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined } & Omit<
-                    OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps,
-                    'variant'
-                  >,
-              ) => <TextField {...params} label="Shift" placeholder="Shift" size="small" required />}
-            />
-            { formType !== 'VIEW' &&
-            <Button
-              variant="contained"
-              type='button'
-              color="primary"
-              size="small"
-              onClick={(event) => handleFileUpload(event)}
-              sx={{ margin: 1, marginLeft: 1, width: 'auto', height: '38px', alignSelf: 'flex-end' }}
-              //disabled={formType === 'VIEW'}
-            >ADD Picture</Button>
-            }
-          </Grid>
-          <Grid display={'flex'} marginBottom={1}>
-            <TextField
-              id="description"
-              name="description"
-              label="Description"
-              disabled={formType === 'VIEW'}
-              sx={{ marginLeft: 2, marginTop: 1, width: '55%' }}
-              multiline
-              value={formValues.description}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
-              size="small"
-            />
-            {formType !== 'VIEW' && (
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
+        <Grid container direction={'column'} sx={{ background: '#9FEAF7', px: 1, py: 0.5 }}>
+          <Grid container spacing={1} alignItems="stretch">
+            <Grid item xs={12} sm={6} lg={3}>
+              <Autocomplete
+                id="product"
+                sx={{ ...compactAutocompleteSx, width: '100%' }}
                 size="small"
-                sx={{ margin: 1, marginLeft: 1, width: 'auto', height: '38px', alignSelf: 'flex-end' }}
-              >
-                {submitTitle}
-              </Button>
-            )}
+                disabled={formType === 'VIEW'}
+                aria-required
+                options={productList}
+                ListboxProps={{ sx: compactAutocompleteListboxSx }}
+                isOptionEqualToValue={(option: Product, value: Product) => option.id === value.id}
+                value={formValues.product ? formValues.product : null}
+                onChange={(_event, newValue) => newValue && handleAutoCompeletChange('product', newValue)}
+                getOptionLabel={(option: { productName: string }) => option.productName}
+                renderInput={(
+                  params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined } & Omit<
+                      OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps,
+                      'variant'
+                    >,
+                ) => <TextField {...params} label="Product" placeholder="Product" size="small" required sx={compactTextFieldSx} />}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} lg={3}>
+              <TextField
+                id="productSN"
+                name="productSN"
+                label="Product SN"
+                disabled={formType === 'VIEW'}
+                sx={{ ...compactTextFieldSx, width: '100%' }}
+                value={formValues.productSN}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
+                size="small"
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} lg={3}>
+              <Autocomplete
+                id="detectedShift"
+                sx={{ ...compactAutocompleteSx, width: '100%' }}
+                size="small"
+                aria-required
+                disabled={formType === 'VIEW'}
+                options={workShiftList}
+                ListboxProps={{ sx: compactAutocompleteListboxSx }}
+                isOptionEqualToValue={(option: WorkShift, value: WorkShift) => option.shiftName === value.shiftName}
+                value={formValues.detectedShift ? formValues.detectedShift : null}
+                onChange={(_event, newValue) => newValue && handleAutoCompeletChange('detectedShift', newValue)}
+                getOptionLabel={(option: { shiftName: string }) => option.shiftName}
+                renderInput={(
+                  params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined } & Omit<
+                      OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps,
+                      'variant'
+                    >,
+                ) => <TextField {...params} label="Shift" placeholder="Shift" size="small" required sx={compactTextFieldSx} />}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} lg={3}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateTimePicker
+                  name="detectedTime"
+                  label="Detect Time"
+                  disabled={formType === 'VIEW'}
+                  viewRenderers={{
+                    seconds: null,
+                  }}
+                  value={formValues.detectTime}
+                  onChange={(newValue) => timeHandler(newValue)}
+                  sx={{
+                    ...compactTextFieldSx,
+                    width: '100%',
+                  }}
+                  disableFuture
+                  format="YYYY.MM.DD    HH:mm"
+                  maxDate={dayjs(new Date())}
+                />
+              </LocalizationProvider>
+            </Grid>
           </Grid>
+          <Grid container spacing={1} alignItems="stretch" sx={{ mt: 0 }}>
+            <Grid item xs={12} sm={6} lg={3}>
+              <Autocomplete
+                id="detectedStation"
+                sx={{ ...compactAutocompleteSx, width: '100%' }}
+                size="small"
+                aria-required
+                disabled={formType === 'VIEW'}
+                options={stationList}
+                ListboxProps={{ sx: compactAutocompleteListboxSx }}
+                isOptionEqualToValue={(option: Station, value: Station) => option.stationName === value.stationName}
+                value={formValues.detectedStation ? formValues.detectedStation : null}
+                onChange={(_event, newValue) => newValue && handleAutoCompeletChange('detectedStation', newValue)}
+                getOptionLabel={(option: { stationName: string }) => option.stationName}
+                renderInput={(
+                  params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined } & Omit<
+                      OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps,
+                      'variant'
+                    >,
+                ) => <TextField {...params} label="Station" placeholder="Add Station" size="small" required sx={compactTextFieldSx} />}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} lg={4}>
+              <Autocomplete
+                id="initNokCode"
+                sx={{ ...compactAutocompleteSx, width: '100%' }}
+                size="small"
+                aria-required
+                disabled={formType === 'VIEW'}
+                options={nokCodeList}
+                ListboxProps={{ sx: compactAutocompleteListboxSx }}
+                isOptionEqualToValue={(option: NokCode, value: NokCode) => option.nokCode === value.nokCode}
+                value={formValues.initNokCode ? formValues.initNokCode : null}
+                onChange={(_event, newValue) => newValue && handleAutoCompeletChange('initNokCode', newValue)}
+                getOptionLabel={(option: { nokCode: string }) => option.nokCode}
+                renderInput={(
+                  params: JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined } & Omit<
+                      OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps,
+                      'variant'
+                    >,
+                ) => <TextField {...params} label="NOK Code" placeholder="NOK Code" size="small" required sx={compactTextFieldSx} />}
+              />
+            </Grid>
+            <Grid item xs={12} lg={5}>
+              <TextField
+                id="description"
+                name="description"
+                label="Description"
+                disabled={formType === 'VIEW'}
+                sx={{ ...compactTextFieldSx, width: '100%' }}
+                multiline
+                value={formValues.description}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event)}
+                size="small"
+              />
+            </Grid>
+          </Grid>
+          {formType !== 'VIEW' && (
+            <Grid
+              container
+              spacing={1}
+              alignItems="stretch"
+              sx={{ mt: 0 }}
+              justifyContent="flex-end"
+            >
+              <Grid
+                item
+                xs={12}
+                lg={4}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                }}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    alignItems: 'center',
+                    gap: 1,
+                    width: '100%',
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <Button
+                    variant="contained"
+                    type="button"
+                    color="primary"
+                    size="small"
+                    onClick={(event) => handleFileUpload(event)}
+                    sx={{ height: '36px', minWidth: '120px' }}
+                  >
+                    ADD Picture
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    sx={{ height: '36px', minWidth: '120px' }}
+                  >
+                    {submitTitle}
+                  </Button>
+                </Box>
+              </Grid>
+            </Grid>
+          )}
         </Grid>
       </form>
       <Divider />

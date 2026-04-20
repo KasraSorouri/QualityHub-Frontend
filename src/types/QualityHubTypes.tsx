@@ -488,3 +488,13 @@ export interface IImageData {
   updatedAt: string;
   uploadedBy: string;
 }
+
+export interface IImage {
+  id: number;
+  filePath: string;
+  qualityStatus?: string
+  imageDescription?: string;
+  imageType?: string;
+  nokId?: number;
+}
+

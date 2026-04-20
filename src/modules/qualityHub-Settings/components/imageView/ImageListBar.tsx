@@ -1,18 +1,17 @@
 import React, { useRef } from 'react';
 import { Box, IconButton, ImageListItemBar } from '@mui/material';
 import { ChevronLeft, ChevronRight, Delete } from '@mui/icons-material';
+import { IImage } from '../../../../types/QualityHubTypes';
 
 interface IImageListBarProbs {
-  imagesData: { id: number; filePath: string; qualityStatus: string }[];
+  imagesData: IImage[];
   status?: 'OK' | 'NOK';
-  selectImage: React.Dispatch<React.SetStateAction<{ id: number; filePath: string; qualityStatus: string } | null>>;
+  selectImage: React.Dispatch<React.SetStateAction<IImage | null>>;
   selected: number | undefined
 }
 
 const ImageListBar = ({ imagesData, status, selectImage, selected }: IImageListBarProbs) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  console.log('selected :', selected);
 
   const scroll = (direction: string) => {
     const { current } = scrollRef;

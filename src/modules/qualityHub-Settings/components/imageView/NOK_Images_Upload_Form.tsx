@@ -21,7 +21,7 @@ interface IProps {
   qualityStatus: 'NOK' | 'OK';
   nokCode : number;
   station : number;
-  closeForm : (x:boolean) => void;
+  closeForm : (show: boolean, qualityStatus: 'NOK' | 'OK') => void;
   setNokImages : (imagesData: IImageData[]) => void;
 }
 
@@ -47,9 +47,8 @@ const ImageFileUploader = ({ nokId, qualityStatus, nokCode, station, closeForm, 
       formData.append('nokCode', nokCode.toString());
       formData.append('station', station.toString());
       const response = await nokImageService.uploadImage(formData);
-      console.log('uploading images response ...', response);
       setNokImages(response);
-      closeForm(false);
+      closeForm(false, qualityStatus);
     } catch (error) {
       console.error('Error uploading files:', error);
     }
@@ -110,7 +109,7 @@ const ImageFileUploader = ({ nokId, qualityStatus, nokCode, station, closeForm, 
           variant="contained"
           color="primary"
           sx={{ ml: 2, alignSelf: 'flex-end'  }}
-          onClick={() => closeForm(false)}
+          onClick={() => closeForm(false, qualityStatus)}
         >
         cancel
         </Button>
@@ -129,4 +128,3 @@ const ImageFileUploader = ({ nokId, qualityStatus, nokCode, station, closeForm, 
 };
 
 export default ImageFileUploader;
-
