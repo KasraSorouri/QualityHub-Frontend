@@ -34,6 +34,7 @@ interface MaterialData {
   dismantledQty: number;
   status: MaterialStatus;
   unitPrice: number;
+  unitPriceInput: string;
 }
 
 interface EnhancedTableHeadProps {
@@ -42,7 +43,7 @@ interface EnhancedTableHeadProps {
   onRequestSort: (_event: React.MouseEvent<unknown>, property: string) => void;
 }
 
-const NokCostForm = ({ nokId, formType, readonly }: NokCostProps) => {
+const NokCostForm = ({ nokId, readonly }: NokCostProps) => {
 
   const blankMaterialData: MaterialData = {
     materialId: 0,
@@ -51,6 +52,7 @@ const NokCostForm = ({ nokId, formType, readonly }: NokCostProps) => {
     dismantledQty: 0,
     status: MaterialStatus.SCRAPPED,
     unitPrice: 0,
+    unitPriceInput: '0',
   };
 
   const [materialData, setMaterialData] = useState<MaterialData[]>([blankMaterialData]);
@@ -67,6 +69,8 @@ const NokCostForm = ({ nokId, formType, readonly }: NokCostProps) => {
   });
 
   const materialList: DismanteledMaterialData[] = useMemo(() => result.data || [], [result.data]);
+  console.log('material list', materialList);
+
 
   useEffect(() => {
     return setMaterialData(
@@ -74,9 +78,10 @@ const NokCostForm = ({ nokId, formType, readonly }: NokCostProps) => {
         materialId: item.material.id,
         materialName: item.material.itemShortName,
         registeredPrice: Number(item.material.price) || 0,
-        dismantledQty: item.qty,
+        dismantledQty: item.actualDismantledQty,
         status: item.materialStatus,
-        unitPrice: 0,
+        unitPrice: item.unitPrice || 0,
+        unitPriceInput: String(item.unitPrice || 0),
       })),
     );
   }, [materialList]);
@@ -150,7 +155,11 @@ const NokCostForm = ({ nokId, formType, readonly }: NokCostProps) => {
   };
 
   const handleCopyPrice = (): void => {
-    const newMaterialData = materialData.map((m) => ({ ...m, unitPrice: m.registeredPrice }));
+    const newMaterialData = materialData.map((m) => ({
+      ...m,
+      unitPrice: m.registeredPrice,
+      unitPriceInput: String(m.registeredPrice),
+    }));
     setMaterialData(newMaterialData);
   };
 
@@ -158,7 +167,13 @@ const NokCostForm = ({ nokId, formType, readonly }: NokCostProps) => {
     const newNokCostData: NewNokCostData = {
       nokId: nokId,
       reworkId: 1,
-      dismantledMaterial: materialData,
+      dismantledMaterial: materialData.map(({ materialId, registeredPrice, dismantledQty, status, unitPrice }) => ({
+        materialId,
+        registeredPrice,
+        dismantledQty,
+        status,
+        unitPrice,
+      })),
     };
     nokCostServices.createNokCost(newNokCostData);
   }
@@ -178,7 +193,8 @@ const NokCostForm = ({ nokId, formType, readonly }: NokCostProps) => {
           name="totalPrice"
           label="Total Price"
           sx={{ width: '20%', margin: '10px' }}
-          value={materialData.reduce((total, material) => total + material.unitPrice * material.dismantledQty, 0)}
+          type='number'
+          value={materialData.reduce((total, material) => total + Number(material.unitPrice) * Number(material.dismantledQty), 0).toFixed(2)}
           InputProps={{ readOnly: true }}
         />
       </Box>
@@ -220,15 +236,22 @@ const NokCostForm = ({ nokId, formType, readonly }: NokCostProps) => {
                     <TableCell align="justify">
                       <TextField
                         name="price"
-                        //type='number'
+                        type="text"
+                        inputProps={{
+                          inputMode: 'decimal',
+                        }}
                         sx={{ width: '98%' }}
-                        value={material.unitPrice}
+                        value={material.unitPriceInput}
                         onChange={(event) => {
+                          const inputValue = event.target.value;
+                          const normalizedValue = inputValue.replace(',', '.');
+                          const parsedValue = Number(normalizedValue);
                           const newMaterialData = materialData.map((item, i) => {
                             if (i === index) {
                               return {
                                 ...item,
-                                unitPrice: parseInt(event.target.value) || 0,
+                                unitPrice: Number.isFinite(parsedValue) ? parsedValue : 0,
+                                unitPriceInput: inputValue,
                               };
                             }
                             return item;

@@ -411,8 +411,9 @@ export interface DismanteledMaterialData {
   reworkId: number;
   materialId: number;
   material: Material;
-  qty: number;
+  actualDismantledQty: number;
   materialStatus: MaterialStatus;
+  unitPrice: number;
 }
 
 export interface CostMaterialData {
