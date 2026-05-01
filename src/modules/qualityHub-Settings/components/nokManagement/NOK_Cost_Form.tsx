@@ -69,8 +69,6 @@ const NokCostForm = ({ nokId, readonly }: NokCostProps) => {
   });
 
   const materialList: DismanteledMaterialData[] = useMemo(() => result.data || [], [result.data]);
-  console.log('material list', materialList);
-
 
   useEffect(() => {
     return setMaterialData(

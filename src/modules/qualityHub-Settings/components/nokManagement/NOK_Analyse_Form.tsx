@@ -144,9 +144,6 @@ const NokAnalyseForm = ({ nokId, nokAnalyseData, formType, removeNok }: NokFromP
   const [openImagesUpload, setOpenImagesUpload] = useState<{ show: boolean , qualityStatus: 'OK' | 'NOK' }>({show:false, qualityStatus: 'NOK'});
   const [openImages, setOpenImages] = useState<boolean>(false)
   const [nokImages, setNokImages] = useState<IImageData[]>([]);
-
-
-  console.log('nok images', nokImages)
   
 
   useEffect(() => {
