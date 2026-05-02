@@ -38,7 +38,7 @@ function App() {
             <Route path="/quality-setting/" element={<ConfigurationPage signedUser={user} />} />
             <Route path="/quality-setting/product-management" element={<ProductsManagement />} />
             <Route path="/quality-setting/system-setting" element={<SystemSetting />} />
-            <Route path="/image" element={<ImageViewer />} />
+            <Route path="/image" element={<ImageViewer images={[]} closeWindow={() => {}} />} />
           </Routes>
         </div>
       </Router>

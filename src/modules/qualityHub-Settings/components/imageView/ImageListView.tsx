@@ -14,7 +14,7 @@ import Lightbox, { ZoomRef } from 'yet-another-react-lightbox';
 import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import 'yet-another-react-lightbox/styles.css';
 
-import { IImageData } from '../../../../../types/QualityHubTypes';
+import { IImageData } from '../../../../types/QualityHubTypes';
 
 interface ImageListViewProps {
   imagesData: IImageData[];
