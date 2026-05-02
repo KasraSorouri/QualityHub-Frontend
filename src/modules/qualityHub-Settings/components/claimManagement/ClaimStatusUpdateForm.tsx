@@ -70,7 +70,6 @@ const ClaimStatusUpdateForm = ({ materialId, onSubmit }: FormProps) => {
   };
 
   const updateStatus = () => {
-    // Handle form submission logic here
     const newClaimData: Claim = {
       dismantledMaterialId: materialId,
       date: new Date(formData.date.toISOString()),
@@ -84,7 +83,7 @@ const ClaimStatusUpdateForm = ({ materialId, onSubmit }: FormProps) => {
   };
 
   return (
-    <Grid direction={'row'} spacing={1} margin={1}>
+    <Grid container direction={'row'} spacing={1} margin={1}>
       <TextField
         required
         name="user"
