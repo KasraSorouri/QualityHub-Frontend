@@ -14,7 +14,6 @@ interface IImageAnalyseProps {
 const ImageAnalyse = ({nokId, closeWindow} : IImageAnalyseProps) => {
 
   const [nokImages, setNokImages] = useState<IImage[]>([]);
-  console.log('nokImages ->', nokImages)
   
    // Download NOK Images
   useEffect(() => {
@@ -22,7 +21,6 @@ const ImageAnalyse = ({nokId, closeWindow} : IImageAnalyseProps) => {
     const fetchNokImages = async () => {
       try {
         const response = await nokImageService.getNokImages(nokId);
-        console.log('response ->',response);
         setNokImages(response);
       } catch (err) {
         console.log(err);

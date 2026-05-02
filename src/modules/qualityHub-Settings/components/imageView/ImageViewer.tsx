@@ -19,8 +19,6 @@ const ImageViewer = ({ images, closeWindow }: IImageViewerProps) => {
   const [selectedNokImage, setSelectedNokImage] = useState<IImage|null>(null);
   const [selectedOkImage, setSelectedOkImage] = useState<IImage|null>(null);
 
-  console.log('images ->', images);
-
   const nokImagesData = images.filter(image => image.qualityStatus === 'NOK');
   const okImagesData = images.filter(image => image.qualityStatus === 'OK');
 
