@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 
 import { Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
@@ -7,6 +7,7 @@ import { DetectedNokData } from './DashBoardDataType';
 
 import WidgetsIcon from '@mui/icons-material/Widgets';
 import Filter_NOK_Detect from './Filter_NOK_Detect';
+import { useSocketEvent } from '../../../../services/useSocketEvent';
 
 const NokDetectDashboard = () => {
   const queryClient = useQueryClient();
@@ -17,6 +18,11 @@ const NokDetectDashboard = () => {
     refetchOnWindowFocus: false,
     retry: 1,
   });
+
+  console.log('NOK Dashboard Data:', queryResult.data);
+  useSocketEvent('nokDashboardUpdate', () => {
+    queryClient.invalidateQueries('nokDashboard');
+  });    
 
   const nokDashboardData = queryResult?.data || ([] as DetectedNokData[]);
 
